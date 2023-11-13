@@ -2,11 +2,10 @@
 //  FireTests.swift
 //  FireTests
 //
-//  Created by Hien Tran on 31/10/2023.
+//  Created by Hien Tran on 13/11/2023.
 //
 
 import XCTest
-@testable import Fire
 
 final class FireTests: XCTestCase {
 
@@ -28,7 +27,7 @@ final class FireTests: XCTestCase {
 
     func testPerformanceExample() throws {
         // This is an example of a performance test case.
-        self.measure {
+        measure {
             // Put the code you want to measure the time of here.
         }
     }
