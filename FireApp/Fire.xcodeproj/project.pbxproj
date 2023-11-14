@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0E04472A2B02FD17005CE582 /* FirePlaybookApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447292B02FD17005CE582 /* FirePlaybookApp.swift */; };
+		0E04472E2B02FD19005CE582 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E04472D2B02FD19005CE582 /* Assets.xcassets */; };
+		0E0447312B02FD19005CE582 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E0447302B02FD19005CE582 /* Preview Assets.xcassets */; };
+		0E04473B2B02FD19005CE582 /* FirePlaybookTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E04473A2B02FD19005CE582 /* FirePlaybookTests.swift */; };
+		0E0447452B02FD1A005CE582 /* FirePlaybookUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447442B02FD1A005CE582 /* FirePlaybookUITests.swift */; };
+		0E0447472B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447462B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift */; };
+		0E0447522B02FD7C005CE582 /* AppPlaybook in Frameworks */ = {isa = PBXBuildFile; productRef = 0E0447512B02FD7C005CE582 /* AppPlaybook */; };
 		0E1FF2692B01F66E00A77369 /* FireApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2682B01F66E00A77369 /* FireApp.swift */; };
 		0E1FF26D2B01F67000A77369 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E1FF26C2B01F67000A77369 /* Assets.xcassets */; };
 		0E1FF2712B01F67000A77369 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E1FF2702B01F67000A77369 /* Preview Assets.xcassets */; };
@@ -17,6 +24,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0E0447372B02FD19005CE582 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0E1FF25D2B01F66E00A77369 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0E0447262B02FD17005CE582;
+			remoteInfo = FirePlaybook;
+		};
+		0E0447412B02FD19005CE582 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0E1FF25D2B01F66E00A77369 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0E0447262B02FD17005CE582;
+			remoteInfo = FirePlaybook;
+		};
 		0E1FF2772B01F67000A77369 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0E1FF25D2B01F66E00A77369 /* Project object */;
@@ -34,6 +55,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0E0447272B02FD17005CE582 /* FirePlaybook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirePlaybook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E0447292B02FD17005CE582 /* FirePlaybookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookApp.swift; sourceTree = "<group>"; };
+		0E04472D2B02FD19005CE582 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0E0447302B02FD19005CE582 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0E0447362B02FD19005CE582 /* FirePlaybookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FirePlaybookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E04473A2B02FD19005CE582 /* FirePlaybookTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookTests.swift; sourceTree = "<group>"; };
+		0E0447402B02FD19005CE582 /* FirePlaybookUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FirePlaybookUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0E0447442B02FD1A005CE582 /* FirePlaybookUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookUITests.swift; sourceTree = "<group>"; };
+		0E0447462B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		0E1FF2652B01F66E00A77369 /* Fire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fire.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E1FF2682B01F66E00A77369 /* FireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireApp.swift; sourceTree = "<group>"; };
 		0E1FF26C2B01F67000A77369 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -47,6 +77,28 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0E0447242B02FD17005CE582 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E0447522B02FD7C005CE582 /* AppPlaybook in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E0447332B02FD19005CE582 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E04473D2B02FD19005CE582 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0E1FF2622B01F66E00A77369 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -72,12 +124,50 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0E0447282B02FD17005CE582 /* FirePlaybook */ = {
+			isa = PBXGroup;
+			children = (
+				0E0447292B02FD17005CE582 /* FirePlaybookApp.swift */,
+				0E04472D2B02FD19005CE582 /* Assets.xcassets */,
+				0E04472F2B02FD19005CE582 /* Preview Content */,
+			);
+			path = FirePlaybook;
+			sourceTree = "<group>";
+		};
+		0E04472F2B02FD19005CE582 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				0E0447302B02FD19005CE582 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		0E0447392B02FD19005CE582 /* FirePlaybookTests */ = {
+			isa = PBXGroup;
+			children = (
+				0E04473A2B02FD19005CE582 /* FirePlaybookTests.swift */,
+			);
+			path = FirePlaybookTests;
+			sourceTree = "<group>";
+		};
+		0E0447432B02FD1A005CE582 /* FirePlaybookUITests */ = {
+			isa = PBXGroup;
+			children = (
+				0E0447442B02FD1A005CE582 /* FirePlaybookUITests.swift */,
+				0E0447462B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift */,
+			);
+			path = FirePlaybookUITests;
+			sourceTree = "<group>";
+		};
 		0E1FF25C2B01F66E00A77369 = {
 			isa = PBXGroup;
 			children = (
 				0E1FF2672B01F66E00A77369 /* Fire */,
 				0E1FF2792B01F67000A77369 /* FireTests */,
 				0E1FF2832B01F67000A77369 /* FireUITests */,
+				0E0447282B02FD17005CE582 /* FirePlaybook */,
+				0E0447392B02FD19005CE582 /* FirePlaybookTests */,
+				0E0447432B02FD1A005CE582 /* FirePlaybookUITests */,
 				0E1FF2662B01F66E00A77369 /* Products */,
 				0E1FF2932B01F72500A77369 /* Frameworks */,
 			);
@@ -89,6 +179,9 @@
 				0E1FF2652B01F66E00A77369 /* Fire.app */,
 				0E1FF2762B01F67000A77369 /* FireTests.xctest */,
 				0E1FF2802B01F67000A77369 /* FireUITests.xctest */,
+				0E0447272B02FD17005CE582 /* FirePlaybook.app */,
+				0E0447362B02FD19005CE582 /* FirePlaybookTests.xctest */,
+				0E0447402B02FD19005CE582 /* FirePlaybookUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -139,6 +232,62 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0E0447262B02FD17005CE582 /* FirePlaybook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E04474E2B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybook" */;
+			buildPhases = (
+				0E0447232B02FD17005CE582 /* Sources */,
+				0E0447242B02FD17005CE582 /* Frameworks */,
+				0E0447252B02FD17005CE582 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FirePlaybook;
+			packageProductDependencies = (
+				0E0447512B02FD7C005CE582 /* AppPlaybook */,
+			);
+			productName = FirePlaybook;
+			productReference = 0E0447272B02FD17005CE582 /* FirePlaybook.app */;
+			productType = "com.apple.product-type.application";
+		};
+		0E0447352B02FD19005CE582 /* FirePlaybookTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E04474F2B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookTests" */;
+			buildPhases = (
+				0E0447322B02FD19005CE582 /* Sources */,
+				0E0447332B02FD19005CE582 /* Frameworks */,
+				0E0447342B02FD19005CE582 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0E0447382B02FD19005CE582 /* PBXTargetDependency */,
+			);
+			name = FirePlaybookTests;
+			productName = FirePlaybookTests;
+			productReference = 0E0447362B02FD19005CE582 /* FirePlaybookTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		0E04473F2B02FD19005CE582 /* FirePlaybookUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0E0447502B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookUITests" */;
+			buildPhases = (
+				0E04473C2B02FD19005CE582 /* Sources */,
+				0E04473D2B02FD19005CE582 /* Frameworks */,
+				0E04473E2B02FD19005CE582 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0E0447422B02FD19005CE582 /* PBXTargetDependency */,
+			);
+			name = FirePlaybookUITests;
+			productName = FirePlaybookUITests;
+			productReference = 0E0447402B02FD19005CE582 /* FirePlaybookUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		0E1FF2642B01F66E00A77369 /* Fire */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0E1FF28A2B01F67000A77369 /* Build configuration list for PBXNativeTarget "Fire" */;
@@ -205,6 +354,17 @@
 				LastSwiftUpdateCheck = 1420;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
+					0E0447262B02FD17005CE582 = {
+						CreatedOnToolsVersion = 14.2;
+					};
+					0E0447352B02FD19005CE582 = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = 0E0447262B02FD17005CE582;
+					};
+					0E04473F2B02FD19005CE582 = {
+						CreatedOnToolsVersion = 14.2;
+						TestTargetID = 0E0447262B02FD17005CE582;
+					};
 					0E1FF2642B01F66E00A77369 = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -234,11 +394,37 @@
 				0E1FF2642B01F66E00A77369 /* Fire */,
 				0E1FF2752B01F67000A77369 /* FireTests */,
 				0E1FF27F2B01F67000A77369 /* FireUITests */,
+				0E0447262B02FD17005CE582 /* FirePlaybook */,
+				0E0447352B02FD19005CE582 /* FirePlaybookTests */,
+				0E04473F2B02FD19005CE582 /* FirePlaybookUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0E0447252B02FD17005CE582 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E0447312B02FD19005CE582 /* Preview Assets.xcassets in Resources */,
+				0E04472E2B02FD19005CE582 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E0447342B02FD19005CE582 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E04473E2B02FD19005CE582 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0E1FF2632B01F66E00A77369 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -265,6 +451,31 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0E0447232B02FD17005CE582 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E04472A2B02FD17005CE582 /* FirePlaybookApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E0447322B02FD19005CE582 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E04473B2B02FD19005CE582 /* FirePlaybookTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0E04473C2B02FD19005CE582 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0E0447452B02FD1A005CE582 /* FirePlaybookUITests.swift in Sources */,
+				0E0447472B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0E1FF2612B01F66E00A77369 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -293,6 +504,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		0E0447382B02FD19005CE582 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0E0447262B02FD17005CE582 /* FirePlaybook */;
+			targetProxy = 0E0447372B02FD19005CE582 /* PBXContainerItemProxy */;
+		};
+		0E0447422B02FD19005CE582 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0E0447262B02FD17005CE582 /* FirePlaybook */;
+			targetProxy = 0E0447412B02FD19005CE582 /* PBXContainerItemProxy */;
+		};
 		0E1FF2782B01F67000A77369 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 0E1FF2642B01F66E00A77369 /* Fire */;
@@ -306,6 +527,147 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		0E0447482B02FD1A005CE582 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"FirePlaybook/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		0E0447492B02FD1A005CE582 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"FirePlaybook/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0E04474A2B02FD1A005CE582 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FirePlaybook.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FirePlaybook";
+			};
+			name = Debug;
+		};
+		0E04474B2B02FD1A005CE582 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FirePlaybook.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FirePlaybook";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		0E04474C2B02FD1A005CE582 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = FirePlaybook;
+			};
+			name = Debug;
+		};
+		0E04474D2B02FD1A005CE582 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = FirePlaybook;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		0E1FF2882B01F67000A77369 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -588,6 +950,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0E04474E2B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E0447482B02FD1A005CE582 /* Debug */,
+				0E0447492B02FD1A005CE582 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0E04474F2B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E04474A2B02FD1A005CE582 /* Debug */,
+				0E04474B2B02FD1A005CE582 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		0E0447502B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0E04474C2B02FD1A005CE582 /* Debug */,
+				0E04474D2B02FD1A005CE582 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		0E1FF2602B01F66E00A77369 /* Build configuration list for PBXProject "Fire" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -627,6 +1016,10 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0E0447512B02FD7C005CE582 /* AppPlaybook */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppPlaybook;
+		};
 		0E230D992B02471A0002128A /* FireFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FireFeature;

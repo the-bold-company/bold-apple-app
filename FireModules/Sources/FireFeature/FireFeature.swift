@@ -29,6 +29,6 @@ public struct AppView: View {
 //                    Label("Settings", systemImage: "gear")
 //                }
 //        }
-        LoginView()
+        LoginPage()
     }
 }

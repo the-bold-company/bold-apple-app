@@ -37,6 +37,15 @@
       }
     },
     {
+      "identity" : "playbook-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/playbook-ui/playbook-ios",
+      "state" : {
+        "revision" : "7adfb03914afe8f97009f798ceb06a87a5a44cbc",
+        "version" : "0.3.4"
+      }
+    },
+    {
       "identity" : "reactiveswift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/ReactiveCocoa/ReactiveSwift.git",

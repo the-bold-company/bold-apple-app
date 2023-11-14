@@ -1,7 +1,7 @@
 import SwiftUI
 import CoreUI
 
-public struct LoginView: View {
+public struct LoginPage: View {
     
     @ObserveInjection private var iO
     

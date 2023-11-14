@@ -9,13 +9,15 @@ let package = Package(
         .iOS(.v14)
     ],
     products: [
-        .singleTargetLibrary("FireFeature")
+        .singleTargetLibrary("FireFeature"),
+        .singleTargetLibrary("AppPlaybook")
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
         .package(url: "https://github.com/hmlongco/Resolver.git", exact: "1.5.0"),
         .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
-        .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3")
+        .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
+        .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
     ],
     targets: [
         .target(
@@ -24,6 +26,15 @@ let package = Package(
                 "CoreUI",
                 "Authentication",
 //                .product(name: "Inject", package: "inject")
+            ]
+        ),
+        .target(
+            name: "AppPlaybook",
+            dependencies: [
+                "Authentication",
+                "CoreUI",
+                .product(name: "Playbook", package: "playbook-ios"),
+                .product(name: "PlaybookUI", package: "playbook-ios"),
             ]
         ),
         .testTarget(
