@@ -13,14 +13,14 @@
 		0E04473B2B02FD19005CE582 /* FirePlaybookTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E04473A2B02FD19005CE582 /* FirePlaybookTests.swift */; };
 		0E0447452B02FD1A005CE582 /* FirePlaybookUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447442B02FD1A005CE582 /* FirePlaybookUITests.swift */; };
 		0E0447472B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447462B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift */; };
-		0E0447522B02FD7C005CE582 /* AppPlaybook in Frameworks */ = {isa = PBXBuildFile; productRef = 0E0447512B02FD7C005CE582 /* AppPlaybook */; };
 		0E1FF2692B01F66E00A77369 /* FireApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2682B01F66E00A77369 /* FireApp.swift */; };
 		0E1FF26D2B01F67000A77369 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E1FF26C2B01F67000A77369 /* Assets.xcassets */; };
 		0E1FF2712B01F67000A77369 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E1FF2702B01F67000A77369 /* Preview Assets.xcassets */; };
 		0E1FF27B2B01F67000A77369 /* FireTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF27A2B01F67000A77369 /* FireTests.swift */; };
 		0E1FF2852B01F67000A77369 /* FireUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2842B01F67000A77369 /* FireUITests.swift */; };
 		0E1FF2872B01F67000A77369 /* FireUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2862B01F67000A77369 /* FireUITestsLaunchTests.swift */; };
-		0E230D9A2B02471A0002128A /* FireFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0E230D992B02471A0002128A /* FireFeature */; };
+		0E23141D2B0613C60049B9F3 /* FireFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0E23141C2B0613C60049B9F3 /* FireFeature */; };
+		0E23141F2B0613D20049B9F3 /* AppPlaybook in Frameworks */ = {isa = PBXBuildFile; productRef = 0E23141E2B0613D20049B9F3 /* AppPlaybook */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,7 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E0447522B02FD7C005CE582 /* AppPlaybook in Frameworks */,
+				0E23141F2B0613D20049B9F3 /* AppPlaybook in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E230D9A2B02471A0002128A /* FireFeature in Frameworks */,
+				0E23141D2B0613C60049B9F3 /* FireFeature in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,7 +246,7 @@
 			);
 			name = FirePlaybook;
 			packageProductDependencies = (
-				0E0447512B02FD7C005CE582 /* AppPlaybook */,
+				0E23141E2B0613D20049B9F3 /* AppPlaybook */,
 			);
 			productName = FirePlaybook;
 			productReference = 0E0447272B02FD17005CE582 /* FirePlaybook.app */;
@@ -302,7 +302,7 @@
 			);
 			name = Fire;
 			packageProductDependencies = (
-				0E230D992B02471A0002128A /* FireFeature */,
+				0E23141C2B0613C60049B9F3 /* FireFeature */,
 			);
 			productName = Fire;
 			productReference = 0E1FF2652B01F66E00A77369 /* Fire.app */;
@@ -537,6 +537,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FirePlaybook/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Fire Playbook";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -548,7 +549,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fire.playbook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -567,6 +568,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"FirePlaybook/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Fire Playbook";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,7 +580,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybook;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fire.playbook;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1016,13 +1018,13 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0E0447512B02FD7C005CE582 /* AppPlaybook */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AppPlaybook;
-		};
-		0E230D992B02471A0002128A /* FireFeature */ = {
+		0E23141C2B0613C60049B9F3 /* FireFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FireFeature;
+		};
+		0E23141E2B0613D20049B9F3 /* AppPlaybook */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppPlaybook;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

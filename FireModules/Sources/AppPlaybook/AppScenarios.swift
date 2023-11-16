@@ -1,40 +1,39 @@
+import Authentication
+@_exported import Inject
 @_exported import Playbook
 @_exported import PlaybookUI
-@_exported import Inject
-import Authentication
 
 public enum ScenarioCatalog: String {
     case home
-    
+
     var kind: ScenarioKind {
         return ScenarioKind(stringLiteral: rawValue)
     }
 }
 
-public struct PlaybookBuilder {
+public enum PlaybookBuilder {
     public static func build() -> Playbook {
         let playbook = Playbook()
-        
+
         playbook.addScenarios(catalog: .home) {
             Scenario("Login", layout: .fill) {
                 LoginPage()
             }
         }
-        
+
         playbook.addScenarios(catalog: .home) {
             Scenario("Login 2", layout: .fill) {
                 LoginPage()
             }
         }
-        
+
         playbook.addScenarios(catalog: .home) {
             Scenario("Login 3", layout: .fill) {
                 LoginPage()
             }
         }
-        
+
         return playbook
-        
     }
 }
 
@@ -49,8 +48,8 @@ private extension Playbook {
     @discardableResult
     func addScenarios<S: ScenariosBuildable>(
         catalog: ScenarioCatalog,
-        @ScenariosBuilder _ scenarios: () -> S) -> Self
-    {
+        @ScenariosBuilder _ scenarios: () -> S
+    ) -> Self {
         return addScenarios(of: catalog.kind, scenarios)
     }
 }
