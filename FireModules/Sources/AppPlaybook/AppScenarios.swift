@@ -46,9 +46,9 @@ private extension Playbook {
     ///
     /// - Returns: A instance of `self`.
     @discardableResult
-    func addScenarios<S: ScenariosBuildable>(
+    func addScenarios(
         catalog: ScenarioCatalog,
-        @ScenariosBuilder _ scenarios: () -> S
+        @ScenariosBuilder _ scenarios: () -> some ScenariosBuildable
     ) -> Self {
         return addScenarios(of: catalog.kind, scenarios)
     }
