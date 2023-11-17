@@ -8,3 +8,4 @@ repos:
   rev: 0.50.3
   hooks:
   - id: swiftlint
+    args: [lint --config .swiftlint.yml --quiet]
