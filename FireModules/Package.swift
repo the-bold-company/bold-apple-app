@@ -87,7 +87,7 @@ extension Product {
 }
 
 package.targets = package.targets.map { target in
-    var plugins = target.plugins ?? []
+var plugins = target.plugins ?? []
     plugins.append(.plugin(name: "SwiftLintPlugin", package: "SwiftLint"))
     target.plugins = plugins
     return target
