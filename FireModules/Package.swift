@@ -4,20 +4,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "Main",
+    name: "FireModules",
     platforms: [
-        .iOS(.v14)
+        .iOS(.v14),
+        .macOS(.v13),
     ],
     products: [
         .singleTargetLibrary("FireFeature"),
-        .singleTargetLibrary("AppPlaybook")
+        .singleTargetLibrary("AppPlaybook"),
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
-        .package(url: "https://github.com/hmlongco/Resolver.git", exact: "1.5.0"),
-        .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
+        .package(url: "https://github.com/realm/SwiftLint.git", from: "0.53.0"),
+//        .package(url: "https://github.com/hmlongco/Resolver.git", exact: "1.5.0"),
+//        .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
+        .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
     ],
     targets: [
         .target(
@@ -25,7 +28,9 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "Authentication",
+//                "Combine+Ext",
 //                .product(name: "Inject", package: "inject")
+//                .product(name: "Resolver", package: "resolver")
             ]
         ),
         .target(
@@ -39,33 +44,39 @@ let package = Package(
         ),
         .testTarget(
             name: "FireFeatureTests",
-            dependencies: ["FireFeature"]),
+            dependencies: ["FireFeature"]
+        ),
         .target(
             name: "Authentication",
             dependencies: [
-                "Networking",
-                "CoreUI"
-            ]),
-        .target(
-            name: "Networking",
-            dependencies: [
-                .product(name: "CombineMoya", package: "moya")
-            ]),
+                // "Networking",
+                "CoreUI",
+            ]
+        ),
 //        .target(
-//            name: "DI",
+//            name: "Networking",
 //            dependencies: [
-//                .product(name: "Resolver", package: "resolver")
-//            ]),
-//        .target(
-//            name: "Combine+Ext",
-//            dependencies: [
-//                .product(name: "CombineExt", package: "combineext")
-//            ]),
+//                .product(name: "CombineMoya", package: "moya")
+//            ]
+//        ),
         .target(
             name: "CoreUI",
             dependencies: [
-                .product(name: "Inject", package: "inject")
-            ]),
+                .product(name: "Inject", package: "inject"),
+            ]
+        ),
+//        .target(
+//            name: "DI",
+//            dependencies: [
+//                .product(name: "Resolver", package: "resolver"),
+//            ]
+//        ),
+//        .target(
+//            name: "Combine+Ext",
+//            dependencies: [
+//                .product(name: "CombineExt", package: "combineext"),
+//            ]
+//        ),
     ]
 )
 
@@ -73,4 +84,11 @@ extension Product {
     static func singleTargetLibrary(_ name: String) -> Product {
         .library(name: name, targets: [name])
     }
+}
+
+package.targets = package.targets.map { target in
+    var plugins = target.plugins ?? []
+    plugins.append(.plugin(name: "SwiftLintPlugin", package: "SwiftLint"))
+    target.plugins = plugins
+    return target
 }

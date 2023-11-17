@@ -1,0 +1,11 @@
+repos:
+- repo: https://github.com/nicklockwood/SwiftFormat
+  rev: 0.52.8
+  hooks:
+  - id: swiftformat
+    args: [--config, .swiftformat, --quiet]
+- repo: https://github.com/realm/SwiftLint
+  rev: 0.50.3
+  hooks:
+  - id: swiftlint
+    args: [lint --config .swiftlint.yml --quiet]

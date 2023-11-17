@@ -1,5 +1,5 @@
-import XCTest
 @testable import FireFeature
+import XCTest
 
 final class FireFeatureTests: XCTestCase {
     func testExample() throws {
