@@ -1,0 +1,25 @@
+configurations:
+  - sources:
+      include:
+        - FireModules/Sources/Networking/
+    templates:
+      - FireModules/Sources/Networking/CodeGen/Templates/
+    output: FireModules/Sources/Networking/CodeGen/
+    baseIndentation: 4
+  # Add Packages generation config here, you can just add another sources/templates/output section
+    args:
+      settingsView: BetaSettingsView
+      settingsStructure: BetaSettings
+      settingsExternalData: BetaSettingsExternalData
+      settingsImports: 
+        - SharedModels
+  # - sources:
+  #     include:
+  #       - FireModules/Sources/CoreUI/
+  #     exclude:
+  #       - FireModules/Sources/CoreUI/CodeGen/Templates/UIColorTemplate.stencil
+  #   templates:
+  #     - FireModules/Sources/CoreUI/CodeGen/Templates/
+  #   output: FireModules/Sources/CoreUI/CodeGen/
+  #   baseIndentation: 4
+  

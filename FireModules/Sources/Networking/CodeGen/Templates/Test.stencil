@@ -1,0 +1,7 @@
+{% for type in types.all %}
+// {{ type.name }}   is of type {{type.kind }}
+  {% for variable in type.storedVariables %}
+    // var  {{variable.name}}: {{variable.typeName}}
+  {% endfor %}
+// MARK: --
+{% endfor %}

@@ -21,6 +21,7 @@ let package = Package(
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
+        .package(url: "https://github.com/siteline/swiftui-introspect", from: "1.0.0"),
     ],
     targets: [
         .target(
@@ -63,6 +64,10 @@ let package = Package(
             name: "CoreUI",
             dependencies: [
                 .product(name: "Inject", package: "inject"),
+                .product(name: "SwiftUIIntrospect", package: "swiftui-introspect"),
+            ],
+            resources: [
+                .process("Assets/Fonts"),
             ]
         ),
 //        .target(
