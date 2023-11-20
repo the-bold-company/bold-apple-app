@@ -16,13 +16,13 @@ public enum PlaybookBuilder {
         let playbook = Playbook()
 
         playbook.addScenarios(catalog: .home) {
-            Scenario("Login", layout: .fill) {
-                LoginPage()
+            Scenario("Landing Page", layout: .fill) {
+                LandingPage()
             }
         }
 
         playbook.addScenarios(catalog: .home) {
-            Scenario("Login 2", layout: .fill) {
+            Scenario("Login", layout: .fill) {
                 LoginPage()
             }
         }
