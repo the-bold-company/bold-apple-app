@@ -1,4 +1,7 @@
-// swiftlint:disable all
+// swiftlint:disable superfluous_disable_command
+// swiftlint:disable line_length
+// swiftlint:disable file_length
+// swiftlint:disable vertical_whitespace
 // Generated using SwiftGen — https://github.com/SwiftGen/SwiftGen
 
 {% if families %}
@@ -17,11 +20,9 @@
 @available(*, deprecated, renamed: "{{fontType}}.Font", message: "This typealias will be removed in SwiftGen 7.0")
 {{accessModifier}} typealias {{param.fontAliasName|default:"Font"}} = {{fontType}}.Font
 
-// swiftlint:disable superfluous_disable_command file_length implicit_return
-
 // MARK: - Fonts
 
-// swiftlint:disable identifier_name line_length type_body_length
+// swiftlint:disable type_body_length
 {% macro transformPath path %}
   {%- if param.preservePath -%}
     {{path}}
@@ -43,7 +44,7 @@
     allCustomFonts.forEach { $0.register() }
   }
 }
-// swiftlint:enable identifier_name line_length type_body_length
+// swiftlint:enable type_body_length
 
 // MARK: - Implementation Details
 
@@ -83,9 +84,8 @@
   #endif
 
   {{accessModifier}} func register() {
-    // swiftlint:disable:next conditional_returns_on_newline
-    guard let url = url else { return }
-    CTFontManagerRegisterFontsForURL(url as CFURL, .process, nil)
+    guard let url = url as CFURL else { return }
+    CTFontManagerRegisterFontsForURL(url, .process, nil)
   }
 
   fileprivate func registerIfNeeded() {
@@ -94,14 +94,13 @@
       register()
     }
     #elseif os(macOS)
-    if let url = url, CTFontManagerGetScopeForURL(url as CFURL) == .none {
+    if let url = url as CFURL, CTFontManagerGetScopeForURL(url) == .none {
       register()
     }
     #endif
   }
 
   fileprivate var url: URL? {
-    // swiftlint:disable:next implicit_return
     {% if param.lookupFunction %}
     return {{param.lookupFunction}}(name, family, path)
     {% else %}
@@ -160,3 +159,8 @@ private final class BundleToken {
 {% else %}
 // No fonts found
 {% endif %}
+
+// swiftlint:enable line_length
+// swiftlint:enable file_length
+// swiftlint:enable vertical_whitespace
+// swiftlint:enable superfluous_disable_command
