@@ -6,58 +6,58 @@
 //
 
 import CoreUI
+import Home
 import SwiftUI
+
+enum Route: String {
+    case login
+    case signup
+}
 
 public struct LandingPage: View {
     @ObserveInjection private var iO
 
+    @State var route: Route?
+
     public init() {}
 
     public var body: some View {
-        VStack {
-            Spacer()
+        NavigationView {
+            VStack {
+                Spacer()
 
-            Image(systemName: "globe")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 200, height: 200)
+                Image(systemName: "globe")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 200, height: 200)
 
-            Spacer().frame(height: 20)
+                Spacer().frame(height: 20)
 
-            Text("Centralize your personal finance all in one place")
-                .font(.custom(FontFamily.Inter.black, size: 28))
-                .multilineTextAlignment(.center)
-                .padding()
+                Text("Centralize your personal finance all in one place")
+                    .typography(.titleSection)
+                    .multilineTextAlignment(.center)
+                    .padding()
 
-            Spacer()
+                Spacer()
 
-            HStack(alignment: .center) {
-                Button(action: {
-                    // Handle log in action
-                }) {
-                    Text("Log in")
-                        .font(.custom(FontFamily.Inter.semiBold, size: 14))
-                        .foregroundColor(Color.coreui.forestGreen)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.coreui.brightGreen)
-                        .cornerRadius(8)
+                HStack(alignment: .center) {
+                    Group {
+                        Button("Log in") {
+                            route = .login
+                        }
+
+                        Button("Sign up") {
+                            route = .signup
+                        }
+                    }
+                    .fireButtonStyle()
                 }
 
-                Button(action: {
-                    // Handle sign up action
-                }) {
-                    Text("Sign up")
-                        .font(.custom(FontFamily.Inter.semiBold, size: 14))
-                        .foregroundColor(Color.coreui.forestGreen)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.coreui.brightGreen)
-                        .cornerRadius(8)
-                }
+                NavigationLink(destination: LoginPage(), tag: Route.login, selection: $route) { EmptyView() }
+                NavigationLink(destination: SignupPage(), tag: Route.signup, selection: $route) { EmptyView() }
             }
+            .padding()
         }
-        .padding()
         .enableInjection()
     }
 }

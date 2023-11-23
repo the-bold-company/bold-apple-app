@@ -12,30 +12,34 @@ public struct LoginPage: View {
     public init() {}
 
     public var body: some View {
-        Form {
-            VStack {
-                Section(footer: Text("").foregroundColor(.red)) {
-                    TextField("Enter your username", text: $username)
-                        .autocapitalization(.none)
-                }
-                Section(footer: Text("").foregroundColor(.red)) {
-                    SecureField("Enter your password", text: $password)
-                    SecureField("Re-enter your password", text: $verifiedPassword)
-                }
-                Section {
-                    Button(action: {}) {
-                        Text("Sign in")
-                    }
-                    .disabled(!isFormValid)
-                }
+        VStack(alignment: .leading) {
+            Text("Log in")
+                .typography(.titleScreen)
+
+            Spacing(height: .size32)
+
+            FireTextView(
+                title: "Your email",
+                text: $username
+            )
+
+            Spacing(height: .size16)
+
+            FireTextView(
+                title: "Your password",
+                text: $username
+            )
+
+            Spacing(height: .size24)
+
+            Button("Log in") {
+                // Handle log in action
             }
+            .fireButtonStyle()
+
+            Spacer()
         }
+        .padding()
         .enableInjection()
     }
 }
-
-// struct SwiftUIView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        SwiftUIView()
-//    }
-// }

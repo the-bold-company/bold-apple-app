@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "FireModules",
     platforms: [
-        .iOS(.v14),
+        .iOS(.v15),
         .macOS(.v13),
     ],
     products: [
@@ -50,7 +50,14 @@ let package = Package(
         .target(
             name: "Authentication",
             dependencies: [
+                "Home",
                 // "Networking",
+                "CoreUI",
+            ]
+        ),
+        .target(
+            name: "Home",
+            dependencies: [
                 "CoreUI",
             ]
         ),

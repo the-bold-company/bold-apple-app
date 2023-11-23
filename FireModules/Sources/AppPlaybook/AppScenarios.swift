@@ -1,10 +1,13 @@
 import Authentication
+import CoreUI
 @_exported import Inject
 @_exported import Playbook
 @_exported import PlaybookUI
+import SwiftUI
 
 public enum ScenarioCatalog: String {
     case home
+    case coreui
 
     var kind: ScenarioKind {
         return ScenarioKind(stringLiteral: rawValue)
@@ -27,9 +30,13 @@ public enum PlaybookBuilder {
             }
         }
 
-        playbook.addScenarios(catalog: .home) {
-            Scenario("Login 3", layout: .fill) {
-                LoginPage()
+        playbook.addScenarios(catalog: .coreui) {
+            Scenario("FireTextView", layout: .fill) {
+                Group {
+                    TextFieldWrapper(title: "TextView", type: .normal)
+                    TextFieldWrapper(title: "Secure TextView", type: .secure)
+                }
+                .padding()
             }
         }
 
@@ -51,5 +58,31 @@ private extension Playbook {
         @ScenariosBuilder _ scenarios: () -> some ScenariosBuildable
     ) -> Self {
         return addScenarios(of: catalog.kind, scenarios)
+    }
+}
+
+// ContentView for the Playbook scenario
+struct TextFieldWrapper: View {
+    enum TextFieldType {
+        case normal
+        case secure
+    }
+
+    @State private var text = ""
+    let title: String
+    let type: TextFieldType
+
+    init(title: String, type: TextFieldType) {
+        self.title = title
+        self.type = type
+    }
+
+    var body: some View {
+        switch type {
+        case .normal:
+            FireTextView(title: title, text: $text)
+        case .secure:
+            FireSecureTextView(title: title, text: $text)
+        }
     }
 }
