@@ -30,7 +30,8 @@
 #--nospaceoperators ..<,...
 #--octalgrouping none
 #--operatorfunc no-space
-#--selfrequired 
+--selfrequired 
+--self init-only
 #--stripunusedargs closure-only
 #--trailingclosures
 #--wraparguments before-first

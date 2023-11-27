@@ -40,6 +40,18 @@ public enum PlaybookBuilder {
             }
         }
 
+        playbook.addScenarios(catalog: .coreui) {
+            Scenario("LoadingOverlay", layout: .fill) {
+                LoadingOverlay(loading: .constant(true)) {
+                    Image(systemName: "globe")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .foregroundColor(.blue)
+                        .frame(width: 200, height: 200)
+                }
+            }
+        }
+
         return playbook
     }
 }
@@ -80,9 +92,9 @@ struct TextFieldWrapper: View {
     var body: some View {
         switch type {
         case .normal:
-            FireTextView(title: title, text: $text)
+            FireTextField(title: title, text: $text)
         case .secure:
-            FireSecureTextView(title: title, text: $text)
+            FireSecureTextField(title: title, text: $text)
         }
     }
 }

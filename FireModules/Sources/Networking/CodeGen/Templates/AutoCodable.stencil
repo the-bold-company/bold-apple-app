@@ -1,0 +1,20 @@
+{% for type in types.implementing.AutoDecodable|!protocol %}
+{{ type.accessLevel }} init(from decoder: Decoder) throws {
+{% for var in type.storedVariables %}
+    {% set jsonKeyAnnotated %}{{ var|annotated:"jsonKey" }}{% endset %}
+	{% set jsonKeyName %}{{ var.annotations.jsonKey.name  }}{% endset %}
+	{% set defaultValue %}{{ var.annotations.jsonKey.default }}{% endset %}
+      
+      
+	{% if jsonKeyAnnotated and jsonKeyName  %}
+	{% if defaultValue %}
+	self.{{var.name}} = (try? decoder.decode("{{jsonKeyName}}")) ?? {% if var.unwrappedTypeName == "String" %}"{{ defaultValue }}"{% else %}{{ defaultValue }}{% endif %}
+	{% else %}
+	self.{{var.name}} = try decoder.decode("{{jsonKeyName}}")
+	{% endif %}
+	{% else %}
+	self.{{var.name}} = try decoder.decode("{{var.name}}")
+	{% endif %}
+{% endfor %}    
+}
+{% endfor %}
