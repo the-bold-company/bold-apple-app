@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "FireModules",
     platforms: [
-        .iOS(.v14),
+        .iOS(.v15),
         .macOS(.v13),
     ],
     products: [
@@ -15,13 +15,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
-        .package(url: "https://github.com/realm/SwiftLint.git", from: "0.53.0"),
+        .package(url: "https://github.com/realm/SwiftLint.git", exact: "0.53.0"),
 //        .package(url: "https://github.com/hmlongco/Resolver.git", exact: "1.5.0"),
-//        .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
+        .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
-        .package(url: "https://github.com/siteline/swiftui-introspect", from: "1.0.0"),
+        .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
+        .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
     ],
     targets: [
         .target(
@@ -50,16 +51,26 @@ let package = Package(
         .target(
             name: "Authentication",
             dependencies: [
-                // "Networking",
+                "Home",
+                "Networking",
                 "CoreUI",
             ]
         ),
-//        .target(
-//            name: "Networking",
-//            dependencies: [
-//                .product(name: "CombineMoya", package: "moya")
-//            ]
-//        ),
+        .target(
+            name: "Home",
+            dependencies: [
+                "CoreUI",
+            ]
+        ),
+        .target(
+            name: "Networking",
+            dependencies: [
+                "Shared",
+                .product(name: "CombineMoya", package: "moya"),
+                .product(name: "Codextended", package: "codextended"),
+                .product(name: "CombineExt", package: "combineext"),
+            ]
+        ),
         .target(
             name: "CoreUI",
             dependencies: [
@@ -67,7 +78,8 @@ let package = Package(
                 .product(name: "SwiftUIIntrospect", package: "swiftui-introspect"),
             ],
             resources: [
-                .process("Assets/Fonts"),
+                .process("Assets"),
+                .process("CodeGen/Templates"),
             ]
         ),
 //        .target(
@@ -76,12 +88,11 @@ let package = Package(
 //                .product(name: "Resolver", package: "resolver"),
 //            ]
 //        ),
-//        .target(
-//            name: "Combine+Ext",
-//            dependencies: [
-//                .product(name: "CombineExt", package: "combineext"),
-//            ]
-//        ),
+        .target(
+            name: "Shared",
+            dependencies: [
+            ]
+        ),
     ]
 )
 

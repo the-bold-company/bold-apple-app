@@ -62,5 +62,9 @@ function process_output() {
 
 # process_output "SwiftLint" "${PODS_ROOT}/SwiftLint/swiftlint lint --quiet"
 process "SwiftFormat" "cd FireModules ; swift run swiftformat .; cd .."
+
+# Run SwiftFormat in lint mode to list the files that would be changed by formatting, but without actually changing them.
+# process "SwiftFormat" "cd FireModules ; swift run swiftformat . --lint --verbose; cd .."
+
 process_output "SwiftLint" "FireModules/.build/arm64-apple-macosx/debug/swiftlint lint"
 # process_output "SwiftLint" "swift run swiftlint"
