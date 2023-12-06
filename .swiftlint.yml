@@ -96,10 +96,10 @@ line_length:
   ignores_comments: true
   ignores_urls: true
 
-# nesting:
-#   type_level:
-#     warning: 3
-#     error: 3
+nesting:
+  type_level:
+    warning: 5
+    error: 5
 #   function_level:
 #     warning: 5
 #     error: 5

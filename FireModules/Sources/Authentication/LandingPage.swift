@@ -5,6 +5,7 @@
 //  Created by Hien Tran on 18/11/2023.
 //
 
+import ComposableArchitecture
 import CoreUI
 import Home
 import SwiftUI
@@ -17,12 +18,16 @@ enum Route: String {
 public struct LandingPage: View {
     @ObserveInjection private var iO
 
+    let store: StoreOf<LandingFeature>
+
     @State var route: Route?
 
-    public init() {}
+    public init(store: StoreOf<LandingFeature>) {
+        self.store = store
+    }
 
     public var body: some View {
-        NavigationView {
+        WithViewStore(store, observe: { $0 }) { _ in
             VStack {
                 Spacer()
 
@@ -43,21 +48,32 @@ public struct LandingPage: View {
                 HStack(alignment: .center) {
                     Group {
                         Button("Log in") {
-                            route = .login
+//                                route = .login
+                            store.send(.loginButtonTapped)
                         }
 
                         Button("Sign up") {
-                            route = .signup
+//                                route = .signup
+                            store.send(.signUpButtonTapped)
                         }
                     }
                     .fireButtonStyle()
                 }
 
-                NavigationLink(destination: LoginPage(), tag: Route.login, selection: $route) { EmptyView() }
-                NavigationLink(destination: SignupPage(), tag: Route.signup, selection: $route) { EmptyView() }
+//                NavigationLink(destination: LoginPage(), tag: Route.login, selection: $route) { EmptyView() }
+//                NavigationLink(
+//                    destination: RegisterEmailPage(store: Store(initialState: EmailRegister.State(), reducer: {
+//                        EmailRegister()
+//                    })),
+//                    tag: Route.signup,
+//                    selection: $route
+//                ) { EmptyView() }
             }
             .padding()
+            .navigationBarHidden(true)
+//            }
         }
+        ._printChanges("🌮")
         .enableInjection()
     }
 }

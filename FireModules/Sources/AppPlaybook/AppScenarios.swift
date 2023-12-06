@@ -8,6 +8,7 @@ import SwiftUI
 public enum ScenarioCatalog: String {
     case home
     case coreui
+    case authentication
 
     var kind: ScenarioKind {
         return ScenarioKind(stringLiteral: rawValue)
@@ -18,17 +19,23 @@ public enum PlaybookBuilder {
     public static func build() -> Playbook {
         let playbook = Playbook()
 
-        playbook.addScenarios(catalog: .home) {
+        playbook.addScenarios(catalog: .authentication) {
             Scenario("Landing Page", layout: .fill) {
                 LandingPage()
             }
         }
 
-        playbook.addScenarios(catalog: .home) {
+        playbook.addScenarios(catalog: .authentication) {
             Scenario("Login", layout: .fill) {
                 LoginPage()
             }
         }
+
+//        playbook.addScenarios(catalog: .authentication) {
+//            Scenario("Login", layout: .fill) {
+//                RegisterEmailPage(store: <#T##StoreOf<RegisterEmailFeature>#>, )
+//            }
+//        }
 
         playbook.addScenarios(catalog: .coreui) {
             Scenario("FireTextView", layout: .fill) {
