@@ -85,9 +85,9 @@ extension LoginViewModel {
     enum LoginState: Equatable {
         case pristine
         case loading
-        case loaded(Result<LoginReponse, NetworkError>)
+        case loaded(Result<LoginResponse, NetworkError>)
 
-        var loadedResult: LoginReponse? {
+        var loadedResult: LoginResponse? {
             switch self {
             case let .loaded(result):
                 return try? result.get()

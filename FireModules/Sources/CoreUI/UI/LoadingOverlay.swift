@@ -11,10 +11,10 @@ import SwiftUI
 public struct LoadingOverlay<Content: View>: View {
     @ObserveInjection private var iO
     @ViewBuilder var content: () -> Content
-    @Binding private var isLoading: Bool
+    private var isLoading: Bool
 
-    public init(loading: Binding<Bool>, @ViewBuilder _ content: @escaping () -> Content) {
-        _isLoading = loading
+    public init(loading: Bool, @ViewBuilder _ content: @escaping () -> Content) {
+        self.isLoading = loading
         self.content = content
     }
 

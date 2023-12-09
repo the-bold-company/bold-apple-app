@@ -1,34 +1,34 @@
 import Authentication
+import ComposableArchitecture
 import CoreUI
+import Home
 import SwiftUI
 
 public struct AppView: View {
-    public init() {}
+    @ObserveInjection private var iO
+
+    let store: StoreOf<AppReducer>
+
+    public init(store: StoreOf<AppReducer>) {
+        self.store = store
+    }
 
     public var body: some View {
-//        TabView {
-//            VStack {
-//                Image(systemName: "globe")
-//                    .imageScale(.large)
-//                    .foregroundColor(.accentColor)
-//                Text("Hello, Home!")
-//            }
-//                .padding()
-//                .tabItem {
-//                    Label("Home", systemImage: "house")
-//                }
-//
-//            VStack {
-//                Image(systemName: "globe")
-//                    .imageScale(.large)
-//                    .foregroundColor(.accentColor)
-//                Text("Hello, Settings!")
-//            }
-//                .padding()
-//                .tabItem {
-//                    Label("Settings", systemImage: "gear")
-//                }
-//        }
-        LandingPage()
+        WithViewStore(store, observe: \.isAuthenticated) { authenticated in
+            if authenticated.state {
+                HomePage()
+            } else {
+                LandingPage(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: { LandingFeature() }
+                    )
+                )
+            }
+        }
+        .task {
+            store.send(.onLaunch)
+        }
+        .enableInjection()
     }
 }

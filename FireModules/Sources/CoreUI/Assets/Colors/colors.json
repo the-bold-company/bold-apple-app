@@ -9,5 +9,8 @@
   "darkGold": "#3A341C",
   "darkCharcoal": "#21231D",
   "darkMaroon": "#320707",
-  "contentPrimary": "0E0F0C"
+  "contentPrimary": "#0E0F0C",
+  "sentimentNegative": "#A8200D",
+  "sentimentPositive": "#2F5711",
+  "sentimentWarning": "#EDC843",
 }

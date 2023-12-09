@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version:5.9
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "FireModules",
     platforms: [
-        .iOS(.v15),
+        .iOS(.v16),
         .macOS(.v13),
     ],
     products: [
@@ -16,13 +16,13 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
         .package(url: "https://github.com/realm/SwiftLint.git", exact: "0.53.0"),
-//        .package(url: "https://github.com/hmlongco/Resolver.git", exact: "1.5.0"),
         .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
         .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
     ],
     targets: [
         .target(
@@ -30,9 +30,7 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "Authentication",
-//                "Combine+Ext",
-//                .product(name: "Inject", package: "inject")
-//                .product(name: "Resolver", package: "resolver")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .target(
@@ -42,6 +40,7 @@ let package = Package(
                 "CoreUI",
                 .product(name: "Playbook", package: "playbook-ios"),
                 .product(name: "PlaybookUI", package: "playbook-ios"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .testTarget(
@@ -54,6 +53,8 @@ let package = Package(
                 "Home",
                 "Networking",
                 "CoreUI",
+                "Shared",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .target(

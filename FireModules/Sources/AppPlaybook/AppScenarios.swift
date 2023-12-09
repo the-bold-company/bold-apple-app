@@ -1,4 +1,5 @@
 import Authentication
+import ComposableArchitecture
 import CoreUI
 @_exported import Inject
 @_exported import Playbook
@@ -8,6 +9,7 @@ import SwiftUI
 public enum ScenarioCatalog: String {
     case home
     case coreui
+    case authentication
 
     var kind: ScenarioKind {
         return ScenarioKind(stringLiteral: rawValue)
@@ -18,13 +20,18 @@ public enum PlaybookBuilder {
     public static func build() -> Playbook {
         let playbook = Playbook()
 
-        playbook.addScenarios(catalog: .home) {
+        playbook.addScenarios(catalog: .authentication) {
             Scenario("Landing Page", layout: .fill) {
-                LandingPage()
+                LandingPage(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: { LandingFeature() }
+                    )
+                )
             }
         }
 
-        playbook.addScenarios(catalog: .home) {
+        playbook.addScenarios(catalog: .authentication) {
             Scenario("Login", layout: .fill) {
                 LoginPage()
             }
@@ -42,7 +49,7 @@ public enum PlaybookBuilder {
 
         playbook.addScenarios(catalog: .coreui) {
             Scenario("LoadingOverlay", layout: .fill) {
-                LoadingOverlay(loading: .constant(true)) {
+                LoadingOverlay(loading: true) {
                     Image(systemName: "globe")
                         .resizable()
                         .aspectRatio(contentMode: .fit)

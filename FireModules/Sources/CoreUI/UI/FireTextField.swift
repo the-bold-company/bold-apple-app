@@ -21,8 +21,7 @@ public struct FireTextField: View {
 
     public var body: some View {
         VStack(alignment: .leading) {
-            Text(title)
-                .font(.custom(FontFamily.Inter.regular, size: 14))
+            Text(title).typography(.bodyDefault)
 
             Spacing(height: .size8)
 
