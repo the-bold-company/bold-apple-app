@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import Foundation
 import Networking
-import Shared
+import Utilities
 
 @Reducer
 public struct RegisterReducer {

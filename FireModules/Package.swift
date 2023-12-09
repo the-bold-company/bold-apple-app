@@ -10,7 +10,7 @@ let package = Package(
         .macOS(.v13),
     ],
     products: [
-        .singleTargetLibrary("FireFeature"),
+        .singleTargetLibrary("App"),
         .singleTargetLibrary("AppPlaybook"),
     ],
     dependencies: [
@@ -25,52 +25,86 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
     ],
     targets: [
+        // MARK: - App Layer: Where all modules come together
+
         .target(
-            name: "FireFeature",
+            name: "App",
             dependencies: [
                 "CoreUI",
-                "Authentication",
+                "HomeFeature",
+                "LogInFeature",
+                "SignUpFeature",
+                "OnboardingFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ]
+            ],
+            path: "Sources/App/App"
+        ),
+        .testTarget(
+            name: "AppTests",
+            dependencies: ["App"]
         ),
         .target(
             name: "AppPlaybook",
             dependencies: [
-                "Authentication",
                 "CoreUI",
+                "HomeFeature",
+                "LogInFeature",
+                "SignUpFeature",
+                "OnboardingFeature",
                 .product(name: "Playbook", package: "playbook-ios"),
                 .product(name: "PlaybookUI", package: "playbook-ios"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ]
+            ],
+            path: "Sources/App/AppPlaybook"
         ),
-        .testTarget(
-            name: "FireFeatureTests",
-            dependencies: ["FireFeature"]
-        ),
+
+        // MARK: - Features Layer: Each feature is independent from each other
+
         .target(
-            name: "Authentication",
+            name: "OnboardingFeature",
             dependencies: [
-                "Home",
-                "Networking",
                 "CoreUI",
-                "Shared",
+                "Utilities",
+                "LogInFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
+                "SignUpFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ]
+            ],
+            path: "Sources/Features/OnboardingFeature"
         ),
         .target(
-            name: "Home",
+            name: "LogInFeature",
             dependencies: [
                 "CoreUI",
-            ]
+                "Utilities",
+                "HomeFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/Features/LogInFeature"
         ),
         .target(
-            name: "Networking",
+            name: "SignUpFeature",
             dependencies: [
-                "Shared",
-                .product(name: "CombineMoya", package: "moya"),
-                .product(name: "Codextended", package: "codextended"),
-                .product(name: "CombineExt", package: "combineext"),
-            ]
+                "CoreUI",
+                "Networking",
+                "Utilities",
+                "HomeFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/Features/SignUpFeature"
+        ),
+        .target(
+            name: "HomeFeature",
+            dependencies: [
+                "CoreUI",
+            ],
+            path: "Sources/Features/HomeFeature"
+        ),
+
+        // MARK: - Shared Layer: Everything that is shared between feature modules
+
+        .target(
+            name: "Utilities",
+            path: "Sources/Shared/Utilities"
         ),
         .target(
             name: "CoreUI",
@@ -78,21 +112,21 @@ let package = Package(
                 .product(name: "Inject", package: "inject"),
                 .product(name: "SwiftUIIntrospect", package: "swiftui-introspect"),
             ],
+            path: "Sources/Shared/CoreUI",
             resources: [
                 .process("Assets"),
                 .process("CodeGen/Templates"),
             ]
         ),
-//        .target(
-//            name: "DI",
-//            dependencies: [
-//                .product(name: "Resolver", package: "resolver"),
-//            ]
-//        ),
         .target(
-            name: "Shared",
+            name: "Networking",
             dependencies: [
-            ]
+                "Utilities",
+                .product(name: "CombineMoya", package: "moya"),
+                .product(name: "Codextended", package: "codextended"),
+                .product(name: "CombineExt", package: "combineext"),
+            ],
+            path: "Sources/Shared/Networking"
         ),
     ]
 )

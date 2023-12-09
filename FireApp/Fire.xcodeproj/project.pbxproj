@@ -19,8 +19,8 @@
 		0E1FF27B2B01F67000A77369 /* FireTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF27A2B01F67000A77369 /* FireTests.swift */; };
 		0E1FF2852B01F67000A77369 /* FireUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2842B01F67000A77369 /* FireUITests.swift */; };
 		0E1FF2872B01F67000A77369 /* FireUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2862B01F67000A77369 /* FireUITestsLaunchTests.swift */; };
-		0E23141D2B0613C60049B9F3 /* FireFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 0E23141C2B0613C60049B9F3 /* FireFeature */; };
-		0E23141F2B0613D20049B9F3 /* AppPlaybook in Frameworks */ = {isa = PBXBuildFile; productRef = 0E23141E2B0613D20049B9F3 /* AppPlaybook */; };
+		0E24093A2B24A1BE00903A46 /* App in Frameworks */ = {isa = PBXBuildFile; productRef = 0E2409392B24A1BE00903A46 /* App */; };
+		0E24093C2B24A37E00903A46 /* AppPlaybook in Frameworks */ = {isa = PBXBuildFile; productRef = 0E24093B2B24A37E00903A46 /* AppPlaybook */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,7 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E23141F2B0613D20049B9F3 /* AppPlaybook in Frameworks */,
+				0E24093C2B24A37E00903A46 /* AppPlaybook in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +103,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E23141D2B0613C60049B9F3 /* FireFeature in Frameworks */,
+				0E24093A2B24A1BE00903A46 /* App in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -246,7 +246,7 @@
 			);
 			name = FirePlaybook;
 			packageProductDependencies = (
-				0E23141E2B0613D20049B9F3 /* AppPlaybook */,
+				0E24093B2B24A37E00903A46 /* AppPlaybook */,
 			);
 			productName = FirePlaybook;
 			productReference = 0E0447272B02FD17005CE582 /* FirePlaybook.app */;
@@ -302,7 +302,7 @@
 			);
 			name = Fire;
 			packageProductDependencies = (
-				0E23141C2B0613C60049B9F3 /* FireFeature */,
+				0E2409392B24A1BE00903A46 /* App */,
 			);
 			productName = Fire;
 			productReference = 0E1FF2652B01F66E00A77369 /* Fire.app */;
@@ -1018,11 +1018,11 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0E23141C2B0613C60049B9F3 /* FireFeature */ = {
+		0E2409392B24A1BE00903A46 /* App */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FireFeature;
+			productName = App;
 		};
-		0E23141E2B0613D20049B9F3 /* AppPlaybook */ = {
+		0E24093B2B24A37E00903A46 /* AppPlaybook */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppPlaybook;
 		};

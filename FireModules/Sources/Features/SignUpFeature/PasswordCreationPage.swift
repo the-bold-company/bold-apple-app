@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 import CoreUI
-import Home
+import HomeFeature
 import Networking
 import SwiftUI
 

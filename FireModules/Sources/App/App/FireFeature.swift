@@ -1,7 +1,7 @@
-import Authentication
 import ComposableArchitecture
 import CoreUI
-import Home
+import HomeFeature
+import OnboardingFeature
 import SwiftUI
 
 public struct AppView: View {

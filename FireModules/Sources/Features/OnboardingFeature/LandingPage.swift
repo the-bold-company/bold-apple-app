@@ -7,7 +7,8 @@
 
 import ComposableArchitecture
 import CoreUI
-import Home
+import LogInFeature
+import SignUpFeature
 import SwiftUI
 
 public struct LandingPage: View {
