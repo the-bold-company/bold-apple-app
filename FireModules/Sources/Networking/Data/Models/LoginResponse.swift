@@ -5,7 +5,8 @@
 //  Created by Hien Tran on 26/11/2023.
 //
 
-public struct LoginReponse: Decodable {
+// TODO: Move Equatable conformation to an entity
+public struct LoginResponse: Decodable, Equatable {
     public let token: String
     public let refreshToken: String
     public let user: UserDetails

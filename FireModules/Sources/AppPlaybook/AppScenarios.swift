@@ -1,4 +1,5 @@
 import Authentication
+import ComposableArchitecture
 import CoreUI
 @_exported import Inject
 @_exported import Playbook
@@ -21,7 +22,12 @@ public enum PlaybookBuilder {
 
         playbook.addScenarios(catalog: .authentication) {
             Scenario("Landing Page", layout: .fill) {
-                LandingPage()
+                LandingPage(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: { LandingFeature() }
+                    )
+                )
             }
         }
 
@@ -30,12 +36,6 @@ public enum PlaybookBuilder {
                 LoginPage()
             }
         }
-
-//        playbook.addScenarios(catalog: .authentication) {
-//            Scenario("Login", layout: .fill) {
-//                RegisterEmailPage(store: <#T##StoreOf<RegisterEmailFeature>#>, )
-//            }
-//        }
 
         playbook.addScenarios(catalog: .coreui) {
             Scenario("FireTextView", layout: .fill) {
@@ -49,7 +49,7 @@ public enum PlaybookBuilder {
 
         playbook.addScenarios(catalog: .coreui) {
             Scenario("LoadingOverlay", layout: .fill) {
-                LoadingOverlay(loading: .constant(true)) {
+                LoadingOverlay(loading: true) {
                     Image(systemName: "globe")
                         .resizable()
                         .aspectRatio(contentMode: .fit)

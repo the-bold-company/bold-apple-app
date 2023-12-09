@@ -8,6 +8,7 @@ struct FireApp: App {
         initialState: AppReducer.State(),
         reducer: { AppReducer() }
     )
+
     var body: some Scene {
         WindowGroup {
             AppView(store: FireApp.store)

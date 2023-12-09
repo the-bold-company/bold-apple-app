@@ -55,15 +55,6 @@
       }
     },
     {
-      "identity" : "flowstacks",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/johnpatrickmorgan/FlowStacks",
-      "state" : {
-        "revision" : "44ee1a60d8657bfe83d7433087427d5df9c6768a",
-        "version" : "0.3.7"
-      }
-    },
-    {
       "identity" : "inject",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzysztofzablocki/Inject.git",
@@ -259,15 +250,6 @@
       "state" : {
         "revision" : "a853604c9e9a83ad9954c7e3d2a565273982471f",
         "version" : "7.0.2"
-      }
-    },
-    {
-      "identity" : "tcacoordinators",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/johnpatrickmorgan/TCACoordinators.git",
-      "state" : {
-        "revision" : "c0060666c67e431268bd6b9897da2787f563a21b",
-        "version" : "0.8.0"
       }
     },
     {

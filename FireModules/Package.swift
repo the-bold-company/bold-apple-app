@@ -23,8 +23,6 @@ let package = Package(
         .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies.git", exact: "1.1.1"),
-        .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
     ],
     targets: [
         .target(
@@ -33,7 +31,6 @@ let package = Package(
                 "CoreUI",
                 "Authentication",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-//                "Combine+Ext",
             ]
         ),
         .target(
@@ -43,6 +40,7 @@ let package = Package(
                 "CoreUI",
                 .product(name: "Playbook", package: "playbook-ios"),
                 .product(name: "PlaybookUI", package: "playbook-ios"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
         ),
         .testTarget(
@@ -57,7 +55,6 @@ let package = Package(
                 "CoreUI",
                 "Shared",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Dependencies", package: "swift-dependencies"),
             ]
         ),
         .target(

@@ -11,34 +11,21 @@ import Foundation
 @Reducer
 public struct LandingFeature {
     public init() {}
-    public struct State: Equatable, Hashable {
-        public var register = RegisterFeature.State()
+    public struct State: Equatable {
         public init() {}
     }
 
     public enum Action {
         case loginButtonTapped
         case signUpButtonTapped
-        case register(RegisterFeature.Action)
-//        case dis(Dis)
-//
-//        public enum Dis {
-//            case register(RegisterFeature.Action)
-//        }
     }
 
     public var body: some ReducerOf<Self> {
-        Scope(state: \.register, action: \.register) {
-            RegisterFeature()
-        }
-
         Reduce { _, action in
             switch action {
             case .loginButtonTapped:
                 return .none
             case .signUpButtonTapped:
-                return .none
-            case .register:
                 return .none
             }
         }

@@ -17,7 +17,7 @@ public struct LoginPage: View {
 
     public var body: some View {
         NavigationView {
-            LoadingOverlay(loading: $isLoading) {
+            LoadingOverlay(loading: isLoading) {
                 VStack(alignment: .leading) {
                     closeButton
                     Spacing(height: .size40)

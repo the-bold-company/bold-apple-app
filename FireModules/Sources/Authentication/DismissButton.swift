@@ -24,7 +24,7 @@ public struct DismissButton: View {
             dismissalHandler?()
             dismiss()
         }) {
-            Image(systemName: "xmark")
+            Image(systemName: "arrow.left")
                 .foregroundColor(Color.coreui.forestGreen)
                 .padding(.all(10))
                 .background(Color.coreui.forestGreen.opacity(0.14))

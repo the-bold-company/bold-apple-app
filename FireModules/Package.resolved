@@ -55,15 +55,6 @@
       }
     },
     {
-      "identity" : "flowstacks",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/johnpatrickmorgan/FlowStacks",
-      "state" : {
-        "revision" : "44ee1a60d8657bfe83d7433087427d5df9c6768a",
-        "version" : "0.3.7"
-      }
-    },
-    {
       "identity" : "inject",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzysztofzablocki/Inject.git",
@@ -131,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
       "state" : {
-        "revision" : "ed7facdd4a361514b46e3bbc6238cd41c84be4ec",
-        "version" : "1.1.1"
+        "revision" : "a5521dde99570789d8cb7c43e51418d7cd1a87ca",
+        "version" : "1.1.2"
       }
     },
     {
@@ -140,8 +131,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-clocks",
       "state" : {
-        "revision" : "d1fd837326aa719bee979bdde1f53cd5797443eb",
-        "version" : "1.0.0"
+        "revision" : "a8421d68068d8f45fbceb418fbf22c5dad4afd33",
+        "version" : "1.0.2"
       }
     },
     {
@@ -185,8 +176,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-dependencies",
       "state" : {
-        "revision" : "63301f4a181ed9aefb46dccef2dfb66466798341",
-        "version" : "1.1.1"
+        "revision" : "9783b58167f7618cb86011156e741cbc6f4cc864",
+        "version" : "1.1.2"
       }
     },
     {
@@ -259,15 +250,6 @@
       "state" : {
         "revision" : "a853604c9e9a83ad9954c7e3d2a565273982471f",
         "version" : "7.0.2"
-      }
-    },
-    {
-      "identity" : "tcacoordinators",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/johnpatrickmorgan/TCACoordinators.git",
-      "state" : {
-        "revision" : "c0060666c67e431268bd6b9897da2787f563a21b",
-        "version" : "0.8.0"
       }
     },
     {
