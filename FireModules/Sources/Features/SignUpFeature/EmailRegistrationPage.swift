@@ -28,7 +28,7 @@ public struct EmailRegistrationPage: View {
     }
 
     public var body: some View {
-        WithViewStore(store, observe: \.viewState) { viewStore in
+        WithViewStore(store, observe: \.emailRegistrationViewState) { viewStore in
             VStack(alignment: .leading) {
                 DismissButton()
                 Spacing(height: .size40)
@@ -68,11 +68,9 @@ public struct EmailRegistrationPage: View {
                     .bold()
                     .underline()
 
-                NavigationLink(
-                    value: viewStore.emailValidationError == nil
-                        ? Route.passwordCreation
-                        : nil
-                ) {
+                Button {
+                    viewStore.send(.goToPasswordCreationButtonTapped)
+                } label: {
                     Text("Continue")
                 }
                 .fireButtonStyle()
@@ -80,18 +78,12 @@ public struct EmailRegistrationPage: View {
             .padding()
             .navigationBarHidden(true)
         }
-        .navigationDestination(for: Route.self) { route in
-            switch route {
-            case .passwordCreation:
-                RegisterPasswordPage(store: store)
-            }
-        }
         .enableInjection()
     }
 }
 
 extension BindingViewStore<RegisterReducer.State> {
-    var viewState: EmailRegistrationPage.ViewState {
+    var emailRegistrationViewState: EmailRegistrationPage.ViewState {
         // swiftformat:disable redundantSelf
         EmailRegistrationPage.ViewState(
             email: self.$email,

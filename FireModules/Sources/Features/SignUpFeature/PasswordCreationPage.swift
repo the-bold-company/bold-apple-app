@@ -7,11 +7,10 @@
 
 import ComposableArchitecture
 import CoreUI
-import Home
 import Networking
 import SwiftUI
 
-public struct RegisterPasswordPage: View {
+public struct PasswordCreationPage: View {
     @ObserveInjection var iO
 
     struct ViewState: Equatable {
@@ -24,7 +23,6 @@ public struct RegisterPasswordPage: View {
 
     let store: StoreOf<RegisterReducer>
     @ObservedObject var viewStore: ViewStore<ViewState, RegisterReducer.Action>
-    @State var accountCreatedSuccessfully = false
 
     public init(store: StoreOf<RegisterReducer>) {
         self.store = store
@@ -65,25 +63,18 @@ public struct RegisterPasswordPage: View {
                 }
                 .fireButtonStyle()
                 .disabled(viewStore.passwordValidationError != nil)
-
-                NavigationLink(destination: HomePage(), isActive: $accountCreatedSuccessfully) {
-                    EmptyView()
-                }
             }
             .padding()
             .navigationBarHidden(true)
-        }
-        .onChange(of: viewStore.accountCreationResult) { result in
-            accountCreatedSuccessfully = result != nil
         }
         .enableInjection()
     }
 }
 
 extension BindingViewStore<RegisterReducer.State> {
-    var passwordCreationViewState: RegisterPasswordPage.ViewState {
+    var passwordCreationViewState: PasswordCreationPage.ViewState {
         // swiftformat:disable redundantSelf
-        RegisterPasswordPage.ViewState(
+        PasswordCreationPage.ViewState(
             password: self.$password,
             passwordValidationError: self.passwordValidationError,
             accountCreationError: self.accountCreationError,

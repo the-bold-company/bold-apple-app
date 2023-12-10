@@ -5,7 +5,6 @@
 //  Created by Hien Tran on 21/11/2023.
 //
 
-import CoreUI
 import SwiftUI
 
 public typealias DismissalHandler = () -> Void

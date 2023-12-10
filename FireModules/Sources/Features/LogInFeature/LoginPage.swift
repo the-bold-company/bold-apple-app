@@ -1,6 +1,6 @@
 import Combine
 import CoreUI
-import Home
+import HomeFeature
 import SwiftUI
 
 public struct LoginPage: View {

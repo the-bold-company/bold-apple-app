@@ -1,5 +1,5 @@
+import App
 import ComposableArchitecture
-import FireFeature
 import SwiftUI
 
 @main
