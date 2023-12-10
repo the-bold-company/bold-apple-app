@@ -31,11 +31,7 @@ let package = Package(
         .target(
             name: "App",
             dependencies: [
-                "CoreUI",
-                "HomeFeature",
-                "LogInFeature",
-                "SignUpFeature",
-                "OnboardingFeature",
+                "Coordinator",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
             ],
@@ -60,6 +56,19 @@ let package = Package(
             path: "Sources/App/AppPlaybook"
         ),
 
+        // MARK: - Coordinator Layer: This layer orchestrates navigation and rounting between features
+
+        .target(
+            name: "Coordinator",
+            dependencies: [
+                "HomeFeature",
+                "LogInFeature",
+                "SignUpFeature",
+                "OnboardingFeature",
+                .product(name: "TCACoordinators", package: "TCACoordinators"),
+            ]
+        ),
+
         // MARK: - Features Layer: Each feature is independent from each other
 
         .target(
@@ -67,8 +76,6 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "Utilities",
-                "LogInFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
-                "SignUpFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/OnboardingFeature"
@@ -89,7 +96,6 @@ let package = Package(
                 "CoreUI",
                 "Networking",
                 "Utilities",
-                "HomeFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/SignUpFeature"
