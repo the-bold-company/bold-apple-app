@@ -72,26 +72,36 @@ public struct Coordinator {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            // MARK: - Landing Routes
+            // MARK: - Landing routes
 
             case .routeAction(_, action: .landingRoute(.loginButtonTapped)):
                 state.routes.push(.login)
             case .routeAction(_, action: .landingRoute(.signUpButtonTapped)):
                 state.routes.push(.emailRegistrationRoute(.init()))
 
-            // MARK: - Registration Routes
+            // MARK: - Registration routes
 
             case let .routeAction(_, action: .emailRegistrationRoute(.navigate(.goToPasswordCreation(carriedOverState)))):
                 state.routes.push(.passwordCreationRoute(carriedOverState))
-            case let .routeAction(_, action: .passwordCreationRoute(.navigate(.backToEmailRegistration(carriedOverState)))):
+            case .routeAction(_, action: .passwordCreationRoute(.navigate(.backToEmailRegistration(_)))):
                 break
             case .routeAction(_, action: .passwordCreationRoute(.navigate(.goToHome))):
-                state.routes.push(.home)
+                return .routeWithDelaysIfUnsupported(state.routes) {
+                    $0.popToRoot()
+                    _ = $0.popLast()
+                    $0.push(.home)
+                }
             case .routeAction(_, action: .passwordCreationRoute),
                  .routeAction(_, action: .emailRegistrationRoute):
                 break
+
+            // MARK: - Home routes
+
             case .routeAction(_, action: .home):
                 state.routes.push(.home)
+
+            // MARK: - Log in routes
+
             case .routeAction(_, action: .login):
                 state.routes.push(.login)
             case .updateRoutes:
