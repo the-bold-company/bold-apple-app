@@ -28,55 +28,44 @@ public struct LandingPage: View {
     }
 
     public var body: some View {
-        NavigationStack {
-            WithViewStore(store, observe: { $0 }) { _ in
-                VStack {
-                    Spacer()
+        WithViewStore(store, observe: { $0 }) { viewStore in
+            VStack {
+                Spacer()
 
-                    Image(systemName: "globe")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 200, height: 200)
+                Image(systemName: "globe")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 200, height: 200)
 
-                    Spacer().frame(height: 20)
+                Spacer().frame(height: 20)
 
-                    Text("Centralize your personal finance all in one place")
-                        .typography(.titleSection)
-                        .multilineTextAlignment(.center)
-                        .padding()
+                Text("Centralize your personal finance all in one place")
+                    .typography(.titleSection)
+                    .multilineTextAlignment(.center)
+                    .padding()
 
-                    Spacer()
+                Spacer()
 
-                    HStack(alignment: .center) {
-                        Group {
-                            NavigationLink(value: Route.login) {
-                                Text("Log in")
-                            }
-
-                            NavigationLink(value: Route.signup) {
-                                Text("Sign up")
-                            }
+                HStack(alignment: .center) {
+                    Group {
+                        Button {
+                            viewStore.send(.loginButtonTapped)
+                        } label: {
+                            Text("Log in")
                         }
-                        .fireButtonStyle()
+
+                        Button {
+                            viewStore.send(.signUpButtonTapped)
+                        } label: {
+                            Text("Sign up")
+                        }
                     }
-                }
-                .padding()
-            }
-            .navigationBarHidden(true)
-            .navigationDestination(for: Route.self) { route in
-                switch route {
-                case .login:
-                    LoginPage()
-                case .signup:
-                    EmailRegistrationPage(
-                        store: Store(
-                            initialState: .init(),
-                            reducer: { RegisterReducer() }
-                        )
-                    )
+                    .fireButtonStyle()
                 }
             }
+            .padding()
         }
+        .navigationBarHidden(true)
         .enableInjection()
     }
 }

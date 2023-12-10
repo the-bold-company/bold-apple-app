@@ -23,6 +23,7 @@ let package = Package(
         .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
+        .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -36,6 +37,7 @@ let package = Package(
                 "SignUpFeature",
                 "OnboardingFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "TCACoordinators", package: "TCACoordinators"),
             ],
             path: "Sources/App/App"
         ),

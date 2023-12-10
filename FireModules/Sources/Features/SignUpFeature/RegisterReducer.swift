@@ -33,6 +33,16 @@ public struct RegisterReducer {
 
         case createUserSuccesfully(LoginResponse)
         case createUserFailure(NetworkError)
+
+        case navigate(Route)
+        case goToPasswordCreationButtonTapped
+
+        public enum Route {
+            case goToPasswordCreation(RegisterReducer.State)
+            case backToEmailRegistration(RegisterReducer.State)
+            case exitRegistrationFlow
+            case goToHome
+        }
     }
 
     public var body: some Reducer<State, Action> {
@@ -55,10 +65,10 @@ private struct EmailRegistrationReducer {
                     state.emailValidationError = nil
                 }
                 return .none
-            case .binding,
-                 .createUserButtonTapped,
-                 .createUserSuccesfully,
-                 .createUserFailure:
+            case .goToPasswordCreationButtonTapped:
+                return .send(.navigate(.goToPasswordCreation(state)))
+            case .binding, .createUserButtonTapped, .createUserSuccesfully,
+                 .createUserFailure, .navigate:
                 return .none
             }
         }
@@ -101,14 +111,14 @@ private struct PasswordCreationReducer {
                     }
                 }
             case let .createUserSuccesfully(response):
-                state.accountCreationInProgress = false
                 state.accountCreationResult = response
-                return .none
+                state.accountCreationInProgress = false
+                return .send(.navigate(.goToHome))
             case let .createUserFailure(error):
                 state.accountCreationInProgress = false
                 state.accountCreationError = error.errorDescription
                 return .none
-            case .binding:
+            case .binding, .navigate, .goToPasswordCreationButtonTapped:
                 return .none
             }
         }
