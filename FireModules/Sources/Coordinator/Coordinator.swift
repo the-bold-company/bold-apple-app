@@ -18,7 +18,7 @@ public struct Navigation {
         case landingRoute(LandingFeature.State)
         case emailRegistrationRoute(RegisterReducer.State)
         case passwordCreationRoute(RegisterReducer.State)
-        case login
+        case loginRoute(LoginReducer.State)
         case home
     }
 
@@ -26,7 +26,7 @@ public struct Navigation {
         case landingRoute(LandingFeature.Action)
         case emailRegistrationRoute(RegisterReducer.Action)
         case passwordCreationRoute(RegisterReducer.Action)
-        case login
+        case loginRoute(LoginReducer.Action)
         case home
     }
 
@@ -38,8 +38,13 @@ public struct Navigation {
         Scope(state: \.emailRegistrationRoute, action: \.emailRegistrationRoute) {
             RegisterReducer()
         }
+        
         Scope(state: \.passwordCreationRoute, action: \.passwordCreationRoute) {
             RegisterReducer()
+        }
+        
+        Scope(state: \.loginRoute, action: \.loginRoute) {
+            LoginReducer()
         }
     }
 }
@@ -75,7 +80,7 @@ public struct Coordinator {
             // MARK: - Landing routes
 
             case .routeAction(_, action: .landingRoute(.loginButtonTapped)):
-                state.routes.push(.login)
+                state.routes.push(.loginRoute(.init()))
             case .routeAction(_, action: .landingRoute(.signUpButtonTapped)):
                 state.routes.push(.emailRegistrationRoute(.init()))
 
@@ -83,7 +88,7 @@ public struct Coordinator {
 
             case let .routeAction(_, action: .emailRegistrationRoute(.navigate(.goToPasswordCreation(carriedOverState)))):
                 state.routes.push(.passwordCreationRoute(carriedOverState))
-            case .routeAction(_, action: .passwordCreationRoute(.navigate(.backToEmailRegistration(_)))):
+            case .routeAction(_, action: .passwordCreationRoute(.navigate(.backToEmailRegistration))):
                 break
             case .routeAction(_, action: .passwordCreationRoute(.navigate(.goToHome))):
                 return .routeWithDelaysIfUnsupported(state.routes) {
@@ -91,9 +96,6 @@ public struct Coordinator {
                     _ = $0.popLast()
                     $0.push(.home)
                 }
-            case .routeAction(_, action: .passwordCreationRoute),
-                 .routeAction(_, action: .emailRegistrationRoute):
-                break
 
             // MARK: - Home routes
 
@@ -102,8 +104,19 @@ public struct Coordinator {
 
             // MARK: - Log in routes
 
-            case .routeAction(_, action: .login):
-                state.routes.push(.login)
+            case .routeAction(_, action: .loginRoute(.navigate(.goToHome))):
+                return .routeWithDelaysIfUnsupported(state.routes) {
+                    $0.popToRoot()
+                    _ = $0.popLast()
+                    $0.push(.home)
+                }
+
+            // MARK: - This section is for non-existent routes, or routes that have been handled by default. They're here just to satisfy the compiler
+
+            case .routeAction(_, action: .loginRoute),
+                 .routeAction(_, action: .passwordCreationRoute),
+                 .routeAction(_, action: .emailRegistrationRoute):
+                break
             case .updateRoutes:
                 break
             }

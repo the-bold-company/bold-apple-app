@@ -40,8 +40,11 @@ public struct CoordinatorView: View {
                     ) { PasswordCreationPage(store: $0) }
                 case .home:
                     HomePage()
-                case .login:
-                    LoginPage()
+                case .loginRoute:
+                    CaseLet(
+                        /Navigation.State.loginRoute,
+                        action: Navigation.Action.loginRoute
+                    ) { LoginPage(store: $0) }
                 }
             }
         }

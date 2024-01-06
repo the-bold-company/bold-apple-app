@@ -23,9 +23,7 @@ public struct LandingFeature {
     public var body: some ReducerOf<Self> {
         Reduce { _, action in
             switch action {
-            case .loginButtonTapped:
-                return .none
-            case .signUpButtonTapped:
+            case .loginButtonTapped, .signUpButtonTapped:
                 return .none
             }
         }

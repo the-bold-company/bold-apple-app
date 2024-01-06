@@ -1,107 +1,94 @@
-import Combine
+import ComposableArchitecture
 import CoreUI
-import HomeFeature
+import Networking
 import SwiftUI
 
 public struct LoginPage: View {
-    @Environment(\.dismiss) private var dismiss
     @ObserveInjection private var iO
 
-    @StateObject private var viewModel = LoginViewModel()
+    struct ViewState: Equatable {
+        @BindingViewState var email: String
+        @BindingViewState var password: String
+        var areInputsValid: Bool
+        var logInError: String?
+        var logInInProgress: Bool
+        var logInResult: LoginResponse?
+    }
 
-    @State private var isLoading = false
-    @State private var isAuthenticated = false
-    @State private var errorMessage: String?
+    let store: StoreOf<LoginReducer>
+    @ObservedObject var viewStore: ViewStore<ViewState, LoginReducer.Action>
 
-    public init() {}
+    public init(store: StoreOf<LoginReducer>) {
+        self.store = store
+        self.viewStore = ViewStore(self.store, observe: \.viewState)
+    }
 
     public var body: some View {
-        NavigationView {
-            LoadingOverlay(loading: isLoading) {
-                VStack(alignment: .leading) {
-                    closeButton
-                    Spacing(height: .size40)
-                    Text("Log in").typography(.titleScreen)
-                    Spacing(height: .size32)
-                    inputFields
-                    Spacing(height: .size24)
-                    loginButton
-                    errorText
-                    Spacer()
-
-                    NavigationLink(destination: HomePage(), isActive: $isAuthenticated, label: {
-                        EmptyView()
-                    })
-                }
-                .padding()
+        LoadingOverlay(loading: viewStore.logInInProgress) {
+            VStack(alignment: .leading) {
+                DismissButton()
+                Spacing(height: .size40)
+                Text("Log in").typography(.titleScreen)
+                Spacing(height: .size32)
+                inputFields
+                Spacing(height: .size24)
+                loginButton
+                errorText
+                Spacer()
             }
-            .onChange(of: viewModel.logInState) { newState in
-                switch newState {
-                case .pristine:
-                    errorMessage = nil
-                    isLoading = false
-                case .loading:
-                    isLoading = true
-                    errorMessage = nil
-                case let .loaded(res):
-                    switch res {
-                    case .success:
-                        isAuthenticated = true
-                    case let .failure(err):
-                        isAuthenticated = false
-                        errorMessage = err.errorDescription
-                    }
-                    isLoading = false
-                }
-            }
+            .padding()
         }
         .navigationBarHidden(true)
         .enableInjection()
     }
 
     @ViewBuilder
-    private var closeButton: some View {
-        Button(action: {
-            dismiss()
-        }) {
-            Image(systemName: "xmark")
-                .foregroundColor(Color.coreui.forestGreen)
-                .padding(.all(10))
-                .background(Color.coreui.forestGreen.opacity(0.14))
-                .clipShape(Circle())
-        }
-    }
-
-    @ViewBuilder
     private var inputFields: some View {
         FireTextField(
             title: "Your email",
-            text: $viewModel.email
+            text: viewStore.$email
         )
 
         Spacing(height: .size16)
 
         FireSecureTextField(
             title: "Your password",
-            text: $viewModel.password
+            text: viewStore.$password
         )
     }
 
     @ViewBuilder
     private var loginButton: some View {
         Button {
-            viewModel.onLoginButtonTapped()
+            viewStore.send(.delegate(.logInButtonTapped))
         } label: {
             Text("Log in")
                 .frame(maxWidth: .infinity)
         }
         .fireButtonStyle()
-        .disabled(!viewModel.isFormValid)
+        .disabled(!viewStore.areInputsValid)
     }
 
     @ViewBuilder
     private var errorText: some View {
         Spacing(height: .size8)
-        Text(errorMessage ?? "").typography(.titleScreen)
+        Text(viewStore.logInError ?? "")
+            .typography(.bodyDefault)
+            .foregroundColor(.coreui.sentimentNegative)
+    }
+}
+
+extension BindingViewStore<LoginReducer.State> {
+    var viewState: LoginPage.ViewState {
+        // swiftformat:disable redundantSelf
+        LoginPage.ViewState(
+            email: self.$email,
+            password: self.$password,
+            areInputsValid: self.areInputsValid,
+            logInError: self.loginError,
+            logInInProgress: self.logInInProgress,
+            logInResult: self.loginResult
+        )
+        // swiftformat:enable redundantSelf
     }
 }
