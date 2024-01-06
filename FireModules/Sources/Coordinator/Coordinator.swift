@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 import HomeFeature
+import KeychainStorageUseCases
 import LogInFeature
 import OnboardingFeature
 import SignUpFeature
@@ -19,7 +20,7 @@ public struct Navigation {
         case emailRegistrationRoute(RegisterReducer.State)
         case passwordCreationRoute(RegisterReducer.State)
         case loginRoute(LoginReducer.State)
-        case home
+        case homeRoute(HomeReducer.State)
     }
 
     public enum Action {
@@ -27,7 +28,7 @@ public struct Navigation {
         case emailRegistrationRoute(RegisterReducer.Action)
         case passwordCreationRoute(RegisterReducer.Action)
         case loginRoute(LoginReducer.Action)
-        case home
+        case homeRoute(HomeReducer.Action)
     }
 
     public var body: some ReducerOf<Self> {
@@ -38,28 +39,34 @@ public struct Navigation {
         Scope(state: \.emailRegistrationRoute, action: \.emailRegistrationRoute) {
             RegisterReducer()
         }
-        
+
         Scope(state: \.passwordCreationRoute, action: \.passwordCreationRoute) {
             RegisterReducer()
         }
-        
+
         Scope(state: \.loginRoute, action: \.loginRoute) {
             LoginReducer()
+        }
+
+        Scope(state: \.homeRoute, action: \.homeRoute) {
+            HomeReducer()
         }
     }
 }
 
 @Reducer
 public struct Coordinator {
+    let keychainService = KeychainService()
     public init() {}
 
     public struct State: Equatable, IndexedRouterState {
         public static let authenticatedInitialState = State(
-            routes: [.root(.home, embedInNavigationView: true)]
+            routes: [.root(.homeRoute(.init()), embedInNavigationView: true)]
         )
 
         public static let unAuthenticatedInitialState = State(
             routes: [.root(.landingRoute(.init()), embedInNavigationView: true)]
+//            routes: [.root(.homeRoute(.init()), embedInNavigationView: true)]
         )
 
         public var routes: [Route<Navigation.State>]
@@ -70,6 +77,7 @@ public struct Coordinator {
     }
 
     public enum Action: IndexedRouterAction {
+        case onLaunch
         case routeAction(Int, action: Navigation.Action)
         case updateRoutes([Route<Navigation.State>])
     }
@@ -77,6 +85,10 @@ public struct Coordinator {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
+            case .onLaunch:
+                keychainService.removeCredentials()
+                return .none
+
             // MARK: - Landing routes
 
             case .routeAction(_, action: .landingRoute(.loginButtonTapped)):
@@ -93,14 +105,14 @@ public struct Coordinator {
             case .routeAction(_, action: .passwordCreationRoute(.navigate(.goToHome))):
                 return .routeWithDelaysIfUnsupported(state.routes) {
                     $0.popToRoot()
-                    _ = $0.popLast()
-                    $0.push(.home)
+//                    _ = $0.popLast()
+                    $0.push(.homeRoute(.init()))
                 }
 
             // MARK: - Home routes
 
-            case .routeAction(_, action: .home):
-                state.routes.push(.home)
+            case .routeAction(_, action: .homeRoute):
+                state.routes.push(.homeRoute(.init()))
 
             // MARK: - Log in routes
 
@@ -108,7 +120,7 @@ public struct Coordinator {
                 return .routeWithDelaysIfUnsupported(state.routes) {
                     $0.popToRoot()
                     _ = $0.popLast()
-                    $0.push(.home)
+                    $0.push(.homeRoute(.init()))
                 }
 
             // MARK: - This section is for non-existent routes, or routes that have been handled by default. They're here just to satisfy the compiler

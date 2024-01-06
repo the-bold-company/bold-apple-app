@@ -6,14 +6,18 @@
 //
 
 import Foundation
+import KeychainStorageUseCases
 import Moya
 
 struct CommonHeadersPlugin: PluginType {
+    let keychainService = KeychainService()
     // swiftformat:disable unusedArguments
     func prepare(_ request: URLRequest, target: TargetType) -> URLRequest {
         var newRequest = request
 
-        // newRequest.headers.add(name: "authorization", value: "Bearer \(accessToken)")
+        if let accessToken = keychainService.getAccessToken() {
+            newRequest.headers.add(name: "authorization", value: accessToken)
+        }
 
         return newRequest
     }

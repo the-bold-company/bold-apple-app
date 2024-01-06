@@ -1,7 +1,9 @@
-import Authentication
+
 import ComposableArchitecture
 import CoreUI
 @_exported import Inject
+import LogInFeature
+import OnboardingFeature
 @_exported import Playbook
 @_exported import PlaybookUI
 import SwiftUI
@@ -33,7 +35,12 @@ public enum PlaybookBuilder {
 
         playbook.addScenarios(catalog: .authentication) {
             Scenario("Login", layout: .fill) {
-                LoginPage()
+                LoginPage(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: { LoginReducer() }
+                    )
+                )
             }
         }
 

@@ -7,12 +7,14 @@
 
 import ComposableArchitecture
 import Foundation
+import KeychainStorageUseCases
 import Networking
 import Utilities
 
 @Reducer
 public struct LoginReducer {
     let authService = AuthAPIService()
+    let keychainService = KeychainService()
     public init() {}
 
     public struct State: Equatable {
@@ -25,7 +27,7 @@ public struct LoginReducer {
         }
 
         var logInInProgress = false
-        var loginResult: LoginResponse?
+        var loggedInUser: UserDetails?
         var loginError: String?
     }
 
@@ -35,13 +37,13 @@ public struct LoginReducer {
 //        case bind(Binding)
         case navigate(Route)
 
-        case logInSuccesfully(LoginResponse)
+        case logInSuccesfully(UserDetails)
         case logInFailure(NetworkError)
 
         public enum Route {
             case goToHome
         }
-        
+
         public enum Delegate {
             case logInButtonTapped
         }
@@ -57,22 +59,21 @@ public struct LoginReducer {
 
                 state.logInInProgress = true
 
-                let email = state.email
-                let password = state.password
-
-                return .run { send in
+                return .run { [email = state.email, password = state.password] send in
                     do {
                         let response = try await authService.login(email: email, password: password)
 
-                        await send(.logInSuccesfully(response))
+                        keychainService.setCredentials(accessToken: response.token, refreshToken: response.refreshToken)
+
+                        await send(.logInSuccesfully(response.user))
                     } catch let error as NetworkError {
                         await send(.logInFailure(error))
                     } catch {
                         await send(.logInFailure(.unknown(error)))
                     }
                 }
-            case let .logInSuccesfully(response):
-                state.loginResult = response
+            case let .logInSuccesfully(user):
+                state.loggedInUser = user
                 state.logInInProgress = false
                 return .send(.navigate(.goToHome))
             case let .logInFailure(error):

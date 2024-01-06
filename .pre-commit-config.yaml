@@ -3,7 +3,7 @@ repos:
   rev: 0.52.8
   hooks:
   - id: swiftformat
-    args: [--config, .swiftformat, --quiet]
+    args: [FireModules, --config, .swiftformat, --quiet]
 - repo: https://github.com/realm/SwiftLint
   rev: 0.50.3
   hooks:

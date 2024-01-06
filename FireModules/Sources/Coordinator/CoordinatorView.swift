@@ -6,6 +6,7 @@
 //
 
 import HomeFeature
+import Inject
 import LogInFeature
 import OnboardingFeature
 import SignUpFeature
@@ -13,6 +14,8 @@ import SwiftUI
 import TCACoordinators
 
 public struct CoordinatorView: View {
+    @ObserveInjection private var iO
+
     let store: StoreOf<Coordinator>
 
     public init(store: StoreOf<Coordinator>) {
@@ -38,16 +41,23 @@ public struct CoordinatorView: View {
                         /Navigation.State.passwordCreationRoute,
                         action: Navigation.Action.passwordCreationRoute
                     ) { PasswordCreationPage(store: $0) }
-                case .home:
-                    HomePage()
                 case .loginRoute:
                     CaseLet(
                         /Navigation.State.loginRoute,
                         action: Navigation.Action.loginRoute
                     ) { LoginPage(store: $0) }
+                case .homeRoute:
+                    CaseLet(
+                        /Navigation.State.homeRoute,
+                        action: Navigation.Action.homeRoute
+                    ) { HomePage(store: $0) }
                 }
             }
         }
+        .task {
+            store.send(.onLaunch)
+        }
+        .enableInjection()
     }
 }
 
