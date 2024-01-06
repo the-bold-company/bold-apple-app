@@ -1,9 +1,9 @@
-input_dir: FireModules/Sources/
-output_dir: FireModules/Sources/
+input_dir: FireModules/Sources/Shared
+output_dir: FireModules/Sources/Shared
 colors:
   inputs: CoreUI/Assets/Colors/colors.json
   outputs:
-    templatePath: FireModules/Sources/CoreUI/CodeGen/Templates/ColorTemplate.stencil
+    templatePath: FireModules/Sources/Shared/CoreUI/CodeGen/Templates/ColorTemplate.stencil
     output: CoreUI/CodeGen/Colors.generated.swift
     params:
       publicAccess: public
@@ -11,7 +11,7 @@ fonts:
   inputs:
     - CoreUI/Assets/Fonts/Inter
   outputs:
-    templatePath: FireModules/Sources/CoreUI/CodeGen/Templates/FontTemplate.stencil
+    templatePath: FireModules/Sources/Shared/CoreUI/CodeGen/Templates/FontTemplate.stencil
     output: CoreUI/CodeGen/Fonts.generated.swift
     params:
       publicAccess: public
