@@ -63,6 +63,7 @@ let package = Package(
             name: "Coordinator",
             dependencies: [
                 "HomeFeature",
+                "FundFeature",
                 "LogInFeature",
                 "SignUpFeature",
                 "OnboardingFeature",
@@ -112,6 +113,16 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/HomeFeature"
+        ),
+        .target(
+            name: "FundFeature",
+            dependencies: [
+                "CoreUI",
+                "Networking",
+                "CurrencyKit",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/Features/FundFeature"
         ),
 
         // MARK: - Shared Layer: Everything that is shared between feature modules

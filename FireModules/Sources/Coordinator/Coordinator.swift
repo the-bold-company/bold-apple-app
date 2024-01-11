@@ -21,6 +21,7 @@ public struct Navigation {
         case passwordCreationRoute(RegisterReducer.State)
         case loginRoute(LoginReducer.State)
         case homeRoute(HomeReducer.State)
+        case fundCreationRoute
     }
 
     public enum Action {
@@ -29,6 +30,7 @@ public struct Navigation {
         case passwordCreationRoute(RegisterReducer.Action)
         case loginRoute(LoginReducer.Action)
         case homeRoute(HomeReducer.Action)
+        case fundCreationRoute
     }
 
     public var body: some ReducerOf<Self> {
