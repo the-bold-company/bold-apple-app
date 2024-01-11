@@ -1,6 +1,7 @@
 
 import ComposableArchitecture
 import CoreUI
+import HomeFeature
 @_exported import Inject
 import LogInFeature
 import OnboardingFeature
@@ -39,6 +40,17 @@ public enum PlaybookBuilder {
                     store: Store(
                         initialState: .init(),
                         reducer: { LoginReducer() }
+                    )
+                )
+            }
+        }
+
+        playbook.addScenarios(catalog: .home) {
+            Scenario("HomePage", layout: .fill) {
+                HomePage(
+                    store: Store(
+                        initialState: .init(),
+                        reducer: { HomeReducer() }
                     )
                 )
             }

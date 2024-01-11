@@ -38,7 +38,7 @@ extension AuthAPI: BaseTargetType {
                     "email": email,
                     "password": password,
                 ],
-                encoding: URLEncoding.default
+                encoding: JSONEncoding.default
             )
         }
     }

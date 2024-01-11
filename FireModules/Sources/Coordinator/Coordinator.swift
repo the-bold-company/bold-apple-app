@@ -66,7 +66,6 @@ public struct Coordinator {
 
         public static let unAuthenticatedInitialState = State(
             routes: [.root(.landingRoute(.init()), embedInNavigationView: true)]
-//            routes: [.root(.homeRoute(.init()), embedInNavigationView: true)]
         )
 
         public var routes: [Route<Navigation.State>]
@@ -111,9 +110,6 @@ public struct Coordinator {
 
             // MARK: - Home routes
 
-            case .routeAction(_, action: .homeRoute):
-                state.routes.push(.homeRoute(.init()))
-
             // MARK: - Log in routes
 
             case .routeAction(_, action: .loginRoute(.navigate(.goToHome))):
@@ -127,7 +123,8 @@ public struct Coordinator {
 
             case .routeAction(_, action: .loginRoute),
                  .routeAction(_, action: .passwordCreationRoute),
-                 .routeAction(_, action: .emailRegistrationRoute):
+                 .routeAction(_, action: .emailRegistrationRoute),
+                 .routeAction(_, action: .homeRoute):
                 break
             case .updateRoutes:
                 break

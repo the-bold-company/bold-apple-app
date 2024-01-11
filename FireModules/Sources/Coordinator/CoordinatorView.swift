@@ -6,7 +6,6 @@
 //
 
 import HomeFeature
-import Inject
 import LogInFeature
 import OnboardingFeature
 import SignUpFeature
@@ -14,8 +13,6 @@ import SwiftUI
 import TCACoordinators
 
 public struct CoordinatorView: View {
-    @ObserveInjection private var iO
-
     let store: StoreOf<Coordinator>
 
     public init(store: StoreOf<Coordinator>) {
@@ -57,15 +54,14 @@ public struct CoordinatorView: View {
         .task {
             store.send(.onLaunch)
         }
-        .enableInjection()
     }
 }
 
-#Preview {
-    CoordinatorView(
-        store: Store(
-            initialState: Coordinator.State.unAuthenticatedInitialState,
-            reducer: { Coordinator() }
-        )
-    )
-}
+// #Preview {
+//    CoordinatorView(
+//        store: Store(
+//            initialState: Coordinator.State.unAuthenticatedInitialState,
+//            reducer: { Coordinator() }
+//        )
+//    )
+// }

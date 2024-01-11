@@ -68,7 +68,6 @@ let package = Package(
                 "OnboardingFeature",
                 "KeychainStorageUseCases",
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
-                .product(name: "Inject", package: "inject"),
             ]
         ),
 

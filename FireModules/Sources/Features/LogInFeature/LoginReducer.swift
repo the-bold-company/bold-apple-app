@@ -74,7 +74,7 @@ public struct LoginReducer {
                 }
             case let .logInSuccesfully(user):
                 state.loggedInUser = user
-                state.logInInProgress = false
+                // state.logInInProgress = false
                 return .send(.navigate(.goToHome))
             case let .logInFailure(error):
                 state.loginError = error.errorDescription
