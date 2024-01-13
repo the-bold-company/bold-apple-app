@@ -34,8 +34,9 @@ public struct FireTextField: View {
             )
             .autocapitalization(.none)
             .padding(16)
-            .overlay(RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.coreui.contentPrimary, lineWidth: 1)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.coreui.contentPrimary, lineWidth: 1)
             )
         }
         .enableInjection()

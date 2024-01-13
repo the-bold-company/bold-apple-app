@@ -126,7 +126,8 @@ public struct Coordinator {
             case .routeAction(_, action: .loginRoute),
                  .routeAction(_, action: .passwordCreationRoute),
                  .routeAction(_, action: .emailRegistrationRoute),
-                 .routeAction(_, action: .homeRoute):
+                 .routeAction(_, action: .homeRoute),
+                 .routeAction(_, action: .fundCreationRoute):
                 break
             case .updateRoutes:
                 break

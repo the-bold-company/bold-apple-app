@@ -14,7 +14,8 @@ public final class CurrencyKit {
     private init() {}
 
     private var symbolCache = [String: String]()
-    private var formatterCache = [String: NumberFormatter]()
+    private var currencyCodeFormatterCache = [String: NumberFormatter]()
+    private var currencySymbolFormatterCache = [String: NumberFormatter]()
 
     /// Finds the shortest currency symbol possible and formats the amount with it
     /// Note: this works around using `currencyCode` and how it displays `CA$1234.56` instead of `$1234.56`
@@ -26,15 +27,24 @@ public final class CurrencyKit {
         guard let isoCurrencyCode,
               let currencySymbol = findSymbol(for: isoCurrencyCode)
         else { return String(describing: amount) }
-        return formatter(for: currencySymbol).string(for: amount) ?? String(describing: amount)
+        return currencyCodeFormatter(for: currencySymbol).string(for: amount) ?? String(describing: amount)
     }
 
-    public func formatter(for currencySymbol: String) -> NumberFormatter {
-        if let cachedFormatter = formatterCache[currencySymbol] { return cachedFormatter }
+    public func currencyCodeFormatter(for currencyCode: String) -> NumberFormatter {
+        if let cachedFormatter = currencyCodeFormatterCache[currencyCode] { return cachedFormatter }
         let formatter = NumberFormatter()
-        formatter.currencySymbol = currencySymbol
+        formatter.currencySymbol = currencyCode
         formatter.numberStyle = .currency
-        formatterCache[currencySymbol] = formatter
+        currencyCodeFormatterCache[currencyCode] = formatter
+        return formatter
+    }
+
+    public func currencySymbolFormatter(for currencyCode: String) -> NumberFormatter {
+        if let cachedFormatter = currencySymbolFormatterCache[currencyCode] { return cachedFormatter }
+        let formatter = NumberFormatter()
+        formatter.currencySymbol = findSymbol(for: currencyCode)
+        formatter.numberStyle = .currency
+        currencySymbolFormatterCache[currencyCode] = formatter
         return formatter
     }
 

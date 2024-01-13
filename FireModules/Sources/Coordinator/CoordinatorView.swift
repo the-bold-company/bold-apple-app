@@ -5,6 +5,7 @@
 //  Created by Hien Tran on 10/12/2023.
 //
 
+import FundFeature
 import HomeFeature
 import LogInFeature
 import OnboardingFeature
@@ -48,6 +49,8 @@ public struct CoordinatorView: View {
                         /Navigation.State.homeRoute,
                         action: Navigation.Action.homeRoute
                     ) { HomePage(store: $0) }
+                case .fundCreationRoute:
+                    FundCreationView()
                 }
             }
         }
