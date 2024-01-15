@@ -9,14 +9,14 @@ import CurrencyKit
 import Foundation
 
 // TODO: Move this logic to DTO
-func formatNumber(_ value: Double?) -> String {
+func formatNumber(_ value: Decimal?) -> String {
     guard let value else { return "" }
     let formatter = NumberFormatter()
     formatter.numberStyle = .decimal
     formatter.minimumFractionDigits = 2
     formatter.maximumFractionDigits = 2
     formatter.locale = Locale(identifier: "en_US")
-    return formatter.string(from: NSNumber(value: value)) ?? ""
+    return formatter.string(from: NSDecimalNumber(decimal: value)) ?? ""
 }
 
 func getCurrencySymbol(isoCurrencyCode: String?) -> String {

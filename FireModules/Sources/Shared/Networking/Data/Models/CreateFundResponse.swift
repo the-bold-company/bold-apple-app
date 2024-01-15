@@ -11,7 +11,7 @@ import Foundation
 public struct CreateFundResponse: Decodable, Equatable, Identifiable {
     public let id: String
     public let creatorId: String
-    public let balance: Double
+    public let balance: Decimal
     public let fundType: FundType
     public let name: String
     public let currency: String

@@ -5,34 +5,60 @@
 //  Created by Hien Tran on 11/01/2024.
 //
 
+import ComposableArchitecture
 import CoreUI
 import CurrencyKit
 import SwiftUI
 
-public struct FundCreationView: View {
+public struct FundCreationPage: View {
     @ObserveInjection private var iO
 
-    @State private var text: Int = 0
-    @State private var des: String = ""
+    struct ViewState: Equatable {
+        @BindingViewState var fundName: String
+        @BindingViewState var description: String
+        @BindingViewState var balance: Int
+        var isLoading: Bool
+    }
 
-    public init() {}
+    let store: StoreOf<FundCreationReducer>
+    @ObservedObject var viewStore: ViewStore<ViewState, FundCreationReducer.Action>
+
+    public init(store: StoreOf<FundCreationReducer>) {
+        self.store = store
+        self.viewStore = ViewStore(store, observe: \.viewState)
+    }
 
     public var body: some View {
-        VStack(alignment: .leading) {
-            DismissButton()
-            Spacing(size: .size8)
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 24) {
-                    Text("Create your fund")
-                        .typography(.titleScreen)
-                    fundNameInputField
-                    balanceFieldInput
-                    descriptionInputField
+        LoadingOverlay(loading: viewStore.isLoading) {
+            VStack(alignment: .leading) {
+                DismissButton()
+                Spacing(size: .size8)
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 24) {
+                        Text("Create your fund")
+                            .typography(.titleScreen)
+                        fundNameInputField
+                        balanceFieldInput
+                        descriptionInputField
+                        Spacing(size: .size24)
+                    }
                 }
+                .scrollDismissesKeyboard(.interactively)
+
+                Spacer()
+                Button(action: {
+                    viewStore.send(.delegate(.submitButtonTapped))
+                }) {
+                    HStack {
+                        Text("Create fund")
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .fireButtonStyle()
             }
-            .scrollDismissesKeyboard(.immediately)
+            .navigationBarHidden(true)
+            .padding()
         }
-        .padding()
         .enableInjection()
     }
 
@@ -40,8 +66,10 @@ public struct FundCreationView: View {
     private var fundNameInputField: some View {
         FireTextField(
             title: "Name your fund",
-            text: .constant("")
+            text: viewStore.$fundName
         )
+        .autocorrectionDisabled()
+        .textInputAutocapitalization(.sentences)
     }
 
     @ViewBuilder
@@ -52,7 +80,6 @@ public struct FundCreationView: View {
             HStack {
                 Button(action: {
                     // Action to perform when the button is tapped
-//                    print(currencyFormatter.locale)
                 }) {
                     HStack {
                         Text("VND").typography(.bodyDefault)
@@ -63,7 +90,7 @@ public struct FundCreationView: View {
                 }
                 .fireButtonStyle(type: .primary(shape: .capsule))
 
-                CurrencyField(value: $text)
+                CurrencyField(value: viewStore.$balance)
             }
             .padding(14)
             .background(
@@ -78,7 +105,9 @@ public struct FundCreationView: View {
         VStack(alignment: .leading) {
             Text("Description").typography(.bodyDefault)
             Spacing(height: .size8)
-            TextEditor(text: $des)
+            TextEditor(text: viewStore.$description)
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.sentences)
                 .multilineTextAlignment(.leading)
                 .frame(width: .infinity, height: 100.0)
                 .cornerRadius(10)
@@ -91,6 +120,24 @@ public struct FundCreationView: View {
     }
 }
 
+extension BindingViewStore<FundCreationReducer.State> {
+    var viewState: FundCreationPage.ViewState {
+        // swiftformat:disable redundantSelf
+        FundCreationPage.ViewState(
+            fundName: self.$fundName,
+            description: self.$description,
+            balance: self.$balance,
+            isLoading: self.loadingState.isLoading
+        )
+        // swiftformat:enable redundantSelf
+    }
+}
+
 #Preview {
-    FundCreationView()
+    FundCreationPage(store: Store(
+        initialState: .init(),
+        reducer: {
+            FundCreationReducer()
+        }
+    ))
 }

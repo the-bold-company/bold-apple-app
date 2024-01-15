@@ -40,6 +40,7 @@ public struct HomeReducer {
 
         public enum Route {
             case settingsRoute
+            case createFund
         }
 
         public enum Delegate {
@@ -69,10 +70,8 @@ public struct HomeReducer {
                         await send(.loadPortfolioFailure(.unknown(error)))
                     }
                 }
-            case .delegate:
-                fatalError()
             case .navigate:
-                fatalError()
+                return .none
             case let .loadPortfolioSuccessfully(networth):
                 state.isLoadingNetworth = false
                 state.networth = networth
@@ -90,6 +89,8 @@ public struct HomeReducer {
                 state.fundsError = error.errorDescription
                 return .none
             case .binding:
+                return .none
+            case .delegate(.refresh):
                 return .none
             }
         }

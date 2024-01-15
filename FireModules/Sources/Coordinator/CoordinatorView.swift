@@ -50,7 +50,10 @@ public struct CoordinatorView: View {
                         action: Navigation.Action.homeRoute
                     ) { HomePage(store: $0) }
                 case .fundCreationRoute:
-                    FundCreationView()
+                    CaseLet(
+                        /Navigation.State.fundCreationRoute,
+                        action: Navigation.Action.fundCreationRoute
+                    ) { FundCreationPage(store: $0) }
                 }
             }
         }

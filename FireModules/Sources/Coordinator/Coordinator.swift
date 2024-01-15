@@ -6,6 +6,7 @@
 //
 
 import ComposableArchitecture
+import FundFeature
 import HomeFeature
 import KeychainStorageUseCases
 import LogInFeature
@@ -21,7 +22,7 @@ public struct Navigation {
         case passwordCreationRoute(RegisterReducer.State)
         case loginRoute(LoginReducer.State)
         case homeRoute(HomeReducer.State)
-        case fundCreationRoute
+        case fundCreationRoute(FundCreationReducer.State)
     }
 
     public enum Action {
@@ -30,7 +31,7 @@ public struct Navigation {
         case passwordCreationRoute(RegisterReducer.Action)
         case loginRoute(LoginReducer.Action)
         case homeRoute(HomeReducer.Action)
-        case fundCreationRoute
+        case fundCreationRoute(FundCreationReducer.Action)
     }
 
     public var body: some ReducerOf<Self> {
@@ -52,6 +53,10 @@ public struct Navigation {
 
         Scope(state: \.homeRoute, action: \.homeRoute) {
             HomeReducer()
+        }
+
+        Scope(state: \.fundCreationRoute, action: \.fundCreationRoute) {
+            FundCreationReducer()
         }
     }
 }
@@ -112,12 +117,20 @@ public struct Coordinator {
 
             // MARK: - Home routes
 
+            case .routeAction(_, action: .homeRoute(.navigate(.createFund))):
+                state.routes.push(.fundCreationRoute(.init()))
+
+            // MARK: - Fund creation routes
+
+            case .routeAction(_, action: .fundCreationRoute(.navigate(.dismissFundCreation))):
+                _ = state.routes.popLast()
+
             // MARK: - Log in routes
 
             case .routeAction(_, action: .loginRoute(.navigate(.goToHome))):
                 return .routeWithDelaysIfUnsupported(state.routes) {
                     $0.popToRoot()
-                    _ = $0.popLast()
+//                    _ = $0.popLast()
                     $0.push(.homeRoute(.init()))
                 }
 

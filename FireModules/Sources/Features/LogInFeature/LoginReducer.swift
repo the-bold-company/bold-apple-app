@@ -34,7 +34,6 @@ public struct LoginReducer {
     public enum Action: BindableAction {
         case delegate(Delegate)
         case binding(BindingAction<State>)
-//        case bind(Binding)
         case navigate(Route)
 
         case logInSuccesfully(UserDetails)
@@ -74,7 +73,7 @@ public struct LoginReducer {
                 }
             case let .logInSuccesfully(user):
                 state.loggedInUser = user
-                // state.logInInProgress = false
+                state.logInInProgress = false
                 return .send(.navigate(.goToHome))
             case let .logInFailure(error):
                 state.loginError = error.errorDescription

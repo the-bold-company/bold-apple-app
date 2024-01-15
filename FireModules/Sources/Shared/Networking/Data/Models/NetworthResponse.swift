@@ -6,9 +6,10 @@
 //
 
 import Codextended
+import Foundation
 
 public struct NetworthResponse: Decodable, Equatable {
-    public let networth: Double
+    public let networth: Decimal
     public let currency: String
 
     public init(from decoder: Decoder) throws {

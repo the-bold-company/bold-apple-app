@@ -24,8 +24,6 @@ public struct HomePage: View {
         var fundsError: String?
     }
 
-    @State var users = [String]()
-
     let store: StoreOf<HomeReducer>
     @ObservedObject var viewStore: ViewStore<ViewState, HomeReducer.Action>
 
@@ -41,7 +39,7 @@ public struct HomePage: View {
                 fundList
             }
         }
-        .navigationBarHidden(false)
+        .navigationBarHidden(true)
 //        .navigationBarItems(
 //            leading: Button(action: {
 //                            self.isShowingSettings.toggle()
@@ -144,7 +142,7 @@ public struct HomePage: View {
                     Text("Funds").typography(.bodyLarge)
                     Spacer()
                     Button(action: {
-                        // Add new fund
+                        viewStore.send(.navigate(.createFund))
                     }) {
                         Image(systemName: "rectangle.stack.badge.plus")
                     }
@@ -153,7 +151,7 @@ public struct HomePage: View {
                 ForEach(
                     viewStore.isLoadingFunds
                         ? CreateFundResponse.mockList
-                        : viewStore.funds!,
+                        : viewStore.funds ?? [],
                     id: \.id
                 ) { fund in
                     FundItemView(fund: fund, isLoading: viewStore.isLoadingFunds)
