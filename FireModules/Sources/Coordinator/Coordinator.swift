@@ -6,7 +6,9 @@
 //
 
 import ComposableArchitecture
+import FundFeature
 import HomeFeature
+import KeychainStorageUseCases
 import LogInFeature
 import OnboardingFeature
 import SignUpFeature
@@ -18,16 +20,20 @@ public struct Navigation {
         case landingRoute(LandingFeature.State)
         case emailRegistrationRoute(RegisterReducer.State)
         case passwordCreationRoute(RegisterReducer.State)
-        case login
-        case home
+        case loginRoute(LoginReducer.State)
+        case homeRoute(HomeReducer.State)
+        case fundCreationRoute(FundCreationReducer.State)
+        case fundDetailsRoute(FundDetailsReducer.State)
     }
 
     public enum Action {
         case landingRoute(LandingFeature.Action)
         case emailRegistrationRoute(RegisterReducer.Action)
         case passwordCreationRoute(RegisterReducer.Action)
-        case login
-        case home
+        case loginRoute(LoginReducer.Action)
+        case homeRoute(HomeReducer.Action)
+        case fundCreationRoute(FundCreationReducer.Action)
+        case fundDetailsRoute(FundDetailsReducer.Action)
     }
 
     public var body: some ReducerOf<Self> {
@@ -38,19 +44,37 @@ public struct Navigation {
         Scope(state: \.emailRegistrationRoute, action: \.emailRegistrationRoute) {
             RegisterReducer()
         }
+
         Scope(state: \.passwordCreationRoute, action: \.passwordCreationRoute) {
             RegisterReducer()
+        }
+
+        Scope(state: \.loginRoute, action: \.loginRoute) {
+            LoginReducer()
+        }
+
+        Scope(state: \.homeRoute, action: \.homeRoute) {
+            HomeReducer()
+        }
+
+        Scope(state: \.fundCreationRoute, action: \.fundCreationRoute) {
+            FundCreationReducer()
+        }
+
+        Scope(state: \.fundDetailsRoute, action: \.fundDetailsRoute) {
+            FundDetailsReducer()
         }
     }
 }
 
 @Reducer
 public struct Coordinator {
+    let keychainService = KeychainService()
     public init() {}
 
     public struct State: Equatable, IndexedRouterState {
         public static let authenticatedInitialState = State(
-            routes: [.root(.home, embedInNavigationView: true)]
+            routes: [.root(.homeRoute(.init()), embedInNavigationView: true)]
         )
 
         public static let unAuthenticatedInitialState = State(
@@ -65,6 +89,7 @@ public struct Coordinator {
     }
 
     public enum Action: IndexedRouterAction {
+        case onLaunch
         case routeAction(Int, action: Navigation.Action)
         case updateRoutes([Route<Navigation.State>])
     }
@@ -72,10 +97,14 @@ public struct Coordinator {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
+            case .onLaunch:
+                keychainService.removeCredentials()
+                return .none
+
             // MARK: - Landing routes
 
             case .routeAction(_, action: .landingRoute(.loginButtonTapped)):
-                state.routes.push(.login)
+                state.routes.push(.loginRoute(.init()))
             case .routeAction(_, action: .landingRoute(.signUpButtonTapped)):
                 state.routes.push(.emailRegistrationRoute(.init()))
 
@@ -83,27 +112,51 @@ public struct Coordinator {
 
             case let .routeAction(_, action: .emailRegistrationRoute(.navigate(.goToPasswordCreation(carriedOverState)))):
                 state.routes.push(.passwordCreationRoute(carriedOverState))
-            case .routeAction(_, action: .passwordCreationRoute(.navigate(.backToEmailRegistration(_)))):
+            case .routeAction(_, action: .passwordCreationRoute(.navigate(.backToEmailRegistration))):
                 break
             case .routeAction(_, action: .passwordCreationRoute(.navigate(.goToHome))):
                 return .routeWithDelaysIfUnsupported(state.routes) {
                     $0.popToRoot()
-                    _ = $0.popLast()
-                    $0.push(.home)
+//                    _ = $0.popLast()
+                    $0.push(.homeRoute(.init()))
                 }
-            case .routeAction(_, action: .passwordCreationRoute),
-                 .routeAction(_, action: .emailRegistrationRoute):
-                break
 
             // MARK: - Home routes
 
-            case .routeAction(_, action: .home):
-                state.routes.push(.home)
+            case .routeAction(_, action: .homeRoute(.navigate(.createFund))):
+                state.routes.push(.fundCreationRoute(.init()))
+
+            case let .routeAction(_, action: .homeRoute(.navigate(.fundDetails(fundDetail)))):
+                state.routes.push(.fundDetailsRoute(.init(fund: fundDetail)))
+
+            // MARK: - Fund creation routes
+
+            case .routeAction(_, action: .fundCreationRoute(.navigate(.dismissFundCreation))):
+                _ = state.routes.popLast()
+
+            // MARK: - Fund details routes
+
+            case .routeAction(_, action: .fundDetailsRoute(.navigate(.dismiss))):
+                _ = state.routes.popLast()
 
             // MARK: - Log in routes
 
-            case .routeAction(_, action: .login):
-                state.routes.push(.login)
+            case .routeAction(_, action: .loginRoute(.navigate(.goToHome))):
+                return .routeWithDelaysIfUnsupported(state.routes) {
+                    $0.popToRoot()
+//                    _ = $0.popLast()
+                    $0.push(.homeRoute(.init()))
+                }
+
+            // MARK: - This section is for non-existent routes, or routes that have been handled by default. They're here just to satisfy the compiler
+
+            case .routeAction(_, action: .loginRoute),
+                 .routeAction(_, action: .passwordCreationRoute),
+                 .routeAction(_, action: .emailRegistrationRoute),
+                 .routeAction(_, action: .homeRoute),
+                 .routeAction(_, action: .fundCreationRoute),
+                 .routeAction(_, action: .fundDetailsRoute):
+                break
             case .updateRoutes:
                 break
             }

@@ -7,17 +7,38 @@
 
 import SwiftUI
 
-public enum FireButtonType {
-    case primary
+public enum FireButtonShape: Equatable {
+    case capsule
+    case roundedCorner
+}
+
+public enum FireButtonType: Equatable {
+    case primary(shape: FireButtonShape)
     case secondary
     case tertiary
+
+    var padding: EdgeInsets {
+        switch self {
+        case let .primary(shape):
+            switch shape {
+            case .capsule:
+                return .symetric(horizontal: 8, vertical: 4)
+            case .roundedCorner:
+                return .all(16)
+            }
+        case .secondary:
+            return .all(16)
+        case .tertiary:
+            return .all(16)
+        }
+    }
 
     var backgroundColor: Color {
         switch self {
         case .primary:
             return .coreui.brightGreen
         case .secondary, .tertiary:
-            return .clear
+            return .white
         }
     }
 
@@ -31,22 +52,35 @@ public enum FireButtonType {
     }
 }
 
-struct FireButtonModifier: ViewModifier {
+public struct FireButtonStyle: ButtonStyle {
+    public init(buttonType: FireButtonType = .primary(shape: .roundedCorner)) {
+        self.buttonType = buttonType
+    }
+
     let buttonType: FireButtonType
 
-    func body(content: Content) -> some View {
-        content
+    public func makeBody(configuration: FireButtonStyle.Configuration) -> some View {
+        configuration.label
             .font(.custom(FontFamily.Inter.semiBold, size: 14))
             .foregroundColor(buttonType.foregroundColor)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(buttonType.backgroundColor)
-            .cornerRadius(8)
-    }
-}
-
-public extension View {
-    func fireButtonStyle(type: FireButtonType = .primary) -> some View {
-        modifier(FireButtonModifier(buttonType: type))
+            .padding(buttonType.padding)
+            .if(buttonType == .primary(shape: .capsule)) {
+                $0.background(Capsule(style: .circular)
+                    .fill(buttonType.backgroundColor))
+            }
+            .if(buttonType != .primary(shape: .capsule)) {
+                $0.background(RoundedRectangle(cornerRadius: 8)
+                    .fill(buttonType.backgroundColor)
+                )
+            }
+            .if(buttonType == .secondary) {
+                $0.overlay {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.coreui.forestGreen, lineWidth: 1)
+                }
+            }
+            .compositingGroup()
+            .opacity(configuration.isPressed ? 0.8 : 1.0)
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
     }
 }

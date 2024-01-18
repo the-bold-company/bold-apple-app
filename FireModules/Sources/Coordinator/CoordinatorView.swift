@@ -5,6 +5,7 @@
 //  Created by Hien Tran on 10/12/2023.
 //
 
+import FundFeature
 import HomeFeature
 import LogInFeature
 import OnboardingFeature
@@ -38,21 +39,40 @@ public struct CoordinatorView: View {
                         /Navigation.State.passwordCreationRoute,
                         action: Navigation.Action.passwordCreationRoute
                     ) { PasswordCreationPage(store: $0) }
-                case .home:
-                    HomePage()
-                case .login:
-                    LoginPage()
+                case .loginRoute:
+                    CaseLet(
+                        /Navigation.State.loginRoute,
+                        action: Navigation.Action.loginRoute
+                    ) { LoginPage(store: $0) }
+                case .homeRoute:
+                    CaseLet(
+                        /Navigation.State.homeRoute,
+                        action: Navigation.Action.homeRoute
+                    ) { HomePage(store: $0) }
+                case .fundCreationRoute:
+                    CaseLet(
+                        /Navigation.State.fundCreationRoute,
+                        action: Navigation.Action.fundCreationRoute
+                    ) { FundCreationPage(store: $0) }
+                case .fundDetailsRoute:
+                    CaseLet(
+                        /Navigation.State.fundDetailsRoute,
+                        action: Navigation.Action.fundDetailsRoute
+                    ) { FundDetailsPage(store: $0) }
                 }
             }
+        }
+        .task {
+            store.send(.onLaunch)
         }
     }
 }
 
-#Preview {
-    CoordinatorView(
-        store: Store(
-            initialState: Coordinator.State.unAuthenticatedInitialState,
-            reducer: { Coordinator() }
-        )
-    )
-}
+// #Preview {
+//    CoordinatorView(
+//        store: Store(
+//            initialState: Coordinator.State.unAuthenticatedInitialState,
+//            reducer: { Coordinator() }
+//        )
+//    )
+// }

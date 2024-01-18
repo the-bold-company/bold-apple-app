@@ -16,9 +16,9 @@ final class MoyaClient<T: BaseTargetType>: MoyaProvider<T> {
                 CommonHeadersPlugin(),
 
                 // TODO: Add #if DEBUG here
-                NetworkLoggerPlugin(configuration: NetworkLoggerPlugin.Configuration(
-                    logOptions: [.formatRequestAscURL, .successResponseBody, .errorResponseBody]
-                )),
+//                NetworkLoggerPlugin(configuration: NetworkLoggerPlugin.Configuration(
+//                    logOptions: [.formatRequestAscURL, .successResponseBody, .errorResponseBody]
+//                )),
             ]
         )
     }

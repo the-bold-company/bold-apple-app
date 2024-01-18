@@ -24,6 +24,7 @@ let package = Package(
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
+        .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -62,9 +63,11 @@ let package = Package(
             name: "Coordinator",
             dependencies: [
                 "HomeFeature",
+                "FundFeature",
                 "LogInFeature",
                 "SignUpFeature",
                 "OnboardingFeature",
+                "KeychainStorageUseCases",
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
             ]
         ),
@@ -85,7 +88,8 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "Utilities",
-                "HomeFeature", // Create an abstraction to remove this, feature must not have direct dependency on on another
+                "Networking",
+                "KeychainStorageUseCases",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/LogInFeature"
@@ -104,8 +108,21 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "CoreUI",
+                "Networking",
+                "CurrencyKit",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/HomeFeature"
+        ),
+        .target(
+            name: "FundFeature",
+            dependencies: [
+                "CoreUI",
+                "Networking",
+                "CurrencyKit",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/Features/FundFeature"
         ),
 
         // MARK: - Shared Layer: Everything that is shared between feature modules
@@ -130,11 +147,26 @@ let package = Package(
             name: "Networking",
             dependencies: [
                 "Utilities",
+                "KeychainStorageUseCases",
                 .product(name: "CombineMoya", package: "moya"),
                 .product(name: "Codextended", package: "codextended"),
                 .product(name: "CombineExt", package: "combineext"),
             ],
             path: "Sources/Shared/Networking"
+        ),
+        .target(
+            name: "CurrencyKit",
+            path: "Sources/Shared/Kits/CurrencyKit"
+        ),
+
+        // MARK: - Use cases
+
+        .target(
+            name: "KeychainStorageUseCases",
+            dependencies: [
+                .product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper"),
+            ],
+            path: "Sources/UseCases/KeychainStorageUseCases"
         ),
     ]
 )

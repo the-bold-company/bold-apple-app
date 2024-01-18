@@ -1,12 +1,9 @@
 import ComposableArchitecture
 import Coordinator
-import Inject
 import SwiftUI
 import TCACoordinators
 
 public struct AppView: View {
-    @ObserveInjection private var iO
-
     let store: StoreOf<AppReducer>
 
     public init(store: StoreOf<AppReducer>) {
@@ -27,6 +24,5 @@ public struct AppView: View {
                 store.send(.onLaunch)
             }
         }
-        .enableInjection()
     }
 }

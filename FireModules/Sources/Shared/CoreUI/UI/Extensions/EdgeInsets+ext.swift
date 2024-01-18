@@ -19,4 +19,12 @@ public extension EdgeInsets {
     static func vertical(_ length: CGFloat) -> EdgeInsets {
         return EdgeInsets(top: length, leading: 0, bottom: length, trailing: 0)
     }
+
+    static var zero: EdgeInsets {
+        return EdgeInsets.all(0)
+    }
+
+    static func symetric(horizontal: CGFloat, vertical: CGFloat) -> EdgeInsets {
+        return EdgeInsets(top: vertical, leading: horizontal, bottom: vertical, trailing: horizontal)
+    }
 }

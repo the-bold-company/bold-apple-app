@@ -15,10 +15,17 @@ public struct AuthAPIService {
 
     public init() {}
 
-    public func login(email: String, password: String) -> AnyPublisher<Result<LoginResponse, NetworkError>, Never> {
-        return client
+    public func login(email: String, password: String) async throws -> LoginResponse {
+        return try await client
             .requestPublisher(.login(email: email, password: password))
             .mapToResponse(LoginResponse.self)
-            .mapToResult()
+            .async()
+    }
+
+    public func register(email: String, password: String) async throws -> LoginResponse {
+        return try await client
+            .requestPublisher(.register(email: email, password: password))
+            .mapToResponse(LoginResponse.self)
+            .async()
     }
 }
