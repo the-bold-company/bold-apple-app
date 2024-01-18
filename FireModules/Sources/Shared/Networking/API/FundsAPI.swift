@@ -22,6 +22,7 @@ enum FundsAPI {
     )
     case listFunds
     case fundDetail(id: String)
+    case deleteFund(id: String)
 }
 
 extension FundsAPI: BaseTargetType {
@@ -33,6 +34,8 @@ extension FundsAPI: BaseTargetType {
             return "/funds/list"
         case let .fundDetail(id):
             return "/funds/\(id)"
+        case let .deleteFund(id):
+            return "/funds/\(id)/delete"
         }
     }
 
@@ -42,6 +45,8 @@ extension FundsAPI: BaseTargetType {
             return .post
         case .listFunds, .fundDetail:
             return .get
+        case .deleteFund:
+            return .delete
         }
     }
 
@@ -58,7 +63,7 @@ extension FundsAPI: BaseTargetType {
                 ],
                 encoding: JSONEncoding.default
             )
-        case .listFunds, .fundDetail:
+        case .listFunds, .fundDetail, .deleteFund:
             return .requestPlain
         }
     }

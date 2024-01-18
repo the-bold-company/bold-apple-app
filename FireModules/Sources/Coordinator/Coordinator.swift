@@ -23,6 +23,7 @@ public struct Navigation {
         case loginRoute(LoginReducer.State)
         case homeRoute(HomeReducer.State)
         case fundCreationRoute(FundCreationReducer.State)
+        case fundDetailsRoute(FundDetailsReducer.State)
     }
 
     public enum Action {
@@ -32,6 +33,7 @@ public struct Navigation {
         case loginRoute(LoginReducer.Action)
         case homeRoute(HomeReducer.Action)
         case fundCreationRoute(FundCreationReducer.Action)
+        case fundDetailsRoute(FundDetailsReducer.Action)
     }
 
     public var body: some ReducerOf<Self> {
@@ -57,6 +59,10 @@ public struct Navigation {
 
         Scope(state: \.fundCreationRoute, action: \.fundCreationRoute) {
             FundCreationReducer()
+        }
+
+        Scope(state: \.fundDetailsRoute, action: \.fundDetailsRoute) {
+            FundDetailsReducer()
         }
     }
 }
@@ -120,9 +126,17 @@ public struct Coordinator {
             case .routeAction(_, action: .homeRoute(.navigate(.createFund))):
                 state.routes.push(.fundCreationRoute(.init()))
 
+            case let .routeAction(_, action: .homeRoute(.navigate(.fundDetails(fundDetail)))):
+                state.routes.push(.fundDetailsRoute(.init(fund: fundDetail)))
+
             // MARK: - Fund creation routes
 
             case .routeAction(_, action: .fundCreationRoute(.navigate(.dismissFundCreation))):
+                _ = state.routes.popLast()
+
+            // MARK: - Fund details routes
+
+            case .routeAction(_, action: .fundDetailsRoute(.navigate(.dismiss))):
                 _ = state.routes.popLast()
 
             // MARK: - Log in routes
@@ -140,7 +154,8 @@ public struct Coordinator {
                  .routeAction(_, action: .passwordCreationRoute),
                  .routeAction(_, action: .emailRegistrationRoute),
                  .routeAction(_, action: .homeRoute),
-                 .routeAction(_, action: .fundCreationRoute):
+                 .routeAction(_, action: .fundCreationRoute),
+                 .routeAction(_, action: .fundDetailsRoute):
                 break
             case .updateRoutes:
                 break

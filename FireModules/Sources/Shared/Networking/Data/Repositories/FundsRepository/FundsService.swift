@@ -46,4 +46,11 @@ public struct FundsService {
             .mapToResponse(CreateFundResponse.self)
             .async()
     }
+
+    public func deleteFund(fundId: String) async throws -> DeleteFundResponse {
+        return try await client
+            .requestPublisher(.deleteFund(id: fundId))
+            .mapToResponse(DeleteFundResponse.self)
+            .async()
+    }
 }

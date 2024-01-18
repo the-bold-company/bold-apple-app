@@ -30,7 +30,7 @@ public struct FundCreationReducer {
         @BindingState public var description: String
         @BindingState public var balance: Int
 
-        var loadingState: LoadingState<CreateFundResponse, NetworkError> = .idle
+        var loadingState: NetworkLoadingState<CreateFundResponse> = .idle
     }
 
     public enum Action: BindableAction {
@@ -87,29 +87,5 @@ public struct FundCreationReducer {
                 return .none
             }
         }
-    }
-}
-
-public enum LoadingState<Success, Failure>: Equatable where Success: Equatable, Failure: Error {
-    case idle
-    case loading
-    case loaded(Success)
-    case failure(Failure)
-
-    public static func == (lhs: LoadingState<Success, Failure>, rhs: LoadingState<Success, Failure>) -> Bool {
-        switch (lhs, rhs) {
-        case (.idle, .idle), (.loading, .loading):
-            return true
-        case let (.loaded(lhsResult), .loaded(rhsResult)):
-            return lhsResult == rhsResult
-        case let (.failure(lhsErr), failure(rhsErr)):
-            return lhsErr.localizedDescription == rhsErr.localizedDescription
-        default:
-            return false
-        }
-    }
-
-    public var isLoading: Bool {
-        return self == .loading
     }
 }

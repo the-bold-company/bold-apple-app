@@ -146,6 +146,7 @@ public struct HomePage: View {
                     }) {
                         Image(systemName: "rectangle.stack.badge.plus")
                     }
+                    .buttonStyle(.plain) // Putting a button inside a List row will make the entire row tapable. This is to disable that. Read more: https://www.reddit.com/r/SwiftUI/comments/11v492t/comment/jcrgl2i
                 }
                 Spacing(height: .size16)
                 ForEach(
@@ -156,7 +157,7 @@ public struct HomePage: View {
                 ) { fund in
                     FundItemView(fund: fund, isLoading: viewStore.isLoadingFunds)
                         .onTapGesture {
-                            // Handle tap
+                            viewStore.send(.navigate(.fundDetails(fund)))
                         }
                 }
             }

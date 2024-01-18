@@ -38,7 +38,7 @@ public enum FireButtonType: Equatable {
         case .primary:
             return .coreui.brightGreen
         case .secondary, .tertiary:
-            return .clear
+            return .white
         }
     }
 
@@ -64,11 +64,20 @@ public struct FireButtonStyle: ButtonStyle {
             .font(.custom(FontFamily.Inter.semiBold, size: 14))
             .foregroundColor(buttonType.foregroundColor)
             .padding(buttonType.padding)
-            .if(.primary(shape: .capsule) == buttonType) {
-                $0.background(Capsule(style: .circular).fill(buttonType.backgroundColor))
+            .if(buttonType == .primary(shape: .capsule)) {
+                $0.background(Capsule(style: .circular)
+                    .fill(buttonType.backgroundColor))
             }
-            .if(.primary(shape: .capsule) != buttonType) {
-                $0.background(RoundedRectangle(cornerRadius: 8).fill(buttonType.backgroundColor))
+            .if(buttonType != .primary(shape: .capsule)) {
+                $0.background(RoundedRectangle(cornerRadius: 8)
+                    .fill(buttonType.backgroundColor)
+                )
+            }
+            .if(buttonType == .secondary) {
+                $0.overlay {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.coreui.forestGreen, lineWidth: 1)
+                }
             }
             .compositingGroup()
             .opacity(configuration.isPressed ? 0.8 : 1.0)

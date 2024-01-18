@@ -41,6 +41,7 @@ public struct HomeReducer {
         public enum Route {
             case settingsRoute
             case createFund
+            case fundDetails(CreateFundResponse)
         }
 
         public enum Delegate {
