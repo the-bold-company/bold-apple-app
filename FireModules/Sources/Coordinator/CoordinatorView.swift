@@ -9,6 +9,8 @@ import FundFeature
 import HomeFeature
 import LogInFeature
 import OnboardingFeature
+import SettingsFeature
+import SharedModels
 import SignUpFeature
 import SwiftUI
 import TCACoordinators
@@ -16,8 +18,16 @@ import TCACoordinators
 public struct CoordinatorView: View {
     let store: StoreOf<Coordinator>
 
+    @State private var model = SettingsModel()
+    @ObservedObject var viewStore: ViewStore<ViewState, Coordinator.Action>
+
+    struct ViewState: Equatable {
+        var navigationStackCount: Int
+    }
+
     public init(store: StoreOf<Coordinator>) {
         self.store = store
+        self.viewStore = ViewStore(store, observe: \.viewState)
     }
 
     public var body: some View {
@@ -59,20 +69,39 @@ public struct CoordinatorView: View {
                         /Navigation.State.fundDetailsRoute,
                         action: Navigation.Action.fundDetailsRoute
                     ) { FundDetailsPage(store: $0) }
+                case .devSettingsRoute:
+                    DevSettingsPage(
+                        viewModel: .init(
+                            settings: model.betaSettings,
+                            externalData: .init(),
+                            save: { newValue in
+                                print("🔥 Save save")
+                                model.betaSettings = newValue
+                            },
+                            dismiss: {}
+                        )
+                    )
                 }
             }
         }
         .task {
             store.send(.onLaunch)
         }
+        .gesture(
+            LongPressGesture(minimumDuration: 2.0)
+                .onEnded { _ in
+                    store.send(.routeAction(viewStore.navigationStackCount - 1, action: .devSettingsRoute))
+                }
+        )
     }
 }
 
-// #Preview {
-//    CoordinatorView(
-//        store: Store(
-//            initialState: Coordinator.State.unAuthenticatedInitialState,
-//            reducer: { Coordinator() }
-//        )
-//    )
-// }
+extension BindingViewStore<Coordinator.State> {
+    var viewState: CoordinatorView.ViewState {
+        // swiftformat:disable redundantSelf
+        CoordinatorView.ViewState(
+            navigationStackCount: self.routes.count
+        )
+        // swiftformat:enable redundantSelf
+    }
+}

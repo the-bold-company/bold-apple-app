@@ -11,6 +11,7 @@ import HomeFeature
 import KeychainStorageUseCases
 import LogInFeature
 import OnboardingFeature
+import SettingsFeature
 import SignUpFeature
 import TCACoordinators
 
@@ -24,6 +25,7 @@ public struct Navigation {
         case homeRoute(HomeReducer.State)
         case fundCreationRoute(FundCreationReducer.State)
         case fundDetailsRoute(FundDetailsReducer.State)
+        case devSettingsRoute
     }
 
     public enum Action {
@@ -34,6 +36,7 @@ public struct Navigation {
         case homeRoute(HomeReducer.Action)
         case fundCreationRoute(FundCreationReducer.Action)
         case fundDetailsRoute(FundDetailsReducer.Action)
+        case devSettingsRoute
     }
 
     public var body: some ReducerOf<Self> {
@@ -88,10 +91,11 @@ public struct Coordinator {
         }
     }
 
-    public enum Action: IndexedRouterAction {
+    public enum Action: IndexedRouterAction, BindableAction {
         case onLaunch
         case routeAction(Int, action: Navigation.Action)
         case updateRoutes([Route<Navigation.State>])
+        case binding(BindingAction<State>)
     }
 
     public var body: some ReducerOf<Self> {
@@ -150,13 +154,16 @@ public struct Coordinator {
 
             // MARK: - This section is for non-existent routes, or routes that have been handled by default. They're here just to satisfy the compiler
 
-            case .routeAction(_, action: .loginRoute),
+            case .binding,
+                 .routeAction(_, action: .loginRoute),
                  .routeAction(_, action: .passwordCreationRoute),
                  .routeAction(_, action: .emailRegistrationRoute),
                  .routeAction(_, action: .homeRoute),
                  .routeAction(_, action: .fundCreationRoute),
                  .routeAction(_, action: .fundDetailsRoute):
                 break
+            case .routeAction(_, action: .devSettingsRoute):
+                state.routes.presentSheet(.devSettingsRoute)
             case .updateRoutes:
                 break
             }
