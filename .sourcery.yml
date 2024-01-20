@@ -14,7 +14,7 @@ configurations:
     output: FireModules/Sources/Features/SettingsFeature/CodeGen/
     baseIndentation: 4
     args:
-      settingsView: DevSettingsPage
+      settingsView: DevSettingsView
       settingsStructure: DevSettings
       settingsExternalData: DevSettingsExternalData
       settingsImports:

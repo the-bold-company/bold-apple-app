@@ -26,6 +26,7 @@ let package = Package(
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.5"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -70,8 +71,8 @@ let package = Package(
                 "OnboardingFeature",
                 "KeychainStorageUseCases",
                 "SettingsFeature",
-                "SharedModels",
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
+                .product(name: "Codextended", package: "codextended"),
             ]
         ),
 
@@ -132,6 +133,7 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "SharedModels",
+                "DevSettingsUseCases",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "AutomaticSettings", package: "automaticsettings"),
             ],
@@ -187,6 +189,15 @@ let package = Package(
                 .product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper"),
             ],
             path: "Sources/UseCases/KeychainStorageUseCases"
+        ),
+        .target(
+            name: "DevSettingsUseCases",
+            dependencies: [
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Codextended", package: "codextended"),
+            ],
+            path: "Sources/UseCases/DevSettingsUseCases"
         ),
     ]
 )

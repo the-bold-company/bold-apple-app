@@ -25,7 +25,8 @@ public struct Navigation {
         case homeRoute(HomeReducer.State)
         case fundCreationRoute(FundCreationReducer.State)
         case fundDetailsRoute(FundDetailsReducer.State)
-        case devSettingsRoute
+        case secretDevSettingsRoute
+        case devSettingsRoute(DevSettingsReducer.State)
     }
 
     public enum Action {
@@ -36,7 +37,8 @@ public struct Navigation {
         case homeRoute(HomeReducer.Action)
         case fundCreationRoute(FundCreationReducer.Action)
         case fundDetailsRoute(FundDetailsReducer.Action)
-        case devSettingsRoute
+        case secretDevSettingsRoute
+        case devSettingsRoute(DevSettingsReducer.Action)
     }
 
     public var body: some ReducerOf<Self> {
@@ -66,6 +68,10 @@ public struct Navigation {
 
         Scope(state: \.fundDetailsRoute, action: \.fundDetailsRoute) {
             FundDetailsReducer()
+        }
+
+        Scope(state: \.devSettingsRoute, action: \.devSettingsRoute) {
+            DevSettingsReducer()._printChanges()
         }
     }
 }
@@ -160,10 +166,11 @@ public struct Coordinator {
                  .routeAction(_, action: .emailRegistrationRoute),
                  .routeAction(_, action: .homeRoute),
                  .routeAction(_, action: .fundCreationRoute),
-                 .routeAction(_, action: .fundDetailsRoute):
+                 .routeAction(_, action: .fundDetailsRoute),
+                 .routeAction(_, action: .devSettingsRoute):
                 break
-            case .routeAction(_, action: .devSettingsRoute):
-                state.routes.presentSheet(.devSettingsRoute)
+            case .routeAction(_, action: .secretDevSettingsRoute):
+                state.routes.presentSheet(.devSettingsRoute(.init()))
             case .updateRoutes:
                 break
             }

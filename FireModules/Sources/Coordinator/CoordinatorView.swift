@@ -18,7 +18,6 @@ import TCACoordinators
 public struct CoordinatorView: View {
     let store: StoreOf<Coordinator>
 
-    @State private var model = SettingsModel()
     @ObservedObject var viewStore: ViewStore<ViewState, Coordinator.Action>
 
     struct ViewState: Equatable {
@@ -69,30 +68,24 @@ public struct CoordinatorView: View {
                         /Navigation.State.fundDetailsRoute,
                         action: Navigation.Action.fundDetailsRoute
                     ) { FundDetailsPage(store: $0) }
+                case .secretDevSettingsRoute:
+                    fatalError("This is use to invoke the dev settings using a secret gesture. It isn't a valid route, and it shouldn't go here")
                 case .devSettingsRoute:
-                    DevSettingsPage(
-                        viewModel: .init(
-                            settings: model.betaSettings,
-                            externalData: .init(),
-                            save: { newValue in
-                                print("🔥 Save save")
-                                model.betaSettings = newValue
-                            },
-                            dismiss: {}
-                        )
-                    )
+                    CaseLet(
+                        /Navigation.State.devSettingsRoute,
+                        action: Navigation.Action.devSettingsRoute
+                    ) { DevSettingsPage(store: $0) }
                 }
             }
         }
         .task {
             store.send(.onLaunch)
         }
-        .gesture(
-            LongPressGesture(minimumDuration: 2.0)
-                .onEnded { _ in
-                    store.send(.routeAction(viewStore.navigationStackCount - 1, action: .devSettingsRoute))
-                }
-        )
+        .onShake {
+            print("Device shaken!")
+            store.send(.routeAction(viewStore.navigationStackCount - 1, action: .secretDevSettingsRoute))
+        }
+        .enableInjection()
     }
 }
 
