@@ -34,7 +34,7 @@ public struct CurrencyField: View {
     }
 
     public var body: some View {
-        HStack {
+        ZStack {
             // Text view to display the formatted currency
             // Set as priority so CurrencyInputField size doesn't affect parent
             Text(label).layoutPriority(1)

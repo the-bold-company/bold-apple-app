@@ -9,6 +9,7 @@ import FundFeature
 import HomeFeature
 import LogInFeature
 import OnboardingFeature
+import RecordTransactionFeature
 import SettingsFeature
 import SharedModels
 import SignUpFeature
@@ -35,45 +36,35 @@ public struct CoordinatorView: View {
                 switch screen {
                 case .landingRoute:
                     CaseLet(
-                        /Navigation.State.landingRoute,
-                        action: Navigation.Action.landingRoute
+                        /Destination.State.landingRoute,
+                        action: Destination.Action.landingRoute
                     ) { LandingPage(store: $0) }
                 case .emailRegistrationRoute:
                     CaseLet(
-                        /Navigation.State.emailRegistrationRoute,
-                        action: Navigation.Action.emailRegistrationRoute
+                        /Destination.State.emailRegistrationRoute,
+                        action: Destination.Action.emailRegistrationRoute
                     ) { EmailRegistrationPage(store: $0) }
                 case .passwordCreationRoute:
                     CaseLet(
-                        /Navigation.State.passwordCreationRoute,
-                        action: Navigation.Action.passwordCreationRoute
+                        /Destination.State.passwordCreationRoute,
+                        action: Destination.Action.passwordCreationRoute
                     ) { PasswordCreationPage(store: $0) }
                 case .loginRoute:
                     CaseLet(
-                        /Navigation.State.loginRoute,
-                        action: Navigation.Action.loginRoute
+                        /Destination.State.loginRoute,
+                        action: Destination.Action.loginRoute
                     ) { LoginPage(store: $0) }
                 case .homeRoute:
                     CaseLet(
-                        /Navigation.State.homeRoute,
-                        action: Navigation.Action.homeRoute
+                        /Destination.State.homeRoute,
+                        action: Destination.Action.homeRoute
                     ) { HomePage(store: $0) }
-                case .fundCreationRoute:
-                    CaseLet(
-                        /Navigation.State.fundCreationRoute,
-                        action: Navigation.Action.fundCreationRoute
-                    ) { FundCreationPage(store: $0) }
-                case .fundDetailsRoute:
-                    CaseLet(
-                        /Navigation.State.fundDetailsRoute,
-                        action: Navigation.Action.fundDetailsRoute
-                    ) { FundDetailsPage(store: $0) }
                 case .secretDevSettingsRoute:
                     fatalError("This is use to invoke the dev settings using a secret gesture. It isn't a valid route, and it shouldn't go here")
                 case .devSettingsRoute:
                     CaseLet(
-                        /Navigation.State.devSettingsRoute,
-                        action: Navigation.Action.devSettingsRoute
+                        /Destination.State.devSettingsRoute,
+                        action: Destination.Action.devSettingsRoute
                     ) { DevSettingsPage(store: $0) }
                 }
             }
@@ -82,7 +73,6 @@ public struct CoordinatorView: View {
             store.send(.onLaunch)
         }
         .onShake {
-            print("Device shaken!")
             store.send(.routeAction(viewStore.navigationStackCount - 1, action: .secretDevSettingsRoute))
         }
         .enableInjection()

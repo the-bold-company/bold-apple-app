@@ -8,6 +8,7 @@
 import Charts
 import ComposableArchitecture
 import CoreUI
+import FundFeature
 import Networking
 import SwiftUI
 
@@ -15,13 +16,9 @@ public struct HomePage: View {
     @ObserveInjection private var iO
 
     struct ViewState: Equatable {
-        var isLoadingNetworth: Bool
-        var networth: NetworthResponse?
-        var networthError: String?
-
-        var isLoadingFunds: Bool
-        var funds: [CreateFundResponse]?
-        var fundsError: String?
+        var networthLoadingState: NetworkLoadingState<NetworthResponse>
+        var fundLoadingState: NetworkLoadingState<[CreateFundResponse]>
+        var fundList: IdentifiedArrayOf<FundDetailsReducer.State>
     }
 
     let store: StoreOf<HomeReducer>
@@ -33,36 +30,28 @@ public struct HomePage: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            List {
-                networth
-                fundList
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 20) {
+                List {
+                    networth
+                    fundList
+                }
             }
+            .navigationBarHidden(true)
+            .background(Color(red: 246 / 255, green: 246 / 255, blue: 246 / 255))
+            .navigationDestination(
+                store: store.scope(
+                    state: \.$destination.fundDetailsRoute,
+                    action: \.destination.fundDetailsRoute
+                )
+            ) { FundDetailsPage(store: $0) }
+            .navigationDestination(
+                store: store.scope(
+                    state: \.$destination.fundCreationRoute,
+                    action: \.destination.fundCreationRoute
+                )
+            ) { FundCreationPage(store: $0) }
         }
-        .navigationBarHidden(true)
-//        .navigationBarItems(
-//            leading: Button(action: {
-//                            self.isShowingSettings.toggle()
-//            }) {
-//                Image(systemName: "gearshape")
-//            },
-//            trailing: Menu {
-//                // Dropdown options for base currency
-//                Button("USD") {
-//                    // Handle selection
-//                        self.baseCurrency = "USD"
-//                }
-//                Button("EUR") {
-//                    // Handle selection
-//                        self.baseCurrency = "EUR"
-//                }
-//            } label: {
-//                Image(systemName: "arrowtriangle.down.fill")
-//                    .foregroundColor(.blue)
-//                    .padding(.trailing)
-//            }
-//        )
-        .background(Color(red: 246 / 255, green: 246 / 255, blue: 246 / 255))
         .task {
             viewStore.send(.onAppear)
         }
@@ -76,11 +65,11 @@ public struct HomePage: View {
                 Text("Networth").typography(.bodyLarge)
 
                 HStack(alignment: .top, spacing: 4) {
-                    Text(getCurrencySymbol(isoCurrencyCode: viewStore.networth?.currency))
+                    Text(getCurrencySymbol(isoCurrencyCode: viewStore.networthLoadingState.result?.currency))
                         .typography(.bodyLarge)
                         .alignmentGuide(.top, computeValue: { _ in -2 })
 
-                    Text("\(formatNumber(viewStore.networth?.networth))")
+                    Text("\(formatNumber(viewStore.networthLoadingState.result?.networth))")
                         .typography(.titleSection)
                         .alignmentGuide(.top, computeValue: { dimensions in dimensions[.top] })
                 }
@@ -131,7 +120,7 @@ public struct HomePage: View {
             .background(Color.white)
             .cornerRadius(8)
         }
-        .redacted(reason: viewStore.isLoadingNetworth ? .placeholder : [])
+        .redacted(reason: viewStore.networthLoadingState.hasResult ? [] : .placeholder)
     }
 
     @ViewBuilder
@@ -142,7 +131,7 @@ public struct HomePage: View {
                     Text("Funds").typography(.bodyLarge)
                     Spacer()
                     Button(action: {
-                        viewStore.send(.navigate(.createFund))
+                        viewStore.send(.delegate(.createFundButtonTapped))
                     }) {
                         Image(systemName: "rectangle.stack.badge.plus")
                     }
@@ -150,14 +139,14 @@ public struct HomePage: View {
                 }
                 Spacing(height: .size16)
                 ForEach(
-                    viewStore.isLoadingFunds
-                        ? CreateFundResponse.mockList
-                        : viewStore.funds ?? [],
+                    viewStore.fundLoadingState.hasResult
+                        ? viewStore.fundList.map(\.fund)
+                        : CreateFundResponse.mockList,
                     id: \.id
                 ) { fund in
-                    FundItemView(fund: fund, isLoading: viewStore.isLoadingFunds)
+                    FundItemView(fund: fund, isLoading: !viewStore.fundLoadingState.hasResult)
                         .onTapGesture {
-                            viewStore.send(.navigate(.fundDetails(fund)))
+                            viewStore.send(.delegate(.fundRowTapped(fund)))
                         }
                 }
             }
@@ -169,12 +158,9 @@ extension BindingViewStore<HomeReducer.State> {
     var viewState: HomePage.ViewState {
         // swiftformat:disable redundantSelf
         HomePage.ViewState(
-            isLoadingNetworth: self.isLoadingNetworth,
-            networth: self.networth,
-            networthError: self.networthError,
-            isLoadingFunds: self.isLoadingFunds,
-            funds: self.funds,
-            fundsError: self.fundsError
+            networthLoadingState: self.networthLoadingState,
+            fundLoadingState: self.fundLoadingState,
+            fundList: self.fundList
         )
         // swiftformat:enable redundantSelf
     }

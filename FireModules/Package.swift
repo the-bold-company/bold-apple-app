@@ -65,7 +65,6 @@ let package = Package(
             name: "Coordinator",
             dependencies: [
                 "HomeFeature",
-                "FundFeature",
                 "LogInFeature",
                 "SignUpFeature",
                 "OnboardingFeature",
@@ -115,6 +114,8 @@ let package = Package(
                 "CoreUI",
                 "Networking",
                 "CurrencyKit",
+                "FundFeature",
+                "SharedServices",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/HomeFeature"
@@ -125,9 +126,21 @@ let package = Package(
                 "CoreUI",
                 "Networking",
                 "CurrencyKit",
+                "RecordTransactionFeature",
+                "SharedServices",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/FundFeature"
+        ),
+        .target(
+            name: "RecordTransactionFeature",
+            dependencies: [
+                "CoreUI",
+                "Networking",
+                "CurrencyKit",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/Features/RecordTransactionFeature"
         ),
         .target(
             name: "SettingsFeature",
@@ -164,6 +177,7 @@ let package = Package(
             dependencies: [
                 "Utilities",
                 "KeychainStorageUseCases",
+                "SharedModels",
                 .product(name: "CombineMoya", package: "moya"),
                 .product(name: "Codextended", package: "codextended"),
                 .product(name: "CombineExt", package: "combineext"),
@@ -180,6 +194,14 @@ let package = Package(
                 .product(name: "AutomaticSettings", package: "automaticsettings"),
             ],
             path: "Sources/Shared/SharedModels"
+        ),
+        .target(
+            name: "SharedServices",
+            dependencies: [
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            path: "Sources/Shared/SharedServices"
         ),
 
         // MARK: - Use cases

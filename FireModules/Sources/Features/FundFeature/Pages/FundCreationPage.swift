@@ -91,7 +91,10 @@ public struct FundCreationPage: View {
                 .fireButtonStyle(type: .primary(shape: .capsule))
 
                 CurrencyField(value: viewStore.$balance)
+
+                Spacer()
             }
+            .frame(maxWidth: .infinity)
             .padding(14)
             .background(
                 RoundedRectangle(cornerRadius: 10)
@@ -109,7 +112,8 @@ public struct FundCreationPage: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.sentences)
                 .multilineTextAlignment(.leading)
-                .frame(width: .infinity, height: 100.0)
+                .frame(height: 100.0)
+                .frame(maxWidth: .infinity)
                 .cornerRadius(10)
                 .padding(.symetric(horizontal: 16, vertical: 8))
                 .background(

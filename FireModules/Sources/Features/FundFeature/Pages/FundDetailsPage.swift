@@ -10,6 +10,7 @@ import ComposableArchitecture
 import CoreUI
 import CurrencyKit
 import Networking
+import RecordTransactionFeature
 import SwiftUI
 
 public struct FundDetailsPage: View {
@@ -43,19 +44,45 @@ public struct FundDetailsPage: View {
                     deleteFundButton
                 }
             }
-            .background(.regularMaterial)
         }
+        .navigationBarHidden(true)
         .onAppear(perform: {
             viewStore.send(.delegate(.onApear))
         })
-        .navigationBarHidden(true)
+        .navigationDestination(
+            store: store.scope(
+                state: \.$destination.sendMoney,
+                action: \.destination.sendMoney
+            )
+        ) { SendMoneyPage(store: $0) }
         .enableInjection()
+    }
+
+    @ViewBuilder
+    var actionItems: some View {
+        HStack {
+            Spacer()
+            VStack(spacing: 8) {
+                Button(action: {
+                    viewStore.send(.delegate(.sendMoneyButtonTapped))
+                }) {
+                    Image(systemName: "arrow.up")
+                        .foregroundColor(Color.coreui.forestGreen)
+                }
+                .fireButtonStyle()
+                .clipShape(Circle())
+
+                Text("Add")
+                    .font(.custom(FontFamily.Inter.regular, size: 12))
+            }
+            Spacer()
+        }
     }
 
     @ViewBuilder
     var balance: some View {
         Section {
-            LazyVStack(alignment: .leading) {
+            VStack(alignment: .leading) {
                 Text(viewStore.fund.name).typography(.titleBody)
 
                 Spacing(size: .size16)
@@ -94,6 +121,9 @@ public struct FundDetailsPage: View {
                     }
                 }
                 .redacted(reason: viewStore.fundDetailsLoadingState.hasResult ? [] : .placeholder)
+
+                Spacing(size: .size24)
+                actionItems
             }
             .background(
                 RoundedRectangle(cornerRadius: 8)
@@ -126,7 +156,7 @@ public struct FundDetailsPage: View {
             Text("Delete this fund")
                 .frame(maxWidth: .infinity)
         }
-        .fireButtonStyle(type: .secondary)
+        .fireButtonStyle(type: .secondary(shape: .roundedCorner))
     }
 
     private func formatNumber(_ value: Decimal?) -> String {
