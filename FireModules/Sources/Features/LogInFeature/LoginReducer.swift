@@ -6,6 +6,7 @@
 //
 
 import ComposableArchitecture
+import DevSettingsUseCases
 import Foundation
 import KeychainStorageUseCases
 import Networking
@@ -18,7 +19,14 @@ public struct LoginReducer {
     public init() {}
 
     public struct State: Equatable {
-        public init() {}
+        public init() {
+            // TODO: Add if DEBUG handler for dev setting
+            @Dependency(\.devSettings) var devSettings
+
+            self.email = devSettings.credentials.username
+            self.password = devSettings.credentials.password
+        }
+
         @BindingState var email: String = ""
         @BindingState var password: String = ""
 

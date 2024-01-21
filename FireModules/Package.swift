@@ -25,6 +25,8 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
+        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.5"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -68,7 +70,9 @@ let package = Package(
                 "SignUpFeature",
                 "OnboardingFeature",
                 "KeychainStorageUseCases",
+                "SettingsFeature",
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
+                .product(name: "Codextended", package: "codextended"),
             ]
         ),
 
@@ -90,6 +94,7 @@ let package = Package(
                 "Utilities",
                 "Networking",
                 "KeychainStorageUseCases",
+                "DevSettingsUseCases",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/LogInFeature"
@@ -123,6 +128,17 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/FundFeature"
+        ),
+        .target(
+            name: "SettingsFeature",
+            dependencies: [
+                "CoreUI",
+                "SharedModels",
+                "DevSettingsUseCases",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "AutomaticSettings", package: "automaticsettings"),
+            ],
+            path: "Sources/Features/SettingsFeature"
         ),
 
         // MARK: - Shared Layer: Everything that is shared between feature modules
@@ -158,6 +174,13 @@ let package = Package(
             name: "CurrencyKit",
             path: "Sources/Shared/Kits/CurrencyKit"
         ),
+        .target(
+            name: "SharedModels",
+            dependencies: [
+                .product(name: "AutomaticSettings", package: "automaticsettings"),
+            ],
+            path: "Sources/Shared/SharedModels"
+        ),
 
         // MARK: - Use cases
 
@@ -167,6 +190,15 @@ let package = Package(
                 .product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper"),
             ],
             path: "Sources/UseCases/KeychainStorageUseCases"
+        ),
+        .target(
+            name: "DevSettingsUseCases",
+            dependencies: [
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "Codextended", package: "codextended"),
+            ],
+            path: "Sources/UseCases/DevSettingsUseCases"
         ),
     ]
 )

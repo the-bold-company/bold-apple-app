@@ -9,6 +9,8 @@ import FundFeature
 import HomeFeature
 import LogInFeature
 import OnboardingFeature
+import SettingsFeature
+import SharedModels
 import SignUpFeature
 import SwiftUI
 import TCACoordinators
@@ -16,8 +18,15 @@ import TCACoordinators
 public struct CoordinatorView: View {
     let store: StoreOf<Coordinator>
 
+    @ObservedObject var viewStore: ViewStore<ViewState, Coordinator.Action>
+
+    struct ViewState: Equatable {
+        var navigationStackCount: Int
+    }
+
     public init(store: StoreOf<Coordinator>) {
         self.store = store
+        self.viewStore = ViewStore(store, observe: \.viewState)
     }
 
     public var body: some View {
@@ -59,20 +68,33 @@ public struct CoordinatorView: View {
                         /Navigation.State.fundDetailsRoute,
                         action: Navigation.Action.fundDetailsRoute
                     ) { FundDetailsPage(store: $0) }
+                case .secretDevSettingsRoute:
+                    fatalError("This is use to invoke the dev settings using a secret gesture. It isn't a valid route, and it shouldn't go here")
+                case .devSettingsRoute:
+                    CaseLet(
+                        /Navigation.State.devSettingsRoute,
+                        action: Navigation.Action.devSettingsRoute
+                    ) { DevSettingsPage(store: $0) }
                 }
             }
         }
         .task {
             store.send(.onLaunch)
         }
+        .onShake {
+            print("Device shaken!")
+            store.send(.routeAction(viewStore.navigationStackCount - 1, action: .secretDevSettingsRoute))
+        }
+        .enableInjection()
     }
 }
 
-// #Preview {
-//    CoordinatorView(
-//        store: Store(
-//            initialState: Coordinator.State.unAuthenticatedInitialState,
-//            reducer: { Coordinator() }
-//        )
-//    )
-// }
+extension BindingViewStore<Coordinator.State> {
+    var viewState: CoordinatorView.ViewState {
+        // swiftformat:disable redundantSelf
+        CoordinatorView.ViewState(
+            navigationStackCount: self.routes.count
+        )
+        // swiftformat:enable redundantSelf
+    }
+}
