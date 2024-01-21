@@ -11,8 +11,8 @@ import SwiftUI
 
 public struct DevSettings: AutomaticSettings {
     public struct Credentials: AutomaticSettings {
-        public var username: String = "hien.tran@fire.com"
-        public var password: String = "Qwerty@123"
+        public var username: String = ""
+        public var password: String = ""
 
         public init() {}
     }

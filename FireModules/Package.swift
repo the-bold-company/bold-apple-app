@@ -94,6 +94,7 @@ let package = Package(
                 "Utilities",
                 "Networking",
                 "KeychainStorageUseCases",
+                "DevSettingsUseCases",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/LogInFeature"
