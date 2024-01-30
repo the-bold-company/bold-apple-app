@@ -8,9 +8,9 @@
 import Foundation
 import Moya
 
-protocol BaseTargetType: TargetType {}
+public protocol BaseTargetType: TargetType {}
 
-extension BaseTargetType {
+public extension BaseTargetType {
     var baseURL: URL {
         // TODO: Use environment flag to set up different schemes
         // TODO: Move base url to env variable

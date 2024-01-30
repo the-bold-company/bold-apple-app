@@ -10,6 +10,7 @@ import ComposableArchitecture
 import CoreUI
 import FundFeature
 import Networking
+import SharedModels
 import SwiftUI
 
 public struct HomePage: View {
@@ -18,7 +19,9 @@ public struct HomePage: View {
     struct ViewState: Equatable {
         var networthLoadingState: NetworkLoadingState<NetworthResponse>
         var fundLoadingState: NetworkLoadingState<[CreateFundResponse]>
-        var fundList: IdentifiedArrayOf<FundDetailsReducer.State>
+        var fundList: IdentifiedArrayOf<CreateFundResponse>
+        var isTransactionLoading: Bool
+        var transactions: IdentifiedArrayOf<TransactionEntity>
     }
 
     let store: StoreOf<HomeReducer>
@@ -35,6 +38,7 @@ public struct HomePage: View {
                 List {
                     networth
                     fundList
+                    transactionList
                 }
             }
             .navigationBarHidden(true)
@@ -53,7 +57,7 @@ public struct HomePage: View {
             ) { FundCreationPage(store: $0) }
         }
         .task {
-            viewStore.send(.onAppear)
+            viewStore.send(.delegate(.onAppear))
         }
         .enableInjection()
     }
@@ -140,7 +144,7 @@ public struct HomePage: View {
                 Spacing(height: .size16)
                 ForEach(
                     viewStore.fundLoadingState.hasResult
-                        ? viewStore.fundList.map(\.fund)
+                        ? viewStore.fundList.elements
                         : CreateFundResponse.mockList,
                     id: \.id
                 ) { fund in
@@ -148,6 +152,46 @@ public struct HomePage: View {
                         .onTapGesture {
                             viewStore.send(.delegate(.fundRowTapped(fund)))
                         }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var transactionList: some View {
+        Section {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Transactions history").typography(.bodyLarge)
+                    Spacer()
+                    Button(action: {
+                        // view all transactions
+                    }) {
+                        Image(systemName: "list.dash")
+                    }
+                    .buttonStyle(.plain) // Putting a button inside a List row will make the entire row tapable. This is to disable that. Read more: https://www.reddit.com/r/SwiftUI/comments/11v492t/comment/jcrgl2i
+                }
+                Spacing(height: .size16)
+                ForEach(
+                    viewStore.isTransactionLoading
+                        ? [
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID())
+                        ]
+                        : viewStore.transactions,
+                    id: \.id
+                ) {
+                    TransactionItemView(
+                        transaction: $0,
+                        isLoading: viewStore.isTransactionLoading,
+                        from: viewStore.fundList[id: $0.sourceFundId.uuidString.lowercased()]?.name ?? "N/A",
+                        to: $0.destinationFundId != nil
+                            ? viewStore.fundList[id: $0.destinationFundId!.uuidString.lowercased()]?.name // swiftlint:disable:this force_unwraping
+                            : nil
+                    )
                 }
             }
         }
@@ -160,7 +204,9 @@ extension BindingViewStore<HomeReducer.State> {
         HomePage.ViewState(
             networthLoadingState: self.networthLoadingState,
             fundLoadingState: self.fundLoadingState,
-            fundList: self.fundList
+            fundList: self.fundList,
+            isTransactionLoading: self.transactionLoadingState.isLoading,
+            transactions: self.transactionList
         )
         // swiftformat:enable redundantSelf
     }

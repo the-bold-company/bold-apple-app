@@ -8,8 +8,9 @@
 import ComposableArchitecture
 import Foundation
 import FundFeature
+import LoggedInUserService
 import Networking
-import SharedServices
+import TransactionsService
 
 @Reducer
 public struct HomeReducer {
@@ -27,105 +28,143 @@ public struct HomeReducer {
 
         var networthLoadingState: NetworkLoadingState<NetworthResponse> = .idle
         var fundLoadingState: NetworkLoadingState<[CreateFundResponse]> = .idle
-        var fundList: IdentifiedArrayOf<FundDetailsReducer.State> = []
+        var transactionLoadingState: NetworkLoadingState<[TransactionEntity]> = .idle
+
+        var fundList: IdentifiedArrayOf<CreateFundResponse> = []
+        var transactionList: IdentifiedArrayOf<TransactionEntity> = []
     }
 
     public enum Action: BindableAction {
-        case onAppear
-        case loadPortfolioSuccessfully(NetworthResponse)
-        case loadPortfolioFailure(NetworkError)
-        case loadFundListSuccessfully(FundListResponse)
-        case loadFundListFailure(NetworkError)
         case binding(BindingAction<State>)
-        case fundList(id: FundDetailsReducer.State.ID, action: FundDetailsReducer.Action)
         case destination(PresentationAction<Destination.Action>)
 
         case delegate(Delegate)
+        case forward(Forward)
 
         public enum Delegate {
+            case onAppear
             case refresh
             case fundRowTapped(CreateFundResponse)
             case createFundButtonTapped
         }
+
+        public enum Forward {
+            case loadPortfolioSuccessfully(NetworthResponse)
+            case loadPortfolioFailure(NetworkError)
+            case loadFundListSuccessfully(FundListResponse)
+            case loadFundListFailure(NetworkError)
+            case loadTransactionsSuccessfully([TransactionEntity])
+            case loadTransactionsFailed(NetworkError)
+            case updateFund(CreateFundResponse)
+        }
     }
 
-    @Dependency(\.authGuardService) var authGuardService
+    @Dependency(\.loggedInUserService) var loggedInUserService
+    @Dependency(\.transactionSerivce) var transactionService
+    @Dependency(\.continuousClock) var clock
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .onAppear:
+            case .delegate(.onAppear):
                 guard state.networthLoadingState == .idle,
-                      state.fundLoadingState == .idle
+                      state.fundLoadingState == .idle,
+                      state.transactionLoadingState == .idle
                 else { return .none }
 
                 state.networthLoadingState = .loading
                 state.fundLoadingState = .loading
+                state.transactionLoadingState = .loading
 
                 return .run { send in
                     do {
                         async let networthResponse = try portolioService.getNetworth()
                         async let fundListResponse = try fundsService.listFunds()
+                        async let transactionList = try transactionService.getTransactionLists()
 
-                        try await send(.loadPortfolioSuccessfully(networthResponse))
-                        try await send(.loadFundListSuccessfully(fundListResponse))
+                        try await send(.forward(.loadPortfolioSuccessfully(networthResponse)))
+                        try await send(.forward(.loadFundListSuccessfully(fundListResponse)))
+                        try await send(.forward(.loadTransactionsSuccessfully(transactionList)))
                     } catch let error as NetworkError {
-                        await send(.loadPortfolioFailure(error))
+                        await send(.forward(.loadPortfolioFailure(error)))
                     } catch {
-                        await send(.loadPortfolioFailure(.unknown(error)))
+                        await send(.forward(.loadPortfolioFailure(.unknown(error))))
                     }
                 }
-            case let .loadPortfolioSuccessfully(networth):
-                state.networthLoadingState = .loaded(networth)
-                return .none
-            case let .loadPortfolioFailure(error):
-                state.networthLoadingState = .failure(error)
-                return .none
-            case let .loadFundListSuccessfully(list):
-                state.fundLoadingState = .loaded(list.funds)
-                state.fundList = IdentifiedArray(
-                    uniqueElements: list.funds.map {
-                        FundDetailsReducer.State(fund: $0)
-                    }
-                )
-                return .run { _ in
-                    await authGuardService.updateLoadedFunds(list.funds.map { $0.asFundEntity() })
-                }
-            case let .loadFundListFailure(error):
-                state.fundLoadingState = .failure(error)
-                return .none
-            case .binding:
-                return .none
             case let .delegate(.fundRowTapped(fund)):
-                guard let fundState = state.fundList[id: fund.id] else { return .none }
-                state.destination = .fundDetailsRoute(fundState)
+                guard let fund = state.fundList[id: fund.id] else { return .none }
+                state.destination = .fundDetailsRoute(.init(fund: fund))
                 return .none
             case .delegate(.createFundButtonTapped):
                 state.destination = .fundCreationRoute(.init())
                 return .none
             case .delegate(.refresh):
                 return .none
-            case .destination(.presented(.fundDetailsRoute(.deleteFundSuccesfully))):
+            case let .forward(.loadPortfolioSuccessfully(networth)):
+                state.networthLoadingState = .loaded(networth)
+                return .none
+            case let .forward(.loadPortfolioFailure(error)):
+                state.networthLoadingState = .failure(error)
+                return .none
+            case let .forward(.loadFundListSuccessfully(list)):
+                state.fundLoadingState = .loaded(list.funds)
+                state.fundList = IdentifiedArray(uniqueElements: list.funds)
+                return .run { _ in
+                    await loggedInUserService.updateLoadedFunds(list.funds.map { $0.asFundEntity() })
+                }
+            case let .forward(.loadFundListFailure(error)):
+                state.fundLoadingState = .failure(error)
+                return .none
+            case let .forward(.loadTransactionsSuccessfully(transactions)):
+                let mostRecentFiveTransactions = Array(transactions.prefix(3))
+                state.transactionLoadingState = .loaded(mostRecentFiveTransactions)
+                state.transactionList = IdentifiedArray(uniqueElements: mostRecentFiveTransactions)
+                return .none
+            case let .forward(.loadTransactionsFailed(error)):
+                state.transactionLoadingState = .failure(error)
+                return .none
+            case let .forward(.updateFund(updatedFund)):
+                state.fundList[id: updatedFund.id] = updatedFund
+                return .none
+            case .destination(.presented(.fundDetailsRoute(.forward(.deleteFundSuccesfully)))):
                 guard let destination = state.destination,
                       case let .fundDetailsRoute(st) = destination
                 else { return .none }
                 state.fundList.remove(id: st.id)
                 return .none
-            case let .destination(.presented(.fundCreationRoute(.fundCreatedSuccessfully(createdFund)))):
-//                guard let destination = state.destination,
-//                    case let .fundDetailsRoute(st) = destination
-//                else { return .none }
-                state.fundList.append(FundDetailsReducer.State(fund: createdFund))
-                return .none
-            case let .fundList(id: id, action: action):
-                switch action {
-                case .delegate(.deleteFundButtonTapped):
-                    state.fundList.remove(id: id)
-                    return .none
-                default:
-                    return .none
+            case let .destination(.presented(.fundDetailsRoute(.forward(.fundDetailsUpdated(updatedFund))))):
+                return .send(.forward(.updateFund(updatedFund)))
+            case let .destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(transaction))))))):
+                guard state.networthLoadingState != .loading,
+                      state.transactionLoadingState != .loading
+                else { return .none }
+
+                state.networthLoadingState = .loading
+                state.transactionLoadingState = .loading
+
+                return .run { send in
+                    do {
+                        async let networthResponse = try portolioService.getNetworth()
+                        async let transactionList = try transactionService.getTransactionLists()
+
+                        if let destinationFundId = transaction.destinationFundId?.uuidString.lowercased() {
+                            try await clock.sleep(for: .milliseconds(500))
+                            async let loadDestinationFund = try fundsService.getFundDetails(fundId: destinationFundId)
+                            try await send(.forward(.updateFund(loadDestinationFund)))
+                        }
+
+                        try await send(.forward(.loadPortfolioSuccessfully(networthResponse)))
+                        try await send(.forward(.loadTransactionsSuccessfully(transactionList)))
+                    } catch {
+                        // do nothing
+                    }
                 }
-            case .destination:
+            case let .destination(.presented(.fundCreationRoute(.fundCreatedSuccessfully(createdFund)))):
+                state.fundList.append(createdFund)
+                return .none
+            case .destination(.dismiss):
+                return .none
+            case .destination, .binding:
                 return .none
             }
         }

@@ -7,7 +7,8 @@
 
 import ComposableArchitecture
 import Foundation
-import SharedServices
+import LoggedInUserService
+import TransactionsService
 
 @Reducer
 public struct SendMoneyReducer {
@@ -26,6 +27,15 @@ public struct SendMoneyReducer {
         @BindingState var description: String = ""
         @PresentationState var fundPicker: FundPickerReducer.State?
         var isFormValid = false
+        var transactionRecordLoadingState: NetworkLoadingState<TransactionEntity> = .idle
+
+        var sourceFundId: UUID {
+            return sourceFund.id
+        }
+
+        var destinationFundId: UUID? {
+            return selectedTargetFund?.id
+        }
     }
 
     public enum Action: BindableAction {
@@ -35,12 +45,18 @@ public struct SendMoneyReducer {
         case fundPicker(PresentationAction<FundPickerReducer.Action>)
         case delegate(Delegate)
 
+        case transactionRecordedSuccessfully(TransactionEntity)
+        case transactionRecordedFailed(NetworkError)
+
         public enum Delegate {
             case fundPickerFieldTapped
+            case proceedButtonTapped
         }
     }
 
-    @Dependency(\.authGuardService) var authGuardService
+    @Dependency(\.dismiss) var dismiss
+    @Dependency(\.loggedInUserService) var loggedInUserService
+    @Dependency(\.transactionSerivce) var transactionService
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -50,7 +66,7 @@ public struct SendMoneyReducer {
             case .onAppear:
                 guard state.targetFunds.isEmpty else { return .none }
                 return .run { [sourceFundId = state.sourceFund.id] send in
-                    let loadedFunds = await authGuardService.loadedFunds()
+                    let loadedFunds = await loggedInUserService.loadedFunds()
                     var possibleTargetFunds = IdentifiedArray(uniqueElements: loadedFunds)
                     possibleTargetFunds.remove(id: sourceFundId)
                     await send(.targetFundsLoaded(possibleTargetFunds))
@@ -70,10 +86,34 @@ public struct SendMoneyReducer {
                 }
 
                 return .none
+            case let .transactionRecordedSuccessfully(transaction):
+                state.transactionRecordLoadingState = .loaded(transaction)
+                return .run { _ in await dismiss() }
+            case let .transactionRecordedFailed(err):
+                state.transactionRecordLoadingState = .failure(err)
+                return .none
             case .delegate(.fundPickerFieldTapped):
                 guard !state.targetFunds.isEmpty else { return .none }
                 state.fundPicker = .init(funds: state.targetFunds, selection: state.selectedTargetFund?.id)
                 return .none
+            case .delegate(.proceedButtonTapped):
+                state.transactionRecordLoadingState = .loading
+                return .run { [sourceID = state.sourceFundId, amount = state.amount, destinationId = state.destinationFundId, description = state.description] send in
+                    do {
+                        let res = try await transactionService.recordTransaction(
+                            sourceFundId: sourceID,
+                            amount: Decimal(amount),
+                            destinationFundId: destinationId,
+                            description: description,
+                            type: .inout
+                        )
+                        await send(.transactionRecordedSuccessfully(res))
+                    } catch let error as NetworkError {
+                        await send(.transactionRecordedFailed(error))
+                    } catch {
+                        await send(.transactionRecordedFailed(NetworkError.unknown(error)))
+                    }
+                }
             case .binding:
                 state.isFormValid = validateForm(currentState: state)
                 return .none

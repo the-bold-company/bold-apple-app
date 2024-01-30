@@ -26,7 +26,7 @@ let package = Package(
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.5"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.2.0"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -115,7 +115,8 @@ let package = Package(
                 "Networking",
                 "CurrencyKit",
                 "FundFeature",
-                "SharedServices",
+                "LoggedInUserService",
+                "TransactionsService",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/HomeFeature"
@@ -127,7 +128,6 @@ let package = Package(
                 "Networking",
                 "CurrencyKit",
                 "RecordTransactionFeature",
-                "SharedServices",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/FundFeature"
@@ -136,8 +136,9 @@ let package = Package(
             name: "RecordTransactionFeature",
             dependencies: [
                 "CoreUI",
-                "Networking",
                 "CurrencyKit",
+                "TransactionsService",
+                "LoggedInUserService",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/RecordTransactionFeature"
@@ -195,14 +196,6 @@ let package = Package(
             ],
             path: "Sources/Shared/SharedModels"
         ),
-        .target(
-            name: "SharedServices",
-            dependencies: [
-                "SharedModels",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ],
-            path: "Sources/Shared/SharedServices"
-        ),
 
         // MARK: - Use cases
 
@@ -221,6 +214,23 @@ let package = Package(
                 .product(name: "Codextended", package: "codextended"),
             ],
             path: "Sources/UseCases/DevSettingsUseCases"
+        ),
+        .target(
+            name: "LoggedInUserService",
+            dependencies: [
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            path: "Sources/UseCases/LoggedInUserService"
+        ),
+        .target(
+            name: "TransactionsService",
+            dependencies: [
+                "SharedModels",
+                "Networking",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            path: "Sources/UseCases/TransactionsService"
         ),
     ]
 )

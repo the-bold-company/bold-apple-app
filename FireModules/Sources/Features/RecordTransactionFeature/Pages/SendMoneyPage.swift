@@ -20,6 +20,7 @@ public struct SendMoneyPage: View {
         var selectedTargetFund: FundEntity?
         @BindingViewState var amount: Int
         @BindingViewState var description: String
+        var isLoading: Bool
         var isFormValid: Bool
     }
 
@@ -32,34 +33,35 @@ public struct SendMoneyPage: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading) {
-            DismissButton().padding(.leading, 16)
-            VStack {
-                ScrollView {
-                    VStack {
-                        amountInput
-                        fundPicker
-                        descriptionInput
+        LoadingOverlay(loading: viewStore.isLoading) {
+            VStack(alignment: .leading) {
+                DismissButton().padding(.leading, 16)
+                VStack {
+                    ScrollView {
+                        VStack {
+                            amountInput
+                            fundPicker
+                            descriptionInput
+                        }
                     }
+                    .scrollDismissesKeyboard(.interactively)
+
+                    Spacer()
+                    proceedButton
                 }
-                .scrollDismissesKeyboard(.interactively)
-
-                Spacer()
-
-                proceedButton
+                .frame(maxHeight: .infinity)
             }
-            .frame(maxHeight: .infinity)
+            .onAppear(perform: {
+                viewStore.send(.onAppear)
+            })
+            .navigationBarHidden(true)
+            .sheet(
+                store: store.scope(
+                    state: \.$fundPicker,
+                    action: \.fundPicker
+                )
+            ) { FundPickerPage(store: $0) }
         }
-        .onAppear(perform: {
-            viewStore.send(.onAppear)
-        })
-        .navigationBarHidden(true)
-        .sheet(
-            store: store.scope(
-                state: \.$fundPicker,
-                action: \.fundPicker
-            )
-        ) { FundPickerPage(store: $0) }
         .enableInjection()
     }
 
@@ -128,7 +130,7 @@ public struct SendMoneyPage: View {
     private var proceedButton: some View {
         VStack {
             Button(action: {
-                //                viewStore.send(.delegate(.submitButtonTapped))
+                viewStore.send(.delegate(.proceedButtonTapped))
             }) {
                 HStack {
                     Text("Proceed")
@@ -151,6 +153,7 @@ extension BindingViewStore<SendMoneyReducer.State> {
             selectedTargetFund: self.selectedTargetFund,
             amount: self.$amount,
             description: self.$description,
+            isLoading: self.transactionRecordLoadingState.isLoading,
             isFormValid: self.isFormValid
         )
         // swiftformat:enable redundantSelf

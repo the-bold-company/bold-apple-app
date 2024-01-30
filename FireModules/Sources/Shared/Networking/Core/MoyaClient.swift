@@ -7,10 +7,10 @@
 
 import Moya
 
-final class MoyaClient<T: BaseTargetType>: MoyaProvider<T> {
+public final class MoyaClient<T: BaseTargetType>: MoyaProvider<T> {
     // TODO: COnfigure cache https://github.com/Moya/Moya/issues/976
 
-    init() {
+    public init() {
         super.init(
             plugins: [
                 CommonHeadersPlugin(),

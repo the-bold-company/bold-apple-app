@@ -138,12 +138,12 @@ public struct FundDetailsPage: View {
             FundInfoItem(
                 isLoading: !viewStore.fundDetailsLoadingState.hasResult,
                 title: "Currency",
-                value: viewStore.fundDetailsLoadingState.result?.currency ?? ""
+                value: viewStore.fund.currency
             )
             FundInfoItem(
                 isLoading: !viewStore.fundDetailsLoadingState.hasResult,
                 title: "Type",
-                value: viewStore.fundDetailsLoadingState.result?.fundType.rawValue.capitalized ?? ""
+                value: viewStore.fund.fundType.rawValue.capitalized
             )
         }
     }
