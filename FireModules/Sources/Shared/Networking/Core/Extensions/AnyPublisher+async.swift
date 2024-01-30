@@ -6,8 +6,9 @@
 //
 
 import Combine
+
 // TODO: Move this to utilities
-extension AnyPublisher {
+public extension AnyPublisher {
     func async() async throws -> Output {
         try await withCheckedThrowingContinuation { continuation in
             var cancellable: AnyCancellable?

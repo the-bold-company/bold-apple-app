@@ -9,7 +9,7 @@ import Combine
 import Foundation
 import Moya
 
-extension AnyPublisher where Output == Response, Failure == MoyaError {
+public extension AnyPublisher where Output == Response, Failure == MoyaError {
     func mapToResponse<D: Decodable>(_: D.Type) -> AnyPublisher<D, NetworkError> {
         // swiftformat:disable:next redundantSelf
         return self

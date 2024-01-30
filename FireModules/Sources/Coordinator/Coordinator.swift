@@ -11,20 +11,19 @@ import HomeFeature
 import KeychainStorageUseCases
 import LogInFeature
 import OnboardingFeature
+import RecordTransactionFeature
 import SettingsFeature
 import SignUpFeature
 import TCACoordinators
 
 @Reducer
-public struct Navigation {
+public struct Destination {
     public enum State: Equatable {
         case landingRoute(LandingFeature.State)
         case emailRegistrationRoute(RegisterReducer.State)
         case passwordCreationRoute(RegisterReducer.State)
         case loginRoute(LoginReducer.State)
         case homeRoute(HomeReducer.State)
-        case fundCreationRoute(FundCreationReducer.State)
-        case fundDetailsRoute(FundDetailsReducer.State)
         case secretDevSettingsRoute
         case devSettingsRoute(DevSettingsReducer.State)
     }
@@ -35,8 +34,6 @@ public struct Navigation {
         case passwordCreationRoute(RegisterReducer.Action)
         case loginRoute(LoginReducer.Action)
         case homeRoute(HomeReducer.Action)
-        case fundCreationRoute(FundCreationReducer.Action)
-        case fundDetailsRoute(FundDetailsReducer.Action)
         case secretDevSettingsRoute
         case devSettingsRoute(DevSettingsReducer.Action)
     }
@@ -62,16 +59,8 @@ public struct Navigation {
             HomeReducer()
         }
 
-        Scope(state: \.fundCreationRoute, action: \.fundCreationRoute) {
-            FundCreationReducer()
-        }
-
-        Scope(state: \.fundDetailsRoute, action: \.fundDetailsRoute) {
-            FundDetailsReducer()
-        }
-
         Scope(state: \.devSettingsRoute, action: \.devSettingsRoute) {
-            DevSettingsReducer()._printChanges()
+            DevSettingsReducer()
         }
     }
 }
@@ -90,17 +79,17 @@ public struct Coordinator {
             routes: [.root(.landingRoute(.init()), embedInNavigationView: true)]
         )
 
-        public var routes: [Route<Navigation.State>]
+        public var routes: [Route<Destination.State>]
 
-        public init(routes: [Route<Navigation.State>]) {
+        public init(routes: [Route<Destination.State>]) {
             self.routes = routes
         }
     }
 
     public enum Action: IndexedRouterAction, BindableAction {
         case onLaunch
-        case routeAction(Int, action: Navigation.Action)
-        case updateRoutes([Route<Navigation.State>])
+        case routeAction(Int, action: Destination.Action)
+        case updateRoutes([Route<Destination.State>])
         case binding(BindingAction<State>)
     }
 
@@ -127,27 +116,8 @@ public struct Coordinator {
             case .routeAction(_, action: .passwordCreationRoute(.navigate(.goToHome))):
                 return .routeWithDelaysIfUnsupported(state.routes) {
                     $0.popToRoot()
-//                    _ = $0.popLast()
                     $0.push(.homeRoute(.init()))
                 }
-
-            // MARK: - Home routes
-
-            case .routeAction(_, action: .homeRoute(.navigate(.createFund))):
-                state.routes.push(.fundCreationRoute(.init()))
-
-            case let .routeAction(_, action: .homeRoute(.navigate(.fundDetails(fundDetail)))):
-                state.routes.push(.fundDetailsRoute(.init(fund: fundDetail)))
-
-            // MARK: - Fund creation routes
-
-            case .routeAction(_, action: .fundCreationRoute(.navigate(.dismissFundCreation))):
-                _ = state.routes.popLast()
-
-            // MARK: - Fund details routes
-
-            case .routeAction(_, action: .fundDetailsRoute(.navigate(.dismiss))):
-                _ = state.routes.popLast()
 
             // MARK: - Log in routes
 
@@ -156,6 +126,7 @@ public struct Coordinator {
                     $0.popToRoot()
 //                    _ = $0.popLast()
                     $0.push(.homeRoute(.init()))
+                    $0.remove(at: 0)
                 }
 
             // MARK: - This section is for non-existent routes, or routes that have been handled by default. They're here just to satisfy the compiler
@@ -165,8 +136,6 @@ public struct Coordinator {
                  .routeAction(_, action: .passwordCreationRoute),
                  .routeAction(_, action: .emailRegistrationRoute),
                  .routeAction(_, action: .homeRoute),
-                 .routeAction(_, action: .fundCreationRoute),
-                 .routeAction(_, action: .fundDetailsRoute),
                  .routeAction(_, action: .devSettingsRoute):
                 break
             case .routeAction(_, action: .secretDevSettingsRoute):
@@ -177,7 +146,7 @@ public struct Coordinator {
             return .none
         }
         .forEachRoute {
-            Navigation()
+            Destination()
         }
     }
 }

@@ -7,6 +7,7 @@
 
 import Codextended
 import Foundation
+import SharedModels
 
 public struct CreateFundResponse: Decodable, Equatable, Identifiable {
     public let id: String
@@ -25,5 +26,17 @@ public struct CreateFundResponse: Decodable, Equatable, Identifiable {
         self.name = try decoder.decode("name")
         self.currency = try decoder.decode("currency")
         self.description = try decoder.decodeIfPresent("description")
+    }
+}
+
+public extension CreateFundResponse {
+    func asFundEntity() -> FundEntity {
+        return FundEntity(
+            id: id,
+            balance: balance,
+            name: name,
+            currency: currency,
+            description: description
+        )
     }
 }

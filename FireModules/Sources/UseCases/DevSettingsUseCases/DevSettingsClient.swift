@@ -29,7 +29,7 @@ extension DevSettingsClient {
         // print("🌮 \(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.absoluteString)")
         let userSettingsFileURL = FileManager.default
             .urls(for: .documentDirectory, in: .userDomainMask)
-            .first!
+            .first! // swiftlint:disable:this force_unwrapping
             .appendingPathComponent(devSettingsFileName)
             .appendingPathExtension("json")
         let initialDevSettingsData = (try? Data(contentsOf: userSettingsFileURL)) ?? Data()

@@ -13,7 +13,7 @@ opt_in_rules:
   - weak_delegate
 
 excluded:
-  - "*.generated"
+  - "*.generated.swift"
   - "**/.build/"
 
 # custom_rules:

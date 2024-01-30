@@ -26,7 +26,7 @@ let package = Package(
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", from: "1.1.5"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.2.0"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -65,7 +65,6 @@ let package = Package(
             name: "Coordinator",
             dependencies: [
                 "HomeFeature",
-                "FundFeature",
                 "LogInFeature",
                 "SignUpFeature",
                 "OnboardingFeature",
@@ -115,6 +114,9 @@ let package = Package(
                 "CoreUI",
                 "Networking",
                 "CurrencyKit",
+                "FundFeature",
+                "LoggedInUserService",
+                "TransactionsService",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/HomeFeature"
@@ -125,9 +127,21 @@ let package = Package(
                 "CoreUI",
                 "Networking",
                 "CurrencyKit",
+                "RecordTransactionFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/FundFeature"
+        ),
+        .target(
+            name: "RecordTransactionFeature",
+            dependencies: [
+                "CoreUI",
+                "CurrencyKit",
+                "TransactionsService",
+                "LoggedInUserService",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/Features/RecordTransactionFeature"
         ),
         .target(
             name: "SettingsFeature",
@@ -164,6 +178,7 @@ let package = Package(
             dependencies: [
                 "Utilities",
                 "KeychainStorageUseCases",
+                "SharedModels",
                 .product(name: "CombineMoya", package: "moya"),
                 .product(name: "Codextended", package: "codextended"),
                 .product(name: "CombineExt", package: "combineext"),
@@ -199,6 +214,23 @@ let package = Package(
                 .product(name: "Codextended", package: "codextended"),
             ],
             path: "Sources/UseCases/DevSettingsUseCases"
+        ),
+        .target(
+            name: "LoggedInUserService",
+            dependencies: [
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            path: "Sources/UseCases/LoggedInUserService"
+        ),
+        .target(
+            name: "TransactionsService",
+            dependencies: [
+                "SharedModels",
+                "Networking",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            path: "Sources/UseCases/TransactionsService"
         ),
     ]
 )

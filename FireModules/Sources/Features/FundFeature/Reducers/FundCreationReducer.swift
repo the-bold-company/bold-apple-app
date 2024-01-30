@@ -36,19 +36,16 @@ public struct FundCreationReducer {
     public enum Action: BindableAction {
         case delegate(Delegate)
         case binding(BindingAction<State>)
-        case navigate(Route)
 
         case fundCreatedSuccessfully(CreateFundResponse)
         case failedToCreateFund(NetworkError)
-
-        public enum Route {
-            case dismissFundCreation
-        }
 
         public enum Delegate {
             case submitButtonTapped
         }
     }
+
+    @Dependency(\.dismiss) var dismiss
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -79,11 +76,9 @@ public struct FundCreationReducer {
                 }
             case let .fundCreatedSuccessfully(response):
                 state.loadingState = .loaded(response)
-                return .send(.navigate(.dismissFundCreation))
+                return .run { _ in await dismiss() }
             case let .failedToCreateFund(err):
                 state.loadingState = .failure(err)
-                return .none
-            case .navigate:
                 return .none
             }
         }
