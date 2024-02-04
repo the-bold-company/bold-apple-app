@@ -9,8 +9,10 @@ import Charts
 import ComposableArchitecture
 import CoreUI
 import CurrencyKit
+import FundsService
 import Networking
 import RecordTransactionFeature
+import SharedModels
 import SwiftUI
 
 public struct FundDetailsPage: View {
@@ -20,6 +22,8 @@ public struct FundDetailsPage: View {
         var fund: CreateFundResponse
         var fundDetailsLoadingState: NetworkLoadingState<CreateFundResponse>
         var fundDeletionState: NetworkLoadingState<DeleteFundResponse>
+        var transactionsLoadingState: NetworkLoadingState<PaginationEntity<TransactionEntity>>
+        var transactions: IdentifiedArrayOf<TransactionEntity>
     }
 
     let store: StoreOf<FundDetailsReducer>
@@ -41,14 +45,15 @@ public struct FundDetailsPage: View {
                 List {
                     balance
                     fundInfo
+                    transactionList
                     deleteFundButton
                 }
             }
         }
         .navigationBarHidden(true)
-        .onAppear(perform: {
+        .task {
             viewStore.send(.delegate(.onApear))
-        })
+        }
         .navigationDestination(
             store: store.scope(
                 state: \.$destination.sendMoney,
@@ -120,7 +125,7 @@ public struct FundDetailsPage: View {
                             .foregroundColor(.green)
                     }
                 }
-                .redacted(reason: viewStore.fundDetailsLoadingState.hasResult ? [] : .placeholder)
+                .redacted(reason: viewStore.fundDetailsLoadingState.isLoading ? .placeholder : [])
 
                 Spacing(size: .size24)
                 actionItems
@@ -136,15 +141,45 @@ public struct FundDetailsPage: View {
     var fundInfo: some View {
         Section {
             FundInfoItem(
-                isLoading: !viewStore.fundDetailsLoadingState.hasResult,
+                isLoading: viewStore.fundDetailsLoadingState.isLoading,
                 title: "Currency",
                 value: viewStore.fund.currency
             )
             FundInfoItem(
-                isLoading: !viewStore.fundDetailsLoadingState.hasResult,
+                isLoading: viewStore.fundDetailsLoadingState.isLoading,
                 title: "Type",
                 value: viewStore.fund.fundType.rawValue.capitalized
             )
+        }
+    }
+
+    @ViewBuilder
+    private var transactionList: some View {
+        Section {
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Transactions history").typography(.bodyLarge)
+                    Spacer()
+                }
+                Spacing(height: .size16)
+                ForEach(
+                    viewStore.transactionsLoadingState.isLoading
+                        ? [
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID()),
+                            TransactionEntity.mock(id: UUID())
+                        ]
+                        : viewStore.transactions,
+                    id: \.id
+                ) {
+                    TransactionItemView(
+                        transaction: $0,
+                        isLoading: viewStore.transactionsLoadingState.isLoading
+                    )
+                }
+            }
         }
     }
 
@@ -181,7 +216,9 @@ extension BindingViewStore<FundDetailsReducer.State> {
         FundDetailsPage.ViewState(
             fund: self.fund,
             fundDetailsLoadingState: self.fundDetailsLoadingState,
-            fundDeletionState: self.fundDeletionState
+            fundDeletionState: self.fundDeletionState,
+            transactionsLoadingState: self.transactionsLoadingState,
+            transactions: self.transactions
         )
         // swiftformat:enable redundantSelf
     }

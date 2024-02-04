@@ -112,11 +112,11 @@ let package = Package(
             name: "HomeFeature",
             dependencies: [
                 "CoreUI",
-                "Networking",
                 "CurrencyKit",
                 "FundFeature",
                 "LoggedInUserService",
                 "TransactionsService",
+                "FundsService",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/HomeFeature"
@@ -125,9 +125,9 @@ let package = Package(
             name: "FundFeature",
             dependencies: [
                 "CoreUI",
-                "Networking",
                 "CurrencyKit",
                 "RecordTransactionFeature",
+                "FundsService",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/FundFeature"
@@ -231,6 +231,15 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ],
             path: "Sources/UseCases/TransactionsService"
+        ),
+        .target(
+            name: "FundsService",
+            dependencies: [
+                "SharedModels",
+                "Networking",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            path: "Sources/UseCases/FundsService"
         ),
     ]
 )

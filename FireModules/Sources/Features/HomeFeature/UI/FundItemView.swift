@@ -6,6 +6,7 @@
 //
 
 import CoreUI
+import FundsService
 import Networking
 import SwiftUI
 

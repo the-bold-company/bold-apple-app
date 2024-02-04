@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Networking
+import FundsService
 
 extension CreateFundResponse {
     private static let mocks: [[String: Any]] = [

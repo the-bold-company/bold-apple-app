@@ -9,6 +9,7 @@ import Charts
 import ComposableArchitecture
 import CoreUI
 import FundFeature
+import FundsService
 import Networking
 import SharedModels
 import SwiftUI
@@ -189,7 +190,7 @@ public struct HomePage: View {
                         isLoading: viewStore.isTransactionLoading,
                         from: viewStore.fundList[id: $0.sourceFundId.uuidString.lowercased()]?.name ?? "N/A",
                         to: $0.destinationFundId != nil
-                            ? viewStore.fundList[id: $0.destinationFundId!.uuidString.lowercased()]?.name // swiftlint:disable:this force_unwraping
+                            ? viewStore.fundList[id: $0.destinationFundId!.uuidString.lowercased()]?.name // swiftlint:disable:this force_unwrapping
                             : nil
                     )
                 }
