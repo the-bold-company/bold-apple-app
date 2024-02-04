@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 import Foundation
-import Networking
+import FundsService
 import RecordTransactionFeature
 
 @Reducer
@@ -29,6 +29,8 @@ public struct FundDetailsReducer {
         public var fund: CreateFundResponse
         var fundDetailsLoadingState: NetworkLoadingState<CreateFundResponse> = .idle
         var fundDeletionState: NetworkLoadingState<DeleteFundResponse> = .idle
+        var transactionsLoadingState: NetworkLoadingState<PaginationEntity<TransactionEntity>> = .idle
+        var transactions: IdentifiedArrayOf<TransactionEntity> = []
     }
 
     public enum Action: BindableAction {
@@ -49,19 +51,23 @@ public struct FundDetailsReducer {
             case deleteFundSuccesfully(DeleteFundResponse)
             case failedToDeleteFund(NetworkError)
             case loadFundDetails
+            case loadTransactionHistory
+            case loadTransactionsSuccesfully(PaginationEntity<TransactionEntity>)
+            case loadTransactionsFailure(NetworkError)
             case fundDetailsUpdated(CreateFundResponse)
         }
     }
 
     @Dependency(\.dismiss) var dismiss
     @Dependency(\.continuousClock) var clock
+    @Dependency(\.fundsSerivce) var fundsService
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
             case .delegate(.onApear):
-                guard state.fundDetailsLoadingState == .idle else { return .none }
-                return .send(.forward(.loadFundDetails))
+                guard state.transactionsLoadingState == .idle else { return .none }
+                return .send(.forward(.loadTransactionHistory))
             case .delegate(.deleteFundButtonTapped):
                 state.fundDeletionState = .loading
                 return .run { [fundId = state.fund.id] send in
@@ -91,6 +97,27 @@ public struct FundDetailsReducer {
                         await send(.forward(.failedToLoadFundDetails(NetworkError.unknown(error))))
                     }
                 }
+            case .forward(.loadTransactionHistory):
+                guard state.transactionsLoadingState != .loading else { return .none }
+                state.transactionsLoadingState = .loading
+
+                return .run { [fundId = state.fund.id] send in
+                    do {
+                        let res = try await fundService.getTransactions(fundId: fundId)
+                        await send(.forward(.loadTransactionsSuccesfully(res)))
+                    } catch let error as NetworkError {
+                        await send(.forward(.loadTransactionsFailure(error)))
+                    } catch {
+                        await send(.forward(.loadTransactionsFailure(NetworkError.unknown(error))))
+                    }
+                }
+            case let .forward(.loadTransactionsSuccesfully(pagination)):
+                state.transactionsLoadingState = .loaded(pagination)
+                state.transactions.append(contentsOf: pagination.items)
+                return .none
+            case let .forward(.loadTransactionsFailure(error)):
+                state.transactionsLoadingState = .failure(error)
+                return .none
             case let .forward(.fundDetailsUpdated(newValue)):
                 state.fund = newValue
                 return .none.animation()
@@ -106,10 +133,25 @@ public struct FundDetailsReducer {
             case let .forward(.failedToDeleteFund(err)):
                 state.fundDeletionState = .failure(err)
                 return .none
-            case .destination(.presented(.sendMoney(.transactionRecordedSuccessfully))):
+            case let .destination(.presented(.sendMoney(.transactionRecordedSuccessfully(addedTransaction)))):
+                state.transactions.insert(
+                    TransactionEntity(
+                        id: addedTransaction.id.uuidString,
+                        timestamp: addedTransaction.timestamp,
+                        sourceFundId: addedTransaction.sourceFundId.uuidString,
+                        destinationFundId: addedTransaction.destinationFundId?.uuidString,
+                        amount: addedTransaction.amount,
+                        type: "out",
+                        userId: addedTransaction.userId.uuidString,
+                        currency: addedTransaction.currency,
+                        description: addedTransaction.description
+                    ),
+                    at: 0
+                )
+
                 return .run { send in
-                    try await clock.sleep(for: .milliseconds(500))
-                    try await send(.forward(.loadFundDetails))
+                    try await clock.sleep(for: .milliseconds(1000))
+                    await send(.forward(.loadFundDetails))
                 }
             case .binding, .destination:
                 return .none

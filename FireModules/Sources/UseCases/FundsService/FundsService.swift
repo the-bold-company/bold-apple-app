@@ -5,9 +5,21 @@
 //  Created by Hien Tran on 10/01/2024.
 //
 
-import CombineExt
-import CombineMoya
+import Dependencies
 import Foundation
+@_exported import Networking
+@_exported import SharedModels
+
+public extension DependencyValues {
+    var fundsSerivce: FundsService {
+        get { self[FundsService.self] }
+        set { self[FundsService.self] = newValue }
+    }
+}
+
+extension FundsService: DependencyKey {
+    public static var liveValue = FundsService()
+}
 
 public struct FundsService {
     let client = MoyaClient<FundsAPI>()
@@ -51,6 +63,15 @@ public struct FundsService {
         return try await client
             .requestPublisher(.deleteFund(id: fundId))
             .mapToResponse(DeleteFundResponse.self)
+            .async()
+    }
+
+    public func getTransactions(fundId: String, ascendingOrder: Bool = false) async throws -> PaginationEntity<TransactionEntity> {
+        return try await client
+            .requestPublisher(.transactions(fundId: fundId, ascendingOrder: ascendingOrder))
+            .mapToResponse(TransactionListModel.self)
+            .map { $0.asPaginationEntity() }
+            .eraseToAnyPublisher()
             .async()
     }
 }

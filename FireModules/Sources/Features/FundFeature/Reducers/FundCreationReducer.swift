@@ -7,13 +7,11 @@
 
 import ComposableArchitecture
 import Foundation
-import Networking
+import FundsService
 
 @Reducer
 public struct FundCreationReducer {
     public init() {}
-
-    let fundsService = FundsService()
 
     public struct State: Equatable {
         public init(
@@ -46,6 +44,7 @@ public struct FundCreationReducer {
     }
 
     @Dependency(\.dismiss) var dismiss
+    @Dependency(\.fundsSerivce) var fundsService
 
     public var body: some ReducerOf<Self> {
         BindingReducer()

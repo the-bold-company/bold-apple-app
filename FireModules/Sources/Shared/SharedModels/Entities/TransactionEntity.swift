@@ -29,13 +29,13 @@ public struct TransactionEntity: Equatable, Identifiable, Hashable {
         currency: String,
         description: String?
     ) {
-        self.id = UUID(uuidString: id)!
+        self.id = UUID(uuidString: id)! // swiftlint:disable:this force_unwrapping
         self.timestamp = timestamp
-        self.sourceFundId = UUID(uuidString: sourceFundId)!
+        self.sourceFundId = UUID(uuidString: sourceFundId)! // swiftlint:disable:this force_unwrapping
         self.destinationFundId = UUID(uuidString: destinationFundId ?? "")
         self.amount = amount
-        self.type = TransactionType(rawValue: type)!
-        self.userId = UUID(uuidString: userId)!
+        self.type = TransactionType(rawValue: type)! // swiftlint:disable:this force_unwrapping
+        self.userId = UUID(uuidString: userId)! // swiftlint:disable:this force_unwrapping
         self.currency = currency
         self.description = description
     }
@@ -59,4 +59,6 @@ public extension TransactionEntity {
 
 public enum TransactionType: String {
     case `inout`
+    case `in`
+    case out
 }

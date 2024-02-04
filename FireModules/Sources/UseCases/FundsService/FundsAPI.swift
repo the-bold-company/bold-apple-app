@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Moya
+import Networking
 
 public enum FundType: String, Decodable {
     case fiat
@@ -23,6 +23,7 @@ enum FundsAPI {
     case listFunds
     case fundDetail(id: String)
     case deleteFund(id: String)
+    case transactions(fundId: String, ascendingOrder: Bool = false)
 }
 
 extension FundsAPI: BaseTargetType {
@@ -36,6 +37,8 @@ extension FundsAPI: BaseTargetType {
             return "/funds/\(id)"
         case let .deleteFund(id):
             return "/funds/\(id)/delete"
+        case let .transactions(fundId, _):
+            return "/funds/\(fundId)/transactions"
         }
     }
 
@@ -43,7 +46,7 @@ extension FundsAPI: BaseTargetType {
         switch self {
         case .createFund:
             return .post
-        case .listFunds, .fundDetail:
+        case .listFunds, .fundDetail, .transactions:
             return .get
         case .deleteFund:
             return .delete
@@ -64,6 +67,8 @@ extension FundsAPI: BaseTargetType {
                 encoding: JSONEncoding.default
             )
         case .listFunds, .fundDetail, .deleteFund:
+            return .requestPlain
+        case .transactions:
             return .requestPlain
         }
     }

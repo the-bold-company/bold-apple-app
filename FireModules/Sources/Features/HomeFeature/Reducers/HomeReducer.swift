@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Foundation
 import FundFeature
+import FundsService
 import LoggedInUserService
 import Networking
 import TransactionsService
@@ -15,7 +16,6 @@ import TransactionsService
 @Reducer
 public struct HomeReducer {
     let portolioService = PortfolioAPIService()
-    let fundsService = FundsService()
 
     public init() {}
 
@@ -62,6 +62,7 @@ public struct HomeReducer {
     @Dependency(\.loggedInUserService) var loggedInUserService
     @Dependency(\.transactionSerivce) var transactionService
     @Dependency(\.continuousClock) var clock
+    @Dependency(\.fundsSerivce) var fundsService
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -148,7 +149,8 @@ public struct HomeReducer {
                         async let transactionList = try transactionService.getTransactionLists()
 
                         if let destinationFundId = transaction.destinationFundId?.uuidString.lowercased() {
-                            try await clock.sleep(for: .milliseconds(500))
+//                            try await clock.sleep(for: .milliseconds(500))
+                            try await clock.sleep(for: .milliseconds(1000))
                             async let loadDestinationFund = try fundsService.getFundDetails(fundId: destinationFundId)
                             try await send(.forward(.updateFund(loadDestinationFund)))
                         }
