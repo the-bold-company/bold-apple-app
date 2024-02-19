@@ -11,6 +11,7 @@ import FundFeature
 import FundsService
 import LoggedInUserService
 import Networking
+import PersistentService
 import TransactionsService
 
 @Reducer
@@ -63,6 +64,7 @@ public struct HomeReducer {
     @Dependency(\.transactionSerivce) var transactionService
     @Dependency(\.continuousClock) var clock
     @Dependency(\.fundsSerivce) var fundsService
+    @Dependency(\.persistentSerivce) var persistentSerivce
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -89,6 +91,7 @@ public struct HomeReducer {
                     } catch let error as NetworkError {
                         await send(.forward(.loadPortfolioFailure(error)))
                     } catch {
+                        print(error)
                         await send(.forward(.loadPortfolioFailure(.unknown(error))))
                     }
                 }
@@ -111,7 +114,12 @@ public struct HomeReducer {
                 state.fundLoadingState = .loaded(list.funds)
                 state.fundList = IdentifiedArray(uniqueElements: list.funds)
                 return .run { _ in
-                    await loggedInUserService.updateLoadedFunds(list.funds.map { $0.asFundEntity() })
+                    do {
+                        await loggedInUserService.updateLoadedFunds(list.funds.map { $0.asFundEntity() })
+                        try await persistentSerivce.saveFunds(list.funds.map { $0.asFundEntity() })
+                    } catch {
+                        // Do we have to handle this error?
+                    }
                 }
             case let .forward(.loadFundListFailure(error)):
                 state.fundLoadingState = .failure(error)

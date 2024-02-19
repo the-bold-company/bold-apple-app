@@ -28,4 +28,18 @@ public struct FundEntity: Equatable, Identifiable, Hashable {
         self.currency = currency
         self.description = description
     }
+
+    public init(
+        uuid: UUID,
+        balance: Decimal,
+        name: String,
+        currency: String,
+        description: String?
+    ) {
+        self.id = uuid
+        self.balance = balance
+        self.name = name
+        self.currency = currency
+        self.description = description
+    }
 }
