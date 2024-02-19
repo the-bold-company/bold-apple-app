@@ -21,6 +21,12 @@
 		0E1FF2872B01F67000A77369 /* FireUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2862B01F67000A77369 /* FireUITestsLaunchTests.swift */; };
 		0E24093A2B24A1BE00903A46 /* App in Frameworks */ = {isa = PBXBuildFile; productRef = 0E2409392B24A1BE00903A46 /* App */; };
 		0E24093C2B24A37E00903A46 /* AppPlaybook in Frameworks */ = {isa = PBXBuildFile; productRef = 0E24093B2B24A37E00903A46 /* AppPlaybook */; };
+		395A5D062B74897D008D53BB /* TransactionRecordingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395A5D052B74897D008D53BB /* TransactionRecordingIntent.swift */; };
+		396F57CE2B835318000674A6 /* TransactionOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396F57CD2B835318000674A6 /* TransactionOverview.swift */; };
+		39B35D182B7D04A200CC00AB /* FireShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D172B7D04A200CC00AB /* FireShortcuts.swift */; };
+		39B35D1A2B7DC20600CC00AB /* Intents in Frameworks */ = {isa = PBXBuildFile; productRef = 39B35D192B7DC20600CC00AB /* Intents */; };
+		39B35D1F2B83161900CC00AB /* SourceFundIntentEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */; };
+		39B35D212B83167C00CC00AB /* DestinationFundIntentEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D202B83167C00CC00AB /* DestinationFundIntentEntity.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +81,11 @@
 		0E1FF2842B01F67000A77369 /* FireUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireUITests.swift; sourceTree = "<group>"; };
 		0E1FF2862B01F67000A77369 /* FireUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		393409F02B48688900611270 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		395A5D052B74897D008D53BB /* TransactionRecordingIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecordingIntent.swift; sourceTree = "<group>"; };
+		396F57CD2B835318000674A6 /* TransactionOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionOverview.swift; sourceTree = "<group>"; };
+		39B35D172B7D04A200CC00AB /* FireShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireShortcuts.swift; sourceTree = "<group>"; };
+		39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFundIntentEntity.swift; sourceTree = "<group>"; };
+		39B35D202B83167C00CC00AB /* DestinationFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationFundIntentEntity.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +115,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39B35D1A2B7DC20600CC00AB /* Intents in Frameworks */,
 				0E24093A2B24A1BE00903A46 /* App in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,8 +202,8 @@
 		0E1FF2672B01F66E00A77369 /* Fire */ = {
 			isa = PBXGroup;
 			children = (
+				39B35D1B2B83153D00CC00AB /* Source */,
 				393409F02B48688900611270 /* Info.plist */,
-				0E1FF2682B01F66E00A77369 /* FireApp.swift */,
 				0E1FF26C2B01F67000A77369 /* Assets.xcassets */,
 				0E1FF26E2B01F67000A77369 /* Fire.entitlements */,
 				0E1FF26F2B01F67000A77369 /* Preview Content */,
@@ -229,6 +241,51 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		396F57CC2B8352ED000674A6 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				396F57CD2B835318000674A6 /* TransactionOverview.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		398C0EDC2B83563C00872813 /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				395A5D052B74897D008D53BB /* TransactionRecordingIntent.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		39B35D1B2B83153D00CC00AB /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				39B35D1C2B83154D00CC00AB /* AppIntents */,
+				0E1FF2682B01F66E00A77369 /* FireApp.swift */,
+			);
+			path = Source;
+			sourceTree = "<group>";
+		};
+		39B35D1C2B83154D00CC00AB /* AppIntents */ = {
+			isa = PBXGroup;
+			children = (
+				398C0EDC2B83563C00872813 /* Intents */,
+				396F57CC2B8352ED000674A6 /* UI */,
+				39B35D1D2B83160400CC00AB /* Entities */,
+				39B35D172B7D04A200CC00AB /* FireShortcuts.swift */,
+			);
+			path = AppIntents;
+			sourceTree = "<group>";
+		};
+		39B35D1D2B83160400CC00AB /* Entities */ = {
+			isa = PBXGroup;
+			children = (
+				39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */,
+				39B35D202B83167C00CC00AB /* DestinationFundIntentEntity.swift */,
+			);
+			path = Entities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -305,6 +362,7 @@
 			name = Fire;
 			packageProductDependencies = (
 				0E2409392B24A1BE00903A46 /* App */,
+				39B35D192B7DC20600CC00AB /* Intents */,
 			);
 			productName = Fire;
 			productReference = 0E1FF2652B01F66E00A77369 /* Fire.app */;
@@ -482,7 +540,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				39B35D182B7D04A200CC00AB /* FireShortcuts.swift in Sources */,
 				0E1FF2692B01F66E00A77369 /* FireApp.swift in Sources */,
+				396F57CE2B835318000674A6 /* TransactionOverview.swift in Sources */,
+				39B35D212B83167C00CC00AB /* DestinationFundIntentEntity.swift in Sources */,
+				395A5D062B74897D008D53BB /* TransactionRecordingIntent.swift in Sources */,
+				39B35D1F2B83161900CC00AB /* SourceFundIntentEntity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1029,6 +1092,10 @@
 		0E24093B2B24A37E00903A46 /* AppPlaybook */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppPlaybook;
+		};
+		39B35D192B7DC20600CC00AB /* Intents */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Intents;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
