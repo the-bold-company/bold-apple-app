@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Foundation
 import LoggedInUserService
+import PersistentService
 import TransactionsService
 
 @Reducer
@@ -57,6 +58,7 @@ public struct SendMoneyReducer {
     @Dependency(\.dismiss) var dismiss
     @Dependency(\.loggedInUserService) var loggedInUserService
     @Dependency(\.transactionSerivce) var transactionService
+    @Dependency(\.persistentSerivce) var persistentSerivce
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -66,10 +68,28 @@ public struct SendMoneyReducer {
             case .onAppear:
                 guard state.targetFunds.isEmpty else { return .none }
                 return .run { [sourceFundId = state.sourceFund.id] send in
-                    let loadedFunds = await loggedInUserService.loadedFunds()
-                    var possibleTargetFunds = IdentifiedArray(uniqueElements: loadedFunds)
-                    possibleTargetFunds.remove(id: sourceFundId)
-                    await send(.targetFundsLoaded(possibleTargetFunds))
+                    var possibleTargetFunds: IdentifiedArrayOf<FundEntity>?
+                    let persistedFunds = await (try? persistentSerivce.fetchFundList()) ?? []
+
+                    if !persistedFunds.isEmpty {
+                        possibleTargetFunds = IdentifiedArray(uniqueElements: persistedFunds)
+
+                    } else {
+                        let sessionPersistedFunds = await loggedInUserService.loadedFunds()
+
+                        if !sessionPersistedFunds.isEmpty {
+                            possibleTargetFunds = IdentifiedArray(uniqueElements: sessionPersistedFunds)
+                        } else {
+                            // Maybe re fetch the fund? But practically, it shouldn't goes here
+                        }
+                    }
+
+                    if var selectableFunds = possibleTargetFunds {
+                        selectableFunds.remove(id: sourceFundId)
+                        await send(.targetFundsLoaded(selectableFunds))
+                    } else {
+                        // Maybe re fetch the fund? But practically, it shouldn't goes here
+                    }
                 }
             case let .targetFundsLoaded(targetFunds):
                 state.targetFunds = targetFunds

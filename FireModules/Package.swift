@@ -11,6 +11,7 @@ let package = Package(
     ],
     products: [
         .singleTargetLibrary("App"),
+        .singleTargetLibrary("Intents"),
         .singleTargetLibrary("AppPlaybook"),
     ],
     dependencies: [
@@ -27,6 +28,7 @@ let package = Package(
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.2.0"),
+        .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -57,6 +59,16 @@ let package = Package(
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/App/AppPlaybook"
+        ),
+        .target(
+            name: "Intents",
+            dependencies: [
+                "PersistentService",
+                "TransactionsService",
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+            ],
+            path: "Sources/App/Intents"
         ),
 
         // MARK: - Coordinator Layer: This layer orchestrates navigation and rounting between features
@@ -117,6 +129,7 @@ let package = Package(
                 "LoggedInUserService",
                 "TransactionsService",
                 "FundsService",
+                "PersistentService",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/HomeFeature"
@@ -139,6 +152,7 @@ let package = Package(
                 "CurrencyKit",
                 "TransactionsService",
                 "LoggedInUserService",
+                "PersistentService",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ],
             path: "Sources/Features/RecordTransactionFeature"
@@ -240,6 +254,15 @@ let package = Package(
                 .product(name: "Dependencies", package: "swift-dependencies"),
             ],
             path: "Sources/UseCases/FundsService"
+        ),
+        .target(
+            name: "PersistentService",
+            dependencies: [
+                "SharedModels",
+                .product(name: "Dependencies", package: "swift-dependencies"),
+                .product(name: "RealmSwift", package: "realm-swift"),
+            ],
+            path: "Sources/UseCases/PersistentService"
         ),
     ]
 )
