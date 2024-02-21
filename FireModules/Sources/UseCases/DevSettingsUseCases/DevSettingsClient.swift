@@ -24,7 +24,7 @@ public struct DevSettingsClient {
     }
 }
 
-extension DevSettingsClient {
+public extension DevSettingsClient {
     static var live: DevSettingsClient {
         // print("🌮 \(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!.absoluteString)")
         let userSettingsFileURL = FileManager.default

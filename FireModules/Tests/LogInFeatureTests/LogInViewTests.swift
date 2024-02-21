@@ -1,13 +1,15 @@
 //
-//  FireTests.swift
-//  FireTests
+//  LogInViewTests.swift
 //
-//  Created by Hien Tran on 13/11/2023.
+//
+//  Created by Hien Tran on 20/02/2024.
 //
 
+@testable import LogInFeature
+import TestHelpers
 import XCTest
 
-final class FireTests: XCTestCase {
+final class LogInViewTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }

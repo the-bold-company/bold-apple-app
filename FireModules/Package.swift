@@ -29,6 +29,7 @@ let package = Package(
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.2.0"),
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
+        .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -204,6 +205,13 @@ let package = Package(
             path: "Sources/Shared/Kits/CurrencyKit"
         ),
         .target(
+            name: "TestHelpers",
+            dependencies: [
+                .product(name: "Difference", package: "difference"),
+            ],
+            path: "Sources/Shared/Kits/TestHelpers"
+        ),
+        .target(
             name: "SharedModels",
             dependencies: [
                 .product(name: "AutomaticSettings", package: "automaticsettings"),
@@ -263,6 +271,17 @@ let package = Package(
                 .product(name: "RealmSwift", package: "realm-swift"),
             ],
             path: "Sources/UseCases/PersistentService"
+        ),
+
+        // MARK: Test targets
+
+        .testTarget(
+            name: "LogInFeatureTests",
+            dependencies: [
+                "LogInFeature",
+                "TestHelpers",
+            ]
+            // exclude: ["__Snapshots__"]
         ),
     ]
 )

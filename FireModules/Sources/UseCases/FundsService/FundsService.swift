@@ -19,6 +19,7 @@ public extension DependencyValues {
 
 extension FundsService: DependencyKey {
     public static var liveValue = FundsService()
+    public static var testValue = FundsService()
 }
 
 public struct FundsService {
