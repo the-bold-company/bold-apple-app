@@ -8,6 +8,7 @@
 import Foundation
 import Networking
 
+// TODO: Conver access control to `internal`
 public enum TransactionsAPI {
     case record(
         sourceFundId: String,

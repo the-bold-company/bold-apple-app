@@ -30,6 +30,7 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.2.0"),
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
         .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
+        .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -38,6 +39,7 @@ let package = Package(
             name: "App",
             dependencies: [
                 "Coordinator",
+                "DI",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
             ],
@@ -75,6 +77,20 @@ let package = Package(
         // MARK: - Coordinator Layer: This layer orchestrates navigation and rounting between features
 
         .target(
+            name: "DI",
+            dependencies: [
+                "LogInUseCase",
+                "AuthAPIServiceInterface",
+                "AuthAPIService",
+                "KeychainServiceInterface",
+                "KeychainService",
+                "LogInFeature",
+                .product(name: "Factory", package: "factory"),
+            ],
+            path: "Sources/App/DI"
+        ),
+
+        .target(
             name: "Coordinator",
             dependencies: [
                 "HomeFeature",
@@ -104,10 +120,11 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "Utilities",
-                "Networking",
-                "KeychainStorageUseCases",
                 "DevSettingsUseCases",
+                "LogInUseCase",
+                "DomainEntities",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/LogInFeature"
         ),
@@ -207,6 +224,7 @@ let package = Package(
         .target(
             name: "TestHelpers",
             dependencies: [
+                "LogInUseCase",
                 .product(name: "Difference", package: "difference"),
             ],
             path: "Sources/Shared/Kits/TestHelpers"
@@ -273,6 +291,65 @@ let package = Package(
             path: "Sources/UseCases/PersistentService"
         ),
 
+        // MARK: Domains/UseCases
+
+        .target(
+            name: "LogInUseCase",
+            dependencies: [
+                "DomainEntities",
+                "AuthAPIServiceInterface",
+                "KeychainServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/LogInUseCase"
+        ),
+
+        // MARK: Domains/DataInterfaces
+
+        .target(
+            name: "AuthAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/AuthAPIServiceInterface"
+        ),
+
+        .target(
+            name: "KeychainServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/KeychainServiceInterface"
+        ),
+
+        // MARK: Domains/Entities
+
+        .target(
+            name: "DomainEntities",
+            path: "Sources/Domains/Entities"
+        ),
+
+        // MARK: Data Layer
+
+        .target(
+            name: "AuthAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "AuthAPIServiceInterface",
+            ],
+            path: "Sources/Data/AuthAPIService"
+        ),
+
+        .target(
+            name: "KeychainService",
+            dependencies: [
+                "DomainEntities",
+                "KeychainServiceInterface",
+                .product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper"),
+            ],
+            path: "Sources/Data/KeychainService"
+        ),
+
         // MARK: Test targets
 
         .testTarget(
@@ -280,6 +357,8 @@ let package = Package(
             dependencies: [
                 "LogInFeature",
                 "TestHelpers",
+                "DomainEntities",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
             // exclude: ["__Snapshots__"]
         ),

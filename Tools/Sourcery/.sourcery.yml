@@ -1,0 +1,12 @@
+configurations:
+  - sources:
+      include:
+        - ../../FireModules/Sources/
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Shared/Kits/TestHelpers/Generated
+    baseIndentation: 4
+    args:
+      autoMockableImports: ["LogInUseCase"]
+
+  

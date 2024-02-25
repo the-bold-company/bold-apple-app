@@ -9,28 +9,17 @@ import XCTest
 
 import ComposableArchitecture
 import DevSettingsUseCases
+import DomainEntities
 @testable import LogInFeature
 import TestHelpers
 
-// extension DependencyValues {
-//    fileprivate mutating func setUpMock() {
-//    self.apiClient.baseUrl = { URL(string: "http://localhost:9876")! }
-//    self.apiClient.currentPlayer = { .some(.init(appleReceipt: .mock, player: .blob)) }
-//    self.build.number = { 42 }
-//    self.mainQueue = .immediate
-//    self.fileClient.save = { @Sendable _, _ in }
-//    self.storeKit.fetchProducts = { _ in
-//      .init(invalidProductIdentifiers: [], products: [])
-//    }
-//    self.storeKit.observer = { .finished }
-//    self.userSettings = .mock()
-//    }
-// }
-
 @MainActor
 final class LogInReducerTests: XCTestCase {
+    var initialState: LoginReducer.State!
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        initialState = LoginReducer.State()
+        initialState.email = "user@fire.com"
+        initialState.password = "P@ssword123"
     }
 
     override func tearDownWithError() throws {
@@ -41,7 +30,7 @@ final class LogInReducerTests: XCTestCase {
         // Arrange
         let store = TestStore(
             initialState: LoginReducer.State(),
-            reducer: { LoginReducer() },
+            reducer: { LoginReducer(logInUseCase: LogInUseCaseProtocolMock()) },
             withDependencies: { dependency in
                 var mockCredentials = DevSettings.Credentials()
                 mockCredentials.username = "user@fire.com"
@@ -67,15 +56,107 @@ final class LogInReducerTests: XCTestCase {
         // Arrange
         let store = TestStore(
             initialState: LoginReducer.State(),
-            reducer: { LoginReducer() }
+            reducer: { LoginReducer(logInUseCase: LogInUseCaseProtocolMock()) }
         )
 
+        // Act & Assert
+        XCAssertTCAStateNoDifference(store.state, LoginReducer.State())
+    }
+
+    func testNavigateToHome_WhenLogInSuccessfully() async throws {
+        // Arrange
+        let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
+        let logInUseCaseMock = LogInUseCaseProtocolMock()
+        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorReturnValue = .success(mockUser)
+        let store = TestStore(
+            initialState: initialState,
+            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
+        )
+        store.exhaustivity = .off(showSkippedAssertions: false)
+
         // Act
-//        var expectedState = LoginReducer.State()
-//        expectedState.email = "user@fire.coms"
-//        expectedState.password = "P@ssword123"
+        await store.send(.delegate(.logInButtonTapped))
 
         // Assert
-        XCAssertTCAStateNoDifference(store.state, LoginReducer.State())
+        await store.receive(\.logInSuccesfully)
+        await store.receive(/LoginReducer.Action.navigate(.goToHome))
+    }
+
+    func testShowError_WhenLogInFailed() async throws {
+        // Arrange
+        let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
+        let logInUseCaseMock = LogInUseCaseProtocolMock()
+        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorClosure = { _, _ in
+            return .failure(DomainError.custom(errorMessage: "Something's wrong"))
+        }
+        let store = TestStore(
+            initialState: initialState,
+            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
+        )
+        store.exhaustivity = .off(showSkippedAssertions: false)
+
+        // Act
+        await store.send(.delegate(.logInButtonTapped))
+
+        // Assert
+        await store.receive(\.logInFailure) {
+            $0.loginError = "Something's wrong"
+        }
+    }
+
+    func testLoadingState_WhenLogInSuccessfully() async throws {
+        // Arrange
+        let logInUseCaseMock = LogInUseCaseProtocolMock()
+        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorReturnValue = .success(AuthenticatedUserEntity(email: "user@fire.com"))
+        let store = TestStore(
+            initialState: initialState,
+            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
+        )
+        store.exhaustivity = .off(showSkippedAssertions: false)
+
+        // Act & Assert
+        await store.send(.delegate(.logInButtonTapped)) {
+            $0.logInInProgress = true
+        }
+
+        await store.receive(\.logInSuccesfully) {
+            $0.logInInProgress = false
+        }
+    }
+
+    func testLoadingState_WhenLogInFailed() async throws {
+        // Arrange
+        let logInUseCaseMock = LogInUseCaseProtocolMock()
+        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorClosure = { _, _ in
+            return .failure(DomainError.custom(errorMessage: "Something's wrong"))
+        }
+        let store = TestStore(
+            initialState: initialState,
+            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
+        )
+        store.exhaustivity = .off(showSkippedAssertions: false)
+
+        // Act & Assert
+        await store.send(.delegate(.logInButtonTapped)) {
+            $0.logInInProgress = true
+        }
+
+        await store.receive(\.logInFailure) {
+            $0.logInInProgress = false
+        }
+    }
+
+    func testUnableToLogIn_WhenInputsAreInvalid() async throws {
+        let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
+        let logInUseCaseMock = LogInUseCaseProtocolMock()
+        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorReturnValue = .success(mockUser)
+        let store = TestStore(
+            initialState: LoginReducer.State(),
+            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
+        )
+
+        // Act & Assert
+        await store.send(.delegate(.logInButtonTapped))
+        XCAssertTCAStateNoDifference(store.state.areInputsValid, false)
     }
 }

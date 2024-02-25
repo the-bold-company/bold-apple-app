@@ -6,6 +6,7 @@
 //
 
 import ComposableArchitecture
+import DI
 import FundFeature
 import HomeFeature
 import KeychainStorageUseCases
@@ -52,7 +53,7 @@ public struct Destination {
         }
 
         Scope(state: \.loginRoute, action: \.loginRoute) {
-            LoginReducer()
+            resolve(\.logInReducer)
         }
 
         Scope(state: \.homeRoute, action: \.homeRoute) {
