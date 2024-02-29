@@ -9,12 +9,12 @@ import Combine
 import CombineExt
 import CombineMoya
 
-public struct UserAPIService {
+struct UserAPIService {
     let client = MoyaClient<UserAPI>()
 
-    public init() {}
+    init() {}
 
-    public func signUp(email: String, password: String) async throws -> LoginResponse {
+    func signUp(email: String, password: String) async throws -> LoginResponse {
         return try await client
             .requestPublisher(.signUp(email: email, password: password))
             .mapToResponse(LoginResponse.self)

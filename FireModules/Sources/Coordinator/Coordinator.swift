@@ -7,14 +7,9 @@
 
 import ComposableArchitecture
 import DI
-import FundFeature
-import HomeFeature
 import KeychainStorageUseCases
-import LogInFeature
 import OnboardingFeature
-import RecordTransactionFeature
 import SettingsFeature
-import SignUpFeature
 import TCACoordinators
 
 @Reducer
@@ -45,19 +40,19 @@ public struct Destination {
         }
 
         Scope(state: \.emailRegistrationRoute, action: \.emailRegistrationRoute) {
-            RegisterReducer()
+            resolve(\SignUpFeatureContainer.registerReducer)
         }
 
         Scope(state: \.passwordCreationRoute, action: \.passwordCreationRoute) {
-            RegisterReducer()
+            resolve(\SignUpFeatureContainer.registerReducer)
         }
 
         Scope(state: \.loginRoute, action: \.loginRoute) {
-            resolve(\.logInReducer)
+            resolve(\LogInFeatureContainer.logInReducer)
         }
 
         Scope(state: \.homeRoute, action: \.homeRoute) {
-            HomeReducer()
+            resolve(\HomeFeatureContainer.homeReducer)
         }
 
         Scope(state: \.devSettingsRoute, action: \.devSettingsRoute) {

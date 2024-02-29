@@ -6,20 +6,17 @@
 //
 
 import ComposableArchitecture
+import DomainEntities
+import Factory
 import Foundation
+import FundDetailsUseCase
 import FundFeature
-import FundsService
-import LoggedInUserService
-import Networking
-import PersistentService
-import TransactionsService
+import FundListUseCase
+import PortfolioUseCase
+import TransactionListUseCase
 
 @Reducer
 public struct HomeReducer {
-    let portolioService = PortfolioAPIService()
-
-    public init() {}
-
     public struct State: Equatable {
         public init(destination: Destination.State? = nil) {
             self.destination = destination
@@ -27,11 +24,11 @@ public struct HomeReducer {
 
         @PresentationState public var destination: Destination.State?
 
-        var networthLoadingState: NetworkLoadingState<NetworthResponse> = .idle
-        var fundLoadingState: NetworkLoadingState<[CreateFundResponse]> = .idle
-        var transactionLoadingState: NetworkLoadingState<[TransactionEntity]> = .idle
+        var networthLoadingState: LoadingState<NetworthEntity> = .idle
+        var fundLoadingState: LoadingState<[FundEntity]> = .idle
+        var transactionLoadingState: LoadingState<[TransactionEntity]> = .idle
 
-        var fundList: IdentifiedArrayOf<CreateFundResponse> = []
+        var fundList: IdentifiedArrayOf<FundEntity> = []
         var transactionList: IdentifiedArrayOf<TransactionEntity> = []
     }
 
@@ -45,26 +42,39 @@ public struct HomeReducer {
         public enum Delegate {
             case onAppear
             case refresh
-            case fundRowTapped(CreateFundResponse)
+            case fundRowTapped(FundEntity)
             case createFundButtonTapped
         }
 
         public enum Forward {
-            case loadPortfolioSuccessfully(NetworthResponse)
-            case loadPortfolioFailure(NetworkError)
-            case loadFundListSuccessfully(FundListResponse)
-            case loadFundListFailure(NetworkError)
+            case loadPortfolioSuccessfully(NetworthEntity)
+            case loadPortfolioFailure(DomainError)
+            case loadFundListSuccessfully([FundEntity])
+            case loadFundListFailure(DomainError)
             case loadTransactionsSuccessfully([TransactionEntity])
-            case loadTransactionsFailed(NetworkError)
-            case updateFund(CreateFundResponse)
+            case loadTransactionsFailed(DomainError)
+            case updateFund(FundEntity)
         }
     }
 
-    @Dependency(\.loggedInUserService) var loggedInUserService
-    @Dependency(\.transactionSerivce) var transactionService
     @Dependency(\.continuousClock) var clock
-    @Dependency(\.fundsSerivce) var fundsService
-    @Dependency(\.persistentSerivce) var persistentSerivce
+
+    let transactionListUseCase: TransactionListUseCaseProtocol
+    let fundListUseCase: FundListUseCaseProtocol
+    let fundDetailsUseCase: FundDetailsUseCaseProtocol
+    let portfolioUseCase: PortfolioUseCaseInterface
+
+    public init(
+        transactionListUseCase: TransactionListUseCaseProtocol,
+        fundListUseCase: FundListUseCaseProtocol,
+        fundDetailsUseCase: FundDetailsUseCaseProtocol,
+        portfolioUseCase: PortfolioUseCaseInterface
+    ) {
+        self.transactionListUseCase = transactionListUseCase
+        self.fundListUseCase = fundListUseCase
+        self.fundDetailsUseCase = fundDetailsUseCase
+        self.portfolioUseCase = portfolioUseCase
+    }
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -80,19 +90,29 @@ public struct HomeReducer {
                 state.transactionLoadingState = .loading
 
                 return .run { send in
-                    do {
-                        async let networthResponse = try portolioService.getNetworth()
-                        async let fundListResponse = try fundsService.listFunds()
-                        async let transactionList = try transactionService.getTransactionLists()
+                    async let networthResponse = portfolioUseCase.getNetworth()
+                    async let fundListResponse = fundListUseCase.getFiatFundList()
+                    async let transactionListResponse = transactionListUseCase.getInOutTransactions()
 
-                        try await send(.forward(.loadPortfolioSuccessfully(networthResponse)))
-                        try await send(.forward(.loadFundListSuccessfully(fundListResponse)))
-                        try await send(.forward(.loadTransactionsSuccessfully(transactionList)))
-                    } catch let error as NetworkError {
-                        await send(.forward(.loadPortfolioFailure(error)))
-                    } catch {
-                        print(error)
-                        await send(.forward(.loadPortfolioFailure(.unknown(error))))
+                    switch await networthResponse {
+                    case let .success(networth):
+                        await send(.forward(.loadPortfolioSuccessfully(networth)))
+                    case .failure:
+                        break
+                    }
+
+                    switch await fundListResponse {
+                    case let .success(fundList):
+                        await send(.forward(.loadFundListSuccessfully(fundList)))
+                    case .failure:
+                        break
+                    }
+
+                    switch await transactionListResponse {
+                    case let .success(transactionList):
+                        await send(.forward(.loadTransactionsSuccessfully(transactionList)))
+                    case .failure:
+                        break
                     }
                 }
             case let .delegate(.fundRowTapped(fund)):
@@ -111,16 +131,9 @@ public struct HomeReducer {
                 state.networthLoadingState = .failure(error)
                 return .none
             case let .forward(.loadFundListSuccessfully(list)):
-                state.fundLoadingState = .loaded(list.funds)
-                state.fundList = IdentifiedArray(uniqueElements: list.funds)
-                return .run { _ in
-                    do {
-                        await loggedInUserService.updateLoadedFunds(list.funds.map { $0.asFundEntity() })
-                        try await persistentSerivce.saveFunds(list.funds.map { $0.asFundEntity() })
-                    } catch {
-                        // Do we have to handle this error?
-                    }
-                }
+                state.fundLoadingState = .loaded(list)
+                state.fundList = IdentifiedArray(uniqueElements: list)
+                return .none
             case let .forward(.loadFundListFailure(error)):
                 state.fundLoadingState = .failure(error)
                 return .none
@@ -152,21 +165,33 @@ public struct HomeReducer {
                 state.transactionLoadingState = .loading
 
                 return .run { send in
-                    do {
-                        async let networthResponse = try portolioService.getNetworth()
-                        async let transactionList = try transactionService.getTransactionLists()
+                    async let networthResponse = portfolioUseCase.getNetworth()
+                    async let loadTransactionsResult = transactionListUseCase.getInOutTransactions()
 
-                        if let destinationFundId = transaction.destinationFundId?.uuidString.lowercased() {
-//                            try await clock.sleep(for: .milliseconds(500))
-                            try await clock.sleep(for: .milliseconds(1000))
-                            async let loadDestinationFund = try fundsService.getFundDetails(fundId: destinationFundId)
-                            try await send(.forward(.updateFund(loadDestinationFund)))
+                    if let destinationFundId = transaction.destinationFundId {
+                        try await clock.sleep(for: .milliseconds(1000))
+                        async let loadDestinationFundResult = fundDetailsUseCase.loadFundDetails(id: destinationFundId)
+
+                        switch await loadDestinationFundResult {
+                        case let .success(updatedDestinationFund):
+                            await send(.forward(.updateFund(updatedDestinationFund)))
+                        case .failure:
+                            break
                         }
+                    }
 
-                        try await send(.forward(.loadPortfolioSuccessfully(networthResponse)))
-                        try await send(.forward(.loadTransactionsSuccessfully(transactionList)))
-                    } catch {
-                        // do nothing
+                    switch await networthResponse {
+                    case let .success(networth):
+                        await send(.forward(.loadPortfolioSuccessfully(networth)))
+                    case .failure:
+                        break
+                    }
+
+                    switch await loadTransactionsResult {
+                    case let .success(transactions):
+                        await send(.forward(.loadTransactionsSuccessfully(transactions)))
+                    case .failure:
+                        break
                     }
                 }
             case let .destination(.presented(.fundCreationRoute(.fundCreatedSuccessfully(createdFund)))):
@@ -199,11 +224,11 @@ public extension HomeReducer {
 
         public var body: some ReducerOf<Self> {
             Scope(state: \.fundCreationRoute, action: \.fundCreationRoute) {
-                FundCreationReducer()
+                resolve(\FundFeatureContainer.fundCreationReducer)
             }
 
             Scope(state: \.fundDetailsRoute, action: \.fundDetailsRoute) {
-                FundDetailsReducer()
+                resolve(\FundFeatureContainer.fundDetailsReducer)
             }
         }
     }

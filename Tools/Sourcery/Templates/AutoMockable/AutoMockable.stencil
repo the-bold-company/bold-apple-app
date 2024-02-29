@@ -264,6 +264,7 @@
 // sourcery:file:{{ type.name }}+AutoMockable
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
+// swiftlint:disable large_tuple
 
 import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -275,18 +276,14 @@ import AppKit
 {% for import in argument.autoMockableImports %}
 import {{ import }}
 {% endfor %}
-    
 {% for import in argument.autoMockableTestableImports %}
 @testable import {{ import }}
 {% endfor %}
-
 {% call accessLevel type.accessLevel %}class {{ type.name }}Mock: {{ type.name }} {
     {% if type.accessLevel == "public" %}public init() {}{% endif %}
-
 {% for variable in type.allVariables|!definedInExtension %}
     {% if variable.isAsync or variable.throws %}{% call mockAsyncOrThrowingVariable variable %}{% elif variable.isOptional %}{% call mockOptionalVariable variable %}{% elif variable.isArray or variable.isDictionary %}{% call mockNonOptionalArrayOrDictionaryVariable variable %}{% else %}{% call mockNonOptionalVariable variable %}{% endif %}
 {% endfor %}
-
 {% if type.allMethods|static|count != 0 and type.allMethods|initializer|count != type.allMethods|static|count %}
     static func reset()
     {
@@ -295,14 +292,15 @@ import {{ import }}
     {% endfor %}
     }
 {% endif %}
-
 {% for method in type.allMethods|!definedInExtension %}
     {% call mockMethod method %}
 {% endfor %}
-
 {% for subscript in type.allSubscripts|!definedInExtension %}
     {% call mockSubscript subscript forloop.counter %}
 {% endfor %}
 }
+// swiftlint:enable line_length
+// swiftlint:enable variable_name
+// swiftlint:enable large_tuple
 // sourcery:end
 {% endif %}{% endfor %}

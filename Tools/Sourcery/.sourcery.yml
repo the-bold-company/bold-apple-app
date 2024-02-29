@@ -1,12 +1,26 @@
 configurations:
   - sources:
       include:
-        - ../../FireModules/Sources/
+        - ../../FireModules/Sources/Domains/UseCases/LogInUseCase
     templates:
       - Templates/AutoMockable/AutoMockable.stencil
-    output: ../../FireModules/Sources/Shared/Kits/TestHelpers/Generated
+    output: ../../FireModules/Sources/Domains/UseCases/LogInUseCase/Generated
     baseIndentation: 4
-    args:
-      autoMockableImports: ["LogInUseCase"]
+  - sources:
+      include:
+        - ../../FireModules/Sources/Domains/UseCases/FundCreationUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/FundCreationUseCase/Generated
+    baseIndentation: 4
+  - sources:
+      include:
+        - ../../FireModules/Sources/Domains/UseCases/FundDetailsUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/FundDetailsUseCase/Generated
+    baseIndentation: 4
+
+
 
   

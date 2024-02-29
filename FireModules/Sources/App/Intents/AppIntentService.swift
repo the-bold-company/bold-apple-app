@@ -6,17 +6,15 @@
 //
 
 @_exported import AppIntents
-import Dependencies
+import DomainEntities
 import Foundation
-import PersistentService
-import SharedModels
-import TransactionsService
+import PersistenceService
+import TransactionsAPIService
 
 public struct AppIntentService {
     public init() {}
-    let persistenceService = PersistentService()
-
-    @Dependency(\.transactionSerivce) var transactionService
+    let persistenceService = PersistenceService()
+    let transactionService = TransactionsAPIService()
 
     public func fetchFunds() async throws -> [FundEntity] {
         return try await persistenceService.fetchFundList()
@@ -26,7 +24,7 @@ public struct AppIntentService {
         sourceFundId: UUID,
         destinationFundId: UUID?,
         amount: Decimal
-    ) async -> Result<TransactionEntity, NetworkError> {
+    ) async -> Result<TransactionEntity, DomainError> {
         do {
             let res = try await transactionService.recordTransaction(
                 sourceFundId: sourceFundId,
@@ -35,12 +33,9 @@ public struct AppIntentService {
                 description: nil,
                 type: .inout
             )
-
             return .success(res)
-        } catch let error as NetworkError {
-            return .failure(error)
         } catch {
-            return .failure(NetworkError.unknown(error))
+            return .failure(error.eraseToDomainError())
         }
     }
 }

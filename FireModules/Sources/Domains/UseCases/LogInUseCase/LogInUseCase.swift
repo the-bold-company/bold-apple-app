@@ -26,10 +26,8 @@ public struct LogInUseCase: LogInUseCaseProtocol {
                 refreshToken: successfulLogIn.credentials.refreshToken
             )
             return .success(successfulLogIn.user)
-        } catch let error as DomainError {
-            return .failure(error)
         } catch {
-            return .failure(DomainError.custom(error: error))
+            return .failure(error.eraseToDomainError())
         }
     }
 }

@@ -11,5 +11,5 @@ public typealias SuccessfulLogIn = (user: AuthenticatedUserEntity, credentials: 
 
 public protocol AuthAPIServiceProtocol {
     func login(email: String, password: String) async throws -> SuccessfulLogIn
-    func register(email: String, password: String) async throws -> AuthenticatedUserEntity
+    func register(email: String, password: String) async throws -> SuccessfulLogIn
 }

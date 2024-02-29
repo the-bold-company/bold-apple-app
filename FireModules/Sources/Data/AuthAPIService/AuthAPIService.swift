@@ -25,12 +25,12 @@ public struct AuthAPIService: AuthAPIServiceProtocol {
             .async()
     }
 
-    public func register(email: String, password: String) async throws -> AuthenticatedUserEntity {
+    public func register(email: String, password: String) async throws -> SuccessfulLogIn {
         return try await client
             .requestPublisher(.register(email: email, password: password))
             .mapToResponse(LoginResponse.self)
             .mapError { DomainError(error: $0) }
-            .map { $0.user.asAuthenticatedUserEntity() }
+            .map { ($0.user.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
             .eraseToAnyPublisher()
             .async()
     }

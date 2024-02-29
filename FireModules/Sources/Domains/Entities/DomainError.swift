@@ -8,52 +8,65 @@
 import Foundation
 
 public struct DomainError: LocalizedError {
-    let error: LocalizedError
+    public let error: Error
 
     public init(error: LocalizedError) {
         self.error = error
     }
 
+    public init(error: Error) {
+        self.error = error
+    }
+
     /// Localized message for debuggin purposes. Don't show this to user
     public var errorDescription: String? {
-        return error.errorDescription
-    }
-
-    /// A localized message describing the reason for the failure. Use this to customize error message that is shown to user
-    public var failureReason: String? {
-        return error.failureReason
-    }
-}
-
-public extension DomainError {
-    static func custom(errorMessage: String) -> DomainError {
-        return DomainError(error: CustomError.custom(errorMessage))
-    }
-
-    static func custom(error: Error) -> DomainError {
-        return DomainError(error: CustomError.unknown(error))
-    }
-}
-
-private enum CustomError: LocalizedError {
-    case custom(String)
-    case unknown(Error)
-
-    public var errorDescription: String? {
-        switch self {
-        case let .custom(message):
-            return message
-        case let .unknown(error):
+        if let localizedError = error as? LocalizedError {
+            return localizedError.errorDescription
+        } else {
             return error.localizedDescription
         }
     }
 
+    /// A localized message describing the reason for the failure. Use this to customize error message that is shown to user
     public var failureReason: String? {
-        switch self {
-        case let .custom(message):
-            return message
-        case .unknown:
+        if let localizedError = error as? LocalizedError {
+            return localizedError.failureReason
+        } else {
             return "An error has occured"
         }
+    }
+}
+
+public extension Error {
+    func eraseToDomainError() -> DomainError {
+        if let error = self as? DomainError {
+            return error
+        } else {
+            return DomainError(error: self)
+        }
+    }
+}
+
+public extension DomainError {
+    static func custom(description: String, reason: String? = nil) -> DomainError {
+        return DomainError(error: CustomError(description: description, reason: reason))
+    }
+}
+
+private struct CustomError: LocalizedError {
+    let description: String
+    let reason: String?
+
+    init(description: String, reason: String? = nil) {
+        self.description = description
+        self.reason = reason
+    }
+
+    public var errorDescription: String? {
+        return description
+    }
+
+    public var failureReason: String? {
+        return reason ?? "An error has occured"
     }
 }

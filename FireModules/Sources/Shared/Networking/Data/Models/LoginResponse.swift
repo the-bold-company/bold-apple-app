@@ -5,15 +5,22 @@
 //  Created by Hien Tran on 26/11/2023.
 //
 
-// TODO: Move Equatable conformation to an entity
-public struct LoginResponse: Decodable, Equatable {
-    public let token: String
-    public let refreshToken: String
-    public let user: UserDetails
+import DomainEntities
 
-    public init(from decoder: Decoder) throws {
+struct LoginResponse: Decodable {
+    let token: String
+    let refreshToken: String
+    let user: UserDetails
+
+    init(from decoder: Decoder) throws {
         self.token = try decoder.decode("token")
         self.refreshToken = try decoder.decode("refreshToken")
         self.user = try decoder.decode("user")
+    }
+}
+
+extension LoginResponse {
+    func asCredentialsEntity() -> CredentialsEntity {
+        return CredentialsEntity(accessToken: token, refreshToken: refreshToken)
     }
 }

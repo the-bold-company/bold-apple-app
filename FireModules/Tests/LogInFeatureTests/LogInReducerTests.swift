@@ -11,11 +11,13 @@ import ComposableArchitecture
 import DevSettingsUseCases
 import DomainEntities
 @testable import LogInFeature
+import LogInUseCase
 import TestHelpers
 
 @MainActor
 final class LogInReducerTests: XCTestCase {
     var initialState: LoginReducer.State!
+
     override func setUpWithError() throws {
         initialState = LoginReducer.State()
         initialState.email = "user@fire.com"
@@ -87,7 +89,7 @@ final class LogInReducerTests: XCTestCase {
         let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
         let logInUseCaseMock = LogInUseCaseProtocolMock()
         logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorClosure = { _, _ in
-            return .failure(DomainError.custom(errorMessage: "Something's wrong"))
+            return .failure(DomainError.custom(description: "Something's wrong"))
         }
         let store = TestStore(
             initialState: initialState,
@@ -128,7 +130,7 @@ final class LogInReducerTests: XCTestCase {
         // Arrange
         let logInUseCaseMock = LogInUseCaseProtocolMock()
         logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorClosure = { _, _ in
-            return .failure(DomainError.custom(errorMessage: "Something's wrong"))
+            return .failure(DomainError.custom(description: "Something's wrong"))
         }
         let store = TestStore(
             initialState: initialState,

@@ -66,10 +66,9 @@ let package = Package(
         .target(
             name: "Intents",
             dependencies: [
-                "PersistentService",
-                "TransactionsService",
-                "SharedModels",
-                .product(name: "Dependencies", package: "swift-dependencies"),
+                "PersistenceService",
+                "TransactionsAPIService",
+                "DomainEntities",
             ],
             path: "Sources/App/Intents"
         ),
@@ -79,12 +78,36 @@ let package = Package(
         .target(
             name: "DI",
             dependencies: [
+                "LogInFeature",
+                "FundFeature",
+                "HomeFeature",
+                "RecordTransactionFeature",
+                "SignUpFeature",
+                "OnboardingFeature",
+
                 "LogInUseCase",
+                "FundDetailsUseCase",
+                "FundCreationUseCase",
+                "FundListUseCase",
+                "TransactionRecordUseCase",
+                "TransactionListUseCase",
+                "AccountRegisterUseCase",
+                "PortfolioUseCase",
+
                 "AuthAPIServiceInterface",
                 "AuthAPIService",
                 "KeychainServiceInterface",
                 "KeychainService",
-                "LogInFeature",
+                "FundsAPIServiceInterface",
+                "FundsAPIService",
+                "TransactionsAPIServiceInterface",
+                "TransactionsAPIService",
+                "PortfolioAPIServiceInterface",
+                "PortfolioAPIService",
+                "TemporaryPersistenceServiceInterface",
+                "TemporaryPersistenceService",
+                "PersistenceServiceInterface",
+                "PersistenceService",
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/App/DI"
@@ -93,10 +116,7 @@ let package = Package(
         .target(
             name: "Coordinator",
             dependencies: [
-                "HomeFeature",
-                "LogInFeature",
-                "SignUpFeature",
-                "OnboardingFeature",
+                "DI",
                 "KeychainStorageUseCases",
                 "SettingsFeature",
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
@@ -132,9 +152,10 @@ let package = Package(
             name: "SignUpFeature",
             dependencies: [
                 "CoreUI",
-                "Networking",
+                "AccountRegisterUseCase",
                 "Utilities",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/SignUpFeature"
         ),
@@ -144,11 +165,12 @@ let package = Package(
                 "CoreUI",
                 "CurrencyKit",
                 "FundFeature",
-                "LoggedInUserService",
-                "TransactionsService",
-                "FundsService",
-                "PersistentService",
+                "TransactionListUseCase",
+                "FundListUseCase",
+                "FundDetailsUseCase",
+                "PortfolioUseCase",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/HomeFeature"
         ),
@@ -158,8 +180,10 @@ let package = Package(
                 "CoreUI",
                 "CurrencyKit",
                 "RecordTransactionFeature",
-                "FundsService",
+                "FundDetailsUseCase",
+                "FundCreationUseCase",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/FundFeature"
         ),
@@ -168,10 +192,10 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "CurrencyKit",
-                "TransactionsService",
-                "LoggedInUserService",
-                "PersistentService",
+                "FundListUseCase",
+                "TransactionRecordUseCase",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/RecordTransactionFeature"
         ),
@@ -224,7 +248,6 @@ let package = Package(
         .target(
             name: "TestHelpers",
             dependencies: [
-                "LogInUseCase",
                 .product(name: "Difference", package: "difference"),
             ],
             path: "Sources/Shared/Kits/TestHelpers"
@@ -255,41 +278,6 @@ let package = Package(
             ],
             path: "Sources/UseCases/DevSettingsUseCases"
         ),
-        .target(
-            name: "LoggedInUserService",
-            dependencies: [
-                "SharedModels",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ],
-            path: "Sources/UseCases/LoggedInUserService"
-        ),
-        .target(
-            name: "TransactionsService",
-            dependencies: [
-                "SharedModels",
-                "Networking",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ],
-            path: "Sources/UseCases/TransactionsService"
-        ),
-        .target(
-            name: "FundsService",
-            dependencies: [
-                "SharedModels",
-                "Networking",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-            ],
-            path: "Sources/UseCases/FundsService"
-        ),
-        .target(
-            name: "PersistentService",
-            dependencies: [
-                "SharedModels",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "RealmSwift", package: "realm-swift"),
-            ],
-            path: "Sources/UseCases/PersistentService"
-        ),
 
         // MARK: Domains/UseCases
 
@@ -302,6 +290,65 @@ let package = Package(
             ],
             path: "Sources/Domains/UseCases/LogInUseCase"
         ),
+        .target(
+            name: "AccountRegisterUseCase",
+            dependencies: [
+                "DomainEntities",
+                "AuthAPIServiceInterface",
+                "KeychainServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/AccountRegisterUseCase"
+        ),
+        .target(
+            name: "FundDetailsUseCase",
+            dependencies: [
+                "DomainEntities",
+                "FundsAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/FundDetailsUseCase"
+        ),
+        .target(
+            name: "FundCreationUseCase",
+            dependencies: [
+                "DomainEntities",
+                "FundsAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/FundCreationUseCase"
+        ),
+        .target(
+            name: "FundListUseCase",
+            dependencies: [
+                "DomainEntities",
+                "FundsAPIServiceInterface",
+                "TemporaryPersistenceServiceInterface",
+                "PersistenceServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/FundListUseCase"
+        ),
+        .target(
+            name: "TransactionListUseCase",
+            dependencies: [
+                "DomainEntities",
+                "TransactionsAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/TransactionListUseCase"
+        ),
+        .target(
+            name: "TransactionRecordUseCase",
+            dependencies: [
+                "DomainEntities",
+                "TransactionsAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/TransactionRecordUseCase"
+        ),
+        .target(
+            name: "PortfolioUseCase",
+            dependencies: [
+                "DomainEntities",
+                "PortfolioAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/PortfolioUseCase"
+        ),
 
         // MARK: Domains/DataInterfaces
 
@@ -312,13 +359,47 @@ let package = Package(
             ],
             path: "Sources/Domains/DataInterfaces/AuthAPIServiceInterface"
         ),
-
+        .target(
+            name: "FundsAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/FundsAPIServiceInterface"
+        ),
+        .target(
+            name: "TransactionsAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/TransactionsAPIServiceInterface"
+        ),
         .target(
             name: "KeychainServiceInterface",
             dependencies: [
                 "DomainEntities",
             ],
             path: "Sources/Domains/DataInterfaces/KeychainServiceInterface"
+        ),
+        .target(
+            name: "PortfolioAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/PortfolioAPIServiceInterface"
+        ),
+        .target(
+            name: "TemporaryPersistenceServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/TemporaryPersistenceServiceInterface"
+        ),
+        .target(
+            name: "PersistenceServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/PersistenceServiceInterface"
         ),
 
         // MARK: Domains/Entities
@@ -339,7 +420,6 @@ let package = Package(
             ],
             path: "Sources/Data/AuthAPIService"
         ),
-
         .target(
             name: "KeychainService",
             dependencies: [
@@ -348,6 +428,50 @@ let package = Package(
                 .product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper"),
             ],
             path: "Sources/Data/KeychainService"
+        ),
+        .target(
+            name: "FundsAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "FundsAPIServiceInterface",
+            ],
+            path: "Sources/Data/FundsAPIService"
+        ),
+        .target(
+            name: "TransactionsAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "TransactionsAPIServiceInterface",
+            ],
+            path: "Sources/Data/TransactionsAPIService"
+        ),
+        .target(
+            name: "PortfolioAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "PortfolioAPIServiceInterface",
+            ],
+            path: "Sources/Data/PortfolioAPIService"
+        ),
+        .target(
+            name: "TemporaryPersistenceService",
+            dependencies: [
+                "DomainEntities",
+                "TemporaryPersistenceServiceInterface",
+            ],
+            path: "Sources/Data/TemporaryPersistenceService"
+        ),
+        .target(
+            name: "PersistenceService",
+            dependencies: [
+                "DomainEntities",
+                "PersistenceServiceInterface",
+                .product(name: "RealmSwift", package: "realm-swift"),
+            ],
+            path: "Sources/Data/PersistenceService"
         ),
 
         // MARK: Test targets

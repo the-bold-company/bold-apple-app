@@ -7,12 +7,10 @@
 
 import ComposableArchitecture
 import Foundation
-import FundsService
+import FundCreationUseCase
 
 @Reducer
 public struct FundCreationReducer {
-    public init() {}
-
     public struct State: Equatable {
         public init(
             fundName: String = "",
@@ -28,15 +26,15 @@ public struct FundCreationReducer {
         @BindingState public var description: String
         @BindingState public var balance: Int
 
-        var loadingState: NetworkLoadingState<CreateFundResponse> = .idle
+        var loadingState: LoadingState<FundEntity> = .idle
     }
 
     public enum Action: BindableAction {
         case delegate(Delegate)
         case binding(BindingAction<State>)
 
-        case fundCreatedSuccessfully(CreateFundResponse)
-        case failedToCreateFund(NetworkError)
+        case fundCreatedSuccessfully(FundEntity)
+        case failedToCreateFund(DomainError)
 
         public enum Delegate {
             case submitButtonTapped
@@ -44,7 +42,12 @@ public struct FundCreationReducer {
     }
 
     @Dependency(\.dismiss) var dismiss
-    @Dependency(\.fundsSerivce) var fundsService
+
+    let fundCreationUseCase: FundCreationUseCaseProtocol
+
+    public init(fundCreationUseCase: FundCreationUseCaseProtocol) {
+        self.fundCreationUseCase = fundCreationUseCase
+    }
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -57,20 +60,18 @@ public struct FundCreationReducer {
                 state.loadingState = .loading
 
                 return .run { [name = state.fundName, description = state.description, balance = state.balance] send in
-                    do {
-                        let res = try await fundsService.createFund(
-                            name: name,
-                            balance: Decimal(balance),
-                            fundType: .fiat, // TODO: Hardcode this for now
-                            currency: "VND",
-                            description: description.isEmpty ? nil : description
-                        )
 
-                        await send(.fundCreatedSuccessfully(res))
-                    } catch let error as NetworkError {
+                    let result = await fundCreationUseCase.createFiatFund(
+                        name: name,
+                        balance: Decimal(balance),
+                        currency: "VND",
+                        description: description.isEmpty ? nil : description
+                    )
+                    switch result {
+                    case let .success(createdFund):
+                        await send(.fundCreatedSuccessfully(createdFund))
+                    case let .failure(error):
                         await send(.failedToCreateFund(error))
-                    } catch {
-                        await send(.failedToCreateFund(NetworkError.unknown(error)))
                     }
                 }
             case let .fundCreatedSuccessfully(response):

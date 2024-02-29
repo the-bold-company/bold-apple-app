@@ -6,8 +6,8 @@
 //
 
 import ComposableArchitecture
+import DomainEntities
 import Foundation
-import SharedModels
 
 @Reducer
 public struct FundPickerReducer {

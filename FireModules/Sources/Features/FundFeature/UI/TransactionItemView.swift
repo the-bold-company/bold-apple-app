@@ -7,8 +7,8 @@
 
 import CoreUI
 import CurrencyKit
+import DomainEntities
 import Inject
-import SharedModels
 import SwiftUI
 
 struct TransactionItemView: View {

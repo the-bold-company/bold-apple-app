@@ -8,19 +8,17 @@
 import Charts
 import ComposableArchitecture
 import CoreUI
+import DomainEntities
 import FundFeature
-import FundsService
-import Networking
-import SharedModels
 import SwiftUI
 
 public struct HomePage: View {
     @ObserveInjection private var iO
 
     struct ViewState: Equatable {
-        var networthLoadingState: NetworkLoadingState<NetworthResponse>
-        var fundLoadingState: NetworkLoadingState<[CreateFundResponse]>
-        var fundList: IdentifiedArrayOf<CreateFundResponse>
+        var networthLoadingState: LoadingState<NetworthEntity>
+        var fundLoadingState: LoadingState<[FundEntity]>
+        var fundList: IdentifiedArrayOf<FundEntity>
         var isTransactionLoading: Bool
         var transactions: IdentifiedArrayOf<TransactionEntity>
     }
@@ -146,7 +144,7 @@ public struct HomePage: View {
                 ForEach(
                     viewStore.fundLoadingState.hasResult
                         ? viewStore.fundList.elements
-                        : CreateFundResponse.mockList,
+                        : FundEntity.mockList,
                     id: \.id
                 ) { fund in
                     FundItemView(fund: fund, isLoading: !viewStore.fundLoadingState.hasResult)
@@ -175,22 +173,19 @@ public struct HomePage: View {
                 Spacing(height: .size16)
                 ForEach(
                     viewStore.isTransactionLoading
-                        ? [
+                        ? IdentifiedArray(uniqueElements: [
                             TransactionEntity.mock(id: UUID()),
                             TransactionEntity.mock(id: UUID()),
                             TransactionEntity.mock(id: UUID()),
-                            TransactionEntity.mock(id: UUID()),
-                            TransactionEntity.mock(id: UUID())
-                        ]
-                        : viewStore.transactions,
-                    id: \.id
+                        ])
+                        : viewStore.transactions
                 ) {
                     TransactionItemView(
                         transaction: $0,
                         isLoading: viewStore.isTransactionLoading,
-                        from: viewStore.fundList[id: $0.sourceFundId.uuidString.lowercased()]?.name ?? "N/A",
+                        from: viewStore.fundList[id: $0.sourceFundId]?.name ?? "N/A",
                         to: $0.destinationFundId != nil
-                            ? viewStore.fundList[id: $0.destinationFundId!.uuidString.lowercased()]?.name // swiftlint:disable:this force_unwrapping
+                            ? viewStore.fundList[id: $0.destinationFundId!]?.name // swiftlint:disable:this force_unwrapping
                             : nil
                     )
                 }
