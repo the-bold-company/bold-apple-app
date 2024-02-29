@@ -1,14 +1,15 @@
 //
-//  TransactionModel.swift
+//  TransactionItemResponse.swift
 //
 //
 //  Created by Hien Tran on 02/02/2024.
 //
 
 import Codextended
+import DomainEntities
 import Foundation
 
-public struct TransactionModel: Decodable {
+public struct TransactionItemResponse: Decodable {
     public let id: String
     public let timestamp: Int
     public let sourceFundId: String
@@ -32,7 +33,7 @@ public struct TransactionModel: Decodable {
     }
 }
 
-public extension TransactionModel {
+public extension TransactionItemResponse {
     func asTransactionEntity() -> TransactionEntity {
         return TransactionEntity(
             id: id,

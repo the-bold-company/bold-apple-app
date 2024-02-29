@@ -74,7 +74,7 @@ public struct KeychainService: KeychainServiceProtocol {
     }
 }
 
-enum KeychainError: LocalizedError {
+public enum KeychainError: LocalizedError {
     case failToGet([KeychainKey])
     case failToSet([KeychainKey])
     case failToRemove([KeychainKey])
@@ -101,7 +101,7 @@ enum KeychainError: LocalizedError {
         }
     }
 
-    var asDomainError: DomainError {
+    public var asDomainError: DomainError {
         return DomainError(error: self)
     }
 }

@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 import DI
-import KeychainStorageUseCases
+import KeychainServiceInterface
 import OnboardingFeature
 import SettingsFeature
 import TCACoordinators
@@ -56,14 +56,15 @@ public struct Destination {
         }
 
         Scope(state: \.devSettingsRoute, action: \.devSettingsRoute) {
-            DevSettingsReducer()
+            resolve(\SettingsFeatureContainer.devSettingsReducer)
         }
     }
 }
 
 @Reducer
 public struct Coordinator {
-    let keychainService = KeychainService()
+    @Injected(\.keychainService) var keychainService: KeychainServiceProtocol
+
     public init() {}
 
     public struct State: Equatable, IndexedRouterState {
@@ -93,8 +94,9 @@ public struct Coordinator {
         Reduce { state, action in
             switch action {
             case .onLaunch:
-                keychainService.removeCredentials()
-                return .none
+                return .run { _ in
+                    try keychainService.removeCredentials()
+                }
 
             // MARK: - Landing routes
 

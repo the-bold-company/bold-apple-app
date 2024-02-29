@@ -6,20 +6,19 @@
 //
 
 import ComposableArchitecture
-import DevSettingsUseCases
+import DevSettingsUseCase
+import Factory
 import SharedModels
 
 @Reducer
 public struct DevSettingsReducer {
-    public init() {}
-
     public struct State: Equatable {
         public init() {
-            @Dependency(\.devSettings) var devSettingsClient
-            self.devSettings = devSettingsClient.get()
+            @Injected(\SettingsFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
+            self.settings = devSettings.get()
         }
 
-        @BindingState public var devSettings: DevSettings = .init()
+        @BindingState public var settings: DevSettings = .init()
     }
 
     public enum Action: BindableAction {
@@ -27,13 +26,17 @@ public struct DevSettingsReducer {
         case updateDevSettings(DevSettings)
     }
 
-    @Dependency(\.devSettings) var devSettings
     @Dependency(\.mainQueue) var mainQueue
+    let devSettingsUseCase: DevSettingsUseCase
+
+    public init(devSettingsUseCase: DevSettingsUseCase) {
+        self.devSettingsUseCase = devSettingsUseCase
+    }
 
     public var body: some ReducerOf<Self> {
         CombineReducers {
             BindingReducer()
-                .onChange(of: \.devSettings.credentials) { _, _ in
+                .onChange(of: \.settings.credentials) { _, _ in
                     Reduce { _, _ in
                         return .none
                     }
@@ -43,18 +46,18 @@ public struct DevSettingsReducer {
                 switch action {
                 case let .updateDevSettings(newSettings):
                     return .run { _ in
-                        await devSettings.set(newSettings)
+                        await devSettingsUseCase.set(newSettings)
                     }
                 case .binding:
                     return .none
                 }
             }
         }
-        .onChange(of: \.devSettings) { _, newSettings in
+        .onChange(of: \.settings) { _, newSettings in
             Reduce { _, _ in
                 enum CancelID { case saveDebounce }
 
-                return .run { _ in await devSettings.set(newSettings) }
+                return .run { _ in await devSettingsUseCase.set(newSettings) }
                     .debounce(id: CancelID.saveDebounce, for: .seconds(0.5), scheduler: mainQueue)
             }
         }

@@ -8,7 +8,7 @@
 import XCTest
 
 import ComposableArchitecture
-import DevSettingsUseCases
+import DevSettingsUseCase
 import DomainEntities
 @testable import LogInFeature
 import LogInUseCase

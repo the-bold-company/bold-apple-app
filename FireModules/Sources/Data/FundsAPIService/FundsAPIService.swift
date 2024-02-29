@@ -63,7 +63,7 @@ public struct FundsAPIService: FundsAPIServiceProtocol {
     public func getTransactions(fundId: String, ascendingOrder: Bool = false) async throws -> PaginationEntity<TransactionEntity> {
         return try await client
             .requestPublisher(.transactions(fundId: fundId, ascendingOrder: ascendingOrder))
-            .mapToResponse(TransactionListModel.self)
+            .mapToResponse(TransactionListResponse.self)
             .map { $0.asPaginationEntity() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()

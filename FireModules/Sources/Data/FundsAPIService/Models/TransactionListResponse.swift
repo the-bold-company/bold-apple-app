@@ -1,22 +1,23 @@
 //
-//  TransactionListModel.swift
+//  TransactionListResponse.swift
 //
 //
 //  Created by Hien Tran on 02/02/2024.
 //
 
 import Codextended
+import DomainEntities
 import Foundation
 
-public struct TransactionListModel: Decodable {
-    public let transactions: [TransactionModel]
+public struct TransactionListResponse: Decodable {
+    public let transactions: [TransactionItemResponse]
 
     public init(from decoder: Decoder) throws {
         self.transactions = try decoder.decode("allTransactions")
     }
 }
 
-public extension TransactionListModel {
+public extension TransactionListResponse {
     func asPaginationEntity() -> PaginationEntity<TransactionEntity> {
         return PaginationEntity(
             currentPage: 0,

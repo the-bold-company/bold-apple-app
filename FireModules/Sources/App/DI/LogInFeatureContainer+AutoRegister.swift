@@ -10,6 +10,7 @@
 extension LogInFeatureContainer: AutoRegistering {
     public func autoRegister() {
         logInUseCase.register { resolve(\.logInUseCase) }
+        devSettingsUseCase.register { resolve(\.devSettingsUseCase) }
         logInReducer.register {
             LoginReducer(logInUseCase: self.logInUseCase.resolve()!)
         }

@@ -84,6 +84,7 @@ let package = Package(
                 "RecordTransactionFeature",
                 "SignUpFeature",
                 "OnboardingFeature",
+                "SettingsFeature",
 
                 "LogInUseCase",
                 "FundDetailsUseCase",
@@ -93,6 +94,7 @@ let package = Package(
                 "TransactionListUseCase",
                 "AccountRegisterUseCase",
                 "PortfolioUseCase",
+                "DevSettingsUseCase",
 
                 "AuthAPIServiceInterface",
                 "AuthAPIService",
@@ -117,8 +119,7 @@ let package = Package(
             name: "Coordinator",
             dependencies: [
                 "DI",
-                "KeychainStorageUseCases",
-                "SettingsFeature",
+                "KeychainServiceInterface",
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
                 .product(name: "Codextended", package: "codextended"),
             ]
@@ -140,7 +141,7 @@ let package = Package(
             dependencies: [
                 "CoreUI",
                 "Utilities",
-                "DevSettingsUseCases",
+                "DevSettingsUseCase",
                 "LogInUseCase",
                 "DomainEntities",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
@@ -203,10 +204,10 @@ let package = Package(
             name: "SettingsFeature",
             dependencies: [
                 "CoreUI",
-                "SharedModels",
-                "DevSettingsUseCases",
+                "DevSettingsUseCase",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "AutomaticSettings", package: "automaticsettings"),
+                .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/SettingsFeature"
         ),
@@ -233,8 +234,7 @@ let package = Package(
             name: "Networking",
             dependencies: [
                 "Utilities",
-                "KeychainStorageUseCases",
-                "SharedModels",
+                "KeychainService",
                 .product(name: "CombineMoya", package: "moya"),
                 .product(name: "Codextended", package: "codextended"),
                 .product(name: "CombineExt", package: "combineext"),
@@ -252,35 +252,18 @@ let package = Package(
             ],
             path: "Sources/Shared/Kits/TestHelpers"
         ),
-        .target(
-            name: "SharedModels",
-            dependencies: [
-                .product(name: "AutomaticSettings", package: "automaticsettings"),
-            ],
-            path: "Sources/Shared/SharedModels"
-        ),
-
-        // MARK: - Use cases
-
-        .target(
-            name: "KeychainStorageUseCases",
-            dependencies: [
-                .product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper"),
-            ],
-            path: "Sources/UseCases/KeychainStorageUseCases"
-        ),
-        .target(
-            name: "DevSettingsUseCases",
-            dependencies: [
-                "SharedModels",
-                .product(name: "Dependencies", package: "swift-dependencies"),
-                .product(name: "Codextended", package: "codextended"),
-            ],
-            path: "Sources/UseCases/DevSettingsUseCases"
-        ),
 
         // MARK: Domains/UseCases
 
+        .target(
+            name: "DevSettingsUseCase",
+            dependencies: [
+                "DomainEntities",
+                .product(name: "Codextended", package: "codextended"),
+                .product(name: "AutomaticSettings", package: "automaticsettings"),
+            ],
+            path: "Sources/Domains/UseCases/DevSettingsUseCase"
+        ),
         .target(
             name: "LogInUseCase",
             dependencies: [

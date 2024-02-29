@@ -23,6 +23,7 @@ import TransactionsAPIServiceInterface
 
 // Domain layer imports
 import AccountRegisterUseCase
+import DevSettingsUseCase
 import FundCreationUseCase
 import FundDetailsUseCase
 import FundListUseCase
@@ -102,5 +103,9 @@ public extension Container {
         self {
             PortfolioUseCase(portfolioAPIService: self.portfolioAPIService.callAsFunction())
         }
+    }
+
+    var devSettingsUseCase: Factory<DevSettingsUseCase> {
+        self { DevSettingsUseCase.live }.singleton
     }
 }

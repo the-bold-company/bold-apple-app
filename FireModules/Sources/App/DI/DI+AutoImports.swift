@@ -10,4 +10,5 @@
 @_exported import HomeFeature
 @_exported import LogInFeature
 @_exported import RecordTransactionFeature
+@_exported import SettingsFeature
 @_exported import SignUpFeature

@@ -6,7 +6,7 @@
 //
 
 import ComposableArchitecture
-import DevSettingsUseCases
+import DevSettingsUseCase
 import Factory
 import Foundation
 import LogInUseCase
@@ -23,7 +23,7 @@ public struct LoginReducer {
     public struct State: Equatable {
         public init() {
             // TODO: Add if DEBUG handler for dev setting
-            @Dependency(\.devSettings) var devSettings
+            @Injected(\LogInFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
 
             self.email = devSettings.credentials.username
             self.password = devSettings.credentials.password

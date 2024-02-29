@@ -20,7 +20,7 @@ public struct DevSettingsPage: View {
 
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            DevSettingsViewWrapper(devSettings: viewStore.$devSettings)
+            DevSettingsViewWrapper(devSettings: viewStore.$settings)
         }
         .enableInjection()
     }
