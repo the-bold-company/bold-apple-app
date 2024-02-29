@@ -5,6 +5,7 @@ import AutomaticSettings
 import Inject
 // swiftlint:disable all
 
+import DevSettingsUseCase
 
 
 
@@ -12,54 +13,54 @@ extension DevSettingsView {
 
 // MARK: - Views
 
-struct CredentialsView<HeaderView: View, FooterView: View>: View, AutomaticSettingsViewDSL {
-    typealias ViewModel = AutomaticSettingsViewModel<DevSettings, DevSettingsExternalData>
+	struct CredentialsView<HeaderView: View, FooterView: View>: View, AutomaticSettingsViewDSL {
+		typealias ViewModel = AutomaticSettingsViewModel<DevSettings, DevSettingsExternalData>
 
-    @ObserveInjection var iO
+		@ObserveInjection var iO
 
-    @ObservedObject
-    var viewModel: ViewModel
+		@ObservedObject
+		var viewModel: ViewModel
 
-    var headerView: HeaderView
-    var footerView: FooterView
+		var headerView: HeaderView
+		var footerView: FooterView
 
-    init(viewModel: ViewModel, headerView: HeaderView, footerView: FooterView) {
-        self.viewModel = viewModel
-        self.headerView = headerView
-        self.footerView = footerView
-    }
+		init(viewModel: ViewModel, headerView: HeaderView, footerView: FooterView) {
+			self.viewModel = viewModel
+			self.headerView = headerView
+			self.footerView = footerView
+		}
 
-    init(viewModel: ViewModel) where HeaderView == EmptyView, FooterView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = EmptyView()
-        self.footerView = EmptyView()
-    }
+		init(viewModel: ViewModel) where HeaderView == EmptyView, FooterView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = EmptyView()
+			self.footerView = EmptyView()
+		}
 
-    init(viewModel: ViewModel, headerView: HeaderView) where FooterView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = headerView
-        self.footerView = EmptyView()
-    }
+		init(viewModel: ViewModel, headerView: HeaderView) where FooterView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = headerView
+			self.footerView = EmptyView()
+		}
 
-    init(viewModel: ViewModel, footerView: FooterView) where HeaderView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = EmptyView()
-        self.footerView = footerView
-    }
+		init(viewModel: ViewModel, footerView: FooterView) where HeaderView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = EmptyView()
+			self.footerView = footerView
+		}
 
-    var body: some View {
-        Group {
-            headerView
-            settings()
-            footerView
-        }
-        .enableInjection()
-    }
+		var body: some View {
+			Group {
+				headerView
+				settings()
+				footerView
+			}
+			.enableInjection()
+		}
 
 
-  /// `Group` containing all Credentials views
-    func settings() -> some View {
-        Section {
+	/// `Group` containing all Credentials views
+		func settings() -> some View {
+			Section {
             Group { 
 				setting(
 					"username", 
@@ -76,59 +77,59 @@ struct CredentialsView<HeaderView: View, FooterView: View>: View, AutomaticSetti
 					uniqueIdentifier: "\\.credentials.password"
         		) 
             } 
-        }
-    }
+			}
+		}
 
-}
+	}
 
-struct ThemeView<HeaderView: View, FooterView: View>: View, AutomaticSettingsViewDSL {
-    typealias ViewModel = AutomaticSettingsViewModel<DevSettings, DevSettingsExternalData>
+	struct ThemeView<HeaderView: View, FooterView: View>: View, AutomaticSettingsViewDSL {
+		typealias ViewModel = AutomaticSettingsViewModel<DevSettings, DevSettingsExternalData>
 
-    @ObserveInjection var iO
+		@ObserveInjection var iO
 
-    @ObservedObject
-    var viewModel: ViewModel
+		@ObservedObject
+		var viewModel: ViewModel
 
-    var headerView: HeaderView
-    var footerView: FooterView
+		var headerView: HeaderView
+		var footerView: FooterView
 
-    init(viewModel: ViewModel, headerView: HeaderView, footerView: FooterView) {
-        self.viewModel = viewModel
-        self.headerView = headerView
-        self.footerView = footerView
-    }
+		init(viewModel: ViewModel, headerView: HeaderView, footerView: FooterView) {
+			self.viewModel = viewModel
+			self.headerView = headerView
+			self.footerView = footerView
+		}
 
-    init(viewModel: ViewModel) where HeaderView == EmptyView, FooterView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = EmptyView()
-        self.footerView = EmptyView()
-    }
+		init(viewModel: ViewModel) where HeaderView == EmptyView, FooterView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = EmptyView()
+			self.footerView = EmptyView()
+		}
 
-    init(viewModel: ViewModel, headerView: HeaderView) where FooterView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = headerView
-        self.footerView = EmptyView()
-    }
+		init(viewModel: ViewModel, headerView: HeaderView) where FooterView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = headerView
+			self.footerView = EmptyView()
+		}
 
-    init(viewModel: ViewModel, footerView: FooterView) where HeaderView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = EmptyView()
-        self.footerView = footerView
-    }
+		init(viewModel: ViewModel, footerView: FooterView) where HeaderView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = EmptyView()
+			self.footerView = footerView
+		}
 
-    var body: some View {
-        Group {
-            headerView
-            settings()
-            footerView
-        }
-        .enableInjection()
-    }
+		var body: some View {
+			Group {
+				headerView
+				settings()
+				footerView
+			}
+			.enableInjection()
+		}
 
 
-  /// `Group` containing all Theme views
-    func settings() -> some View {
-        Section {
+	/// `Group` containing all Theme views
+		func settings() -> some View {
+			Section {
             Group { 
 				setting(
 					"color", 
@@ -138,10 +139,10 @@ struct ThemeView<HeaderView: View, FooterView: View>: View, AutomaticSettingsVie
 					uniqueIdentifier: "\\.theme.color"
         		) 
             } 
-        }
-    }
+			}
+		}
 
-}
+	}
 
 
 // MARK: -
@@ -155,107 +156,107 @@ struct ThemeView<HeaderView: View, FooterView: View>: View, AutomaticSettingsVie
 // MARK: - Top Level Link wrappers
 
 
-func credentialsLink<HeaderView: View, FooterView: View>(
-    label: String = "Credentials", 
-    @ViewBuilder headerView: @escaping () -> HeaderView,
-    @ViewBuilder footerView: @escaping () -> FooterView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-     	destination: Form {
-			CredentialsView(viewModel: viewModel, headerView: InjectionWrapper { headerView() }, footerView: InjectionWrapper { footerView() })
-		}
-        //.navigationBarTitle("Credentials".automaticSettingsTitleCase)
-    )
-}
+	func credentialsLink<HeaderView: View, FooterView: View>(
+		label: String = "Credentials", 
+		@ViewBuilder headerView: @escaping () -> HeaderView,
+		@ViewBuilder footerView: @escaping () -> FooterView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				CredentialsView(viewModel: viewModel, headerView: InjectionWrapper { headerView() }, footerView: InjectionWrapper { footerView() })
+			}
+			//.navigationBarTitle("Credentials".automaticSettingsTitleCase)
+		)
+	}
 
-func credentialsLink<HeaderView: View>(
-    label: String = "Credentials", 
-    @ViewBuilder headerView: @escaping () -> HeaderView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-      	destination: Form {
-        	CredentialsView(viewModel: viewModel, headerView: InjectionWrapper { headerView() })
-        }
-        //.navigationBarTitle("Credentials".automaticSettingsTitleCase)
-    )
-}
+	func credentialsLink<HeaderView: View>(
+		label: String = "Credentials", 
+		@ViewBuilder headerView: @escaping () -> HeaderView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				CredentialsView(viewModel: viewModel, headerView: InjectionWrapper { headerView() })
+			}
+			//.navigationBarTitle("Credentials".automaticSettingsTitleCase)
+		)
+	}
 
-func credentialsLink<FooterView: View>(
-    label: String = "Credentials", 
-    @ViewBuilder footerView: @escaping () -> FooterView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-      	destination: Form {
-          	CredentialsView(viewModel: viewModel, footerView: footerView())
-        }
-        //.navigationBarTitle("Credentials".automaticSettingsTitleCase)
-    )
-}
-func credentialsLink(
-    label: String = "Credentials"
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase,
-      	destination: Form {
-          	CredentialsView(viewModel: self.viewModel)
-        }
-        //.navigationBarTitle("Credentials".automaticSettingsTitleCase)
-    )
-}
+	func credentialsLink<FooterView: View>(
+		label: String = "Credentials", 
+		@ViewBuilder footerView: @escaping () -> FooterView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				CredentialsView(viewModel: viewModel, footerView: footerView())
+			}
+			//.navigationBarTitle("Credentials".automaticSettingsTitleCase)
+		)
+	}
+	func credentialsLink(
+		label: String = "Credentials"
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase,
+			destination: Form {
+				CredentialsView(viewModel: self.viewModel)
+			}
+			//.navigationBarTitle("Credentials".automaticSettingsTitleCase)
+		)
+	}
 
-func themeLink<HeaderView: View, FooterView: View>(
-    label: String = "Theme", 
-    @ViewBuilder headerView: @escaping () -> HeaderView,
-    @ViewBuilder footerView: @escaping () -> FooterView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-     	destination: Form {
-			ThemeView(viewModel: viewModel, headerView: InjectionWrapper { headerView() }, footerView: InjectionWrapper { footerView() })
-		}
-        //.navigationBarTitle("Theme".automaticSettingsTitleCase)
-    )
-}
+	func themeLink<HeaderView: View, FooterView: View>(
+		label: String = "Theme", 
+		@ViewBuilder headerView: @escaping () -> HeaderView,
+		@ViewBuilder footerView: @escaping () -> FooterView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				ThemeView(viewModel: viewModel, headerView: InjectionWrapper { headerView() }, footerView: InjectionWrapper { footerView() })
+			}
+			//.navigationBarTitle("Theme".automaticSettingsTitleCase)
+		)
+	}
 
-func themeLink<HeaderView: View>(
-    label: String = "Theme", 
-    @ViewBuilder headerView: @escaping () -> HeaderView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-      	destination: Form {
-        	ThemeView(viewModel: viewModel, headerView: InjectionWrapper { headerView() })
-        }
-        //.navigationBarTitle("Theme".automaticSettingsTitleCase)
-    )
-}
+	func themeLink<HeaderView: View>(
+		label: String = "Theme", 
+		@ViewBuilder headerView: @escaping () -> HeaderView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				ThemeView(viewModel: viewModel, headerView: InjectionWrapper { headerView() })
+			}
+			//.navigationBarTitle("Theme".automaticSettingsTitleCase)
+		)
+	}
 
-func themeLink<FooterView: View>(
-    label: String = "Theme", 
-    @ViewBuilder footerView: @escaping () -> FooterView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-      	destination: Form {
-          	ThemeView(viewModel: viewModel, footerView: footerView())
-        }
-        //.navigationBarTitle("Theme".automaticSettingsTitleCase)
-    )
-}
-func themeLink(
-    label: String = "Theme"
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase,
-      	destination: Form {
-          	ThemeView(viewModel: self.viewModel)
-        }
-        //.navigationBarTitle("Theme".automaticSettingsTitleCase)
-    )
-}
+	func themeLink<FooterView: View>(
+		label: String = "Theme", 
+		@ViewBuilder footerView: @escaping () -> FooterView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				ThemeView(viewModel: viewModel, footerView: footerView())
+			}
+			//.navigationBarTitle("Theme".automaticSettingsTitleCase)
+		)
+	}
+	func themeLink(
+		label: String = "Theme"
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase,
+			destination: Form {
+				ThemeView(viewModel: self.viewModel)
+			}
+			//.navigationBarTitle("Theme".automaticSettingsTitleCase)
+		)
+	}
 }
 
 /// Creates a view that supports injecting dynamic header / footer

@@ -384,6 +384,13 @@ let package = Package(
             ],
             path: "Sources/Domains/DataInterfaces/PersistenceServiceInterface"
         ),
+        .target(
+            name: "UserAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/UserAPIServiceInterface"
+        ),
 
         // MARK: Domains/Entities
 
@@ -455,6 +462,15 @@ let package = Package(
                 .product(name: "RealmSwift", package: "realm-swift"),
             ],
             path: "Sources/Data/PersistenceService"
+        ),
+        .target(
+            name: "UserAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "UserAPIServiceInterface",
+            ],
+            path: "Sources/Data/UserAPIService"
         ),
 
         // MARK: Test targets

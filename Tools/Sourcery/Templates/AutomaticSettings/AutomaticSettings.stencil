@@ -50,59 +50,59 @@ extension {{ argument.settingsView }} {
 // MARK: - Views
 
 {% for type in types.implementing.AutomaticSettings where type.localName != argument.settingsStructure %}
-struct {{type.localName}}View<HeaderView: View, FooterView: View>: View, AutomaticSettingsViewDSL {
-    typealias ViewModel = AutomaticSettingsViewModel<{{ argument.settingsStructure }}, {{ argument.settingsExternalData }}>
+	struct {{type.localName}}View<HeaderView: View, FooterView: View>: View, AutomaticSettingsViewDSL {
+		typealias ViewModel = AutomaticSettingsViewModel<{{ argument.settingsStructure }}, {{ argument.settingsExternalData }}>
 
-    @ObserveInjection var iO
+		@ObserveInjection var iO
 
-    @ObservedObject
-    var viewModel: ViewModel
+		@ObservedObject
+		var viewModel: ViewModel
 
-    var headerView: HeaderView
-    var footerView: FooterView
+		var headerView: HeaderView
+		var footerView: FooterView
 
-    init(viewModel: ViewModel, headerView: HeaderView, footerView: FooterView) {
-        self.viewModel = viewModel
-        self.headerView = headerView
-        self.footerView = footerView
-    }
+		init(viewModel: ViewModel, headerView: HeaderView, footerView: FooterView) {
+			self.viewModel = viewModel
+			self.headerView = headerView
+			self.footerView = footerView
+		}
 
-    init(viewModel: ViewModel) where HeaderView == EmptyView, FooterView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = EmptyView()
-        self.footerView = EmptyView()
-    }
+		init(viewModel: ViewModel) where HeaderView == EmptyView, FooterView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = EmptyView()
+			self.footerView = EmptyView()
+		}
 
-    init(viewModel: ViewModel, headerView: HeaderView) where FooterView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = headerView
-        self.footerView = EmptyView()
-    }
+		init(viewModel: ViewModel, headerView: HeaderView) where FooterView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = headerView
+			self.footerView = EmptyView()
+		}
 
-    init(viewModel: ViewModel, footerView: FooterView) where HeaderView == EmptyView {
-        self.viewModel = viewModel
-        self.headerView = EmptyView()
-        self.footerView = footerView
-    }
+		init(viewModel: ViewModel, footerView: FooterView) where HeaderView == EmptyView {
+			self.viewModel = viewModel
+			self.headerView = EmptyView()
+			self.footerView = footerView
+		}
 
-    var body: some View {
-        Group {
-            headerView
-            settings()
-            footerView
-        }
-        .enableInjection()
-    }
+		var body: some View {
+			Group {
+				headerView
+				settings()
+				footerView
+			}
+			.enableInjection()
+		}
 
 
-  /// `Group` containing all {{type.localName|upperFirstLetter}} views
-    func settings() -> some View {
-        Section {
-        {% call generateSettings type %}
-        }
-    }
+	/// `Group` containing all {{type.localName|upperFirstLetter}} views
+		func settings() -> some View {
+			Section {
+			{% call generateSettings type %}
+			}
+		}
 
-}
+	}
 
 {% endfor %}
 
@@ -129,74 +129,74 @@ struct {{type.localName}}View<HeaderView: View, FooterView: View>: View, Automat
 {% for type in types.implementing.AutomaticSettings where type.parent.localName == argument.settingsStructure %}
 
 {% if type.annotations.injectFooter or type.annotations.injectHeader %}
-func {{type.localName|lowerFirstLetter}}Link(
-	label: String = "{{type.localName|upperFirstLetter}}"
-) -> some View {
-	NavigationLink(
-	label.automaticSettingsTitleCase, 
-	destination: 
-		Form {
-		{{type.localName}}View(
-			viewModel: self.viewModel{% if type.annotations.injectFooter or type.annotations.injectHeader %},{% endif%}
-			{% if type.annotations.injectHeader %} headerView: InjectionWrapper { {{type.parent.localName}}View.{{type.localName|lowerFirstLetter}}SectionHeader(self)() } {% if type.annotations.injectFooter %},{% endif%}{% endif %}
-			{% if type.annotations.injectFooter %} footerView: InjectionWrapper { {{type.parent.localName}}View.{{type.localName|lowerFirstLetter}}SectionFooter(self)() } {% endif %}
+	func {{type.localName|lowerFirstLetter}}Link(
+		label: String = "{{type.localName|upperFirstLetter}}"
+	) -> some View {
+		NavigationLink(
+		label.automaticSettingsTitleCase, 
+		destination: 
+			Form {
+			{{type.localName}}View(
+				viewModel: self.viewModel{% if type.annotations.injectFooter or type.annotations.injectHeader %},{% endif%}
+				{% if type.annotations.injectHeader %} headerView: InjectionWrapper { {{type.parent.localName}}View.{{type.localName|lowerFirstLetter}}SectionHeader(self)() } {% if type.annotations.injectFooter %},{% endif%}{% endif %}
+				{% if type.annotations.injectFooter %} footerView: InjectionWrapper { {{type.parent.localName}}View.{{type.localName|lowerFirstLetter}}SectionFooter(self)() } {% endif %}
+			)
+			}
+			//.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
 		)
-		}
-		//.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
-	)
-}
+	}
 {% else %}
-func {{type.localName|lowerFirstLetter}}Link<HeaderView: View, FooterView: View>(
-    label: String = "{{type.localName|upperFirstLetter}}", 
-    @ViewBuilder headerView: @escaping () -> HeaderView,
-    @ViewBuilder footerView: @escaping () -> FooterView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-     	destination: Form {
-			{{type.localName}}View(viewModel: viewModel, headerView: InjectionWrapper { headerView() }, footerView: InjectionWrapper { footerView() })
-		}
-        //.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
-    )
-}
+	func {{type.localName|lowerFirstLetter}}Link<HeaderView: View, FooterView: View>(
+		label: String = "{{type.localName|upperFirstLetter}}", 
+		@ViewBuilder headerView: @escaping () -> HeaderView,
+		@ViewBuilder footerView: @escaping () -> FooterView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				{{type.localName}}View(viewModel: viewModel, headerView: InjectionWrapper { headerView() }, footerView: InjectionWrapper { footerView() })
+			}
+			//.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
+		)
+	}
 
-func {{type.localName|lowerFirstLetter}}Link<HeaderView: View>(
-    label: String = "{{type.localName|upperFirstLetter}}", 
-    @ViewBuilder headerView: @escaping () -> HeaderView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-      	destination: Form {
-        	{{type.localName}}View(viewModel: viewModel, headerView: InjectionWrapper { headerView() })
-        }
-        //.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
-    )
-}
+	func {{type.localName|lowerFirstLetter}}Link<HeaderView: View>(
+		label: String = "{{type.localName|upperFirstLetter}}", 
+		@ViewBuilder headerView: @escaping () -> HeaderView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				{{type.localName}}View(viewModel: viewModel, headerView: InjectionWrapper { headerView() })
+			}
+			//.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
+		)
+	}
 
-func {{type.localName|lowerFirstLetter}}Link<FooterView: View>(
-    label: String = "{{type.localName|upperFirstLetter}}", 
-    @ViewBuilder footerView: @escaping () -> FooterView
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase, 
-      	destination: Form {
-          	{{type.localName}}View(viewModel: viewModel, footerView: footerView())
-        }
-        //.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
-    )
-}
+	func {{type.localName|lowerFirstLetter}}Link<FooterView: View>(
+		label: String = "{{type.localName|upperFirstLetter}}", 
+		@ViewBuilder footerView: @escaping () -> FooterView
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase, 
+			destination: Form {
+				{{type.localName}}View(viewModel: viewModel, footerView: footerView())
+			}
+			//.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
+		)
+	}
   
-func {{type.localName|lowerFirstLetter}}Link(
-    label: String = "{{type.localName|upperFirstLetter}}"
-) -> some View {
-    NavigationLink(
-      	label.automaticSettingsTitleCase,
-      	destination: Form {
-          	{{type.localName}}View(viewModel: self.viewModel)
-        }
-        //.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
-    )
-}
+	func {{type.localName|lowerFirstLetter}}Link(
+		label: String = "{{type.localName|upperFirstLetter}}"
+	) -> some View {
+		NavigationLink(
+			label.automaticSettingsTitleCase,
+			destination: Form {
+				{{type.localName}}View(viewModel: self.viewModel)
+			}
+			//.navigationBarTitle("{{type.localName|upperFirstLetter}}".automaticSettingsTitleCase)
+		)
+	}
 {% endif %}
 {% endfor %}
 }

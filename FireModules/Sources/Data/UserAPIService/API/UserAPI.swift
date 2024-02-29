@@ -5,7 +5,7 @@
 //  Created by Hien Tran on 07/12/2023.
 //
 
-import Moya
+import Networking
 
 enum UserAPI {
     case signUp(email: String, password: String)

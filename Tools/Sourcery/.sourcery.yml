@@ -31,6 +31,8 @@ configurations:
       settingsView: DevSettingsView
       settingsStructure: DevSettings
       settingsExternalData: DevSettingsExternalData
+      settingsImports:
+        - DevSettingsUseCase
 
 
 

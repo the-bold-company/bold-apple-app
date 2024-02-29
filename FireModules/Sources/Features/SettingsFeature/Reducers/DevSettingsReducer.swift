@@ -8,7 +8,6 @@
 import ComposableArchitecture
 import DevSettingsUseCase
 import Factory
-import SharedModels
 
 @Reducer
 public struct DevSettingsReducer {

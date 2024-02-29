@@ -29,8 +29,8 @@ public struct AuthAPIService: AuthAPIServiceProtocol {
         return try await client
             .requestPublisher(.register(email: email, password: password))
             .mapToResponse(LoginResponse.self)
-            .mapError { DomainError(error: $0) }
             .map { ($0.user.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
+            .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
             .async()
     }

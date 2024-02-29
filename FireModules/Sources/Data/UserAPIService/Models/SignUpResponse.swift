@@ -1,5 +1,5 @@
 //
-//  LoginResponse.swift
+//  SignUpResponse.swift
 //
 //
 //  Created by Hien Tran on 26/11/2023.
@@ -7,7 +7,7 @@
 
 import DomainEntities
 
-struct LoginResponse: Decodable {
+struct SignUpResponse: Decodable {
     let token: String
     let refreshToken: String
     let user: UserDetails
@@ -19,7 +19,7 @@ struct LoginResponse: Decodable {
     }
 }
 
-extension LoginResponse {
+extension SignUpResponse {
     func asCredentialsEntity() -> CredentialsEntity {
         return CredentialsEntity(accessToken: token, refreshToken: refreshToken)
     }

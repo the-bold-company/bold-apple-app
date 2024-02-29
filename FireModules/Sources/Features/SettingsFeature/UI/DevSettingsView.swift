@@ -7,7 +7,7 @@
 
 import AutomaticSettings
 import CoreUI
-import SharedModels
+import DevSettingsUseCase
 import SwiftUI
 
 /// Use this wrapper to bind between thew view model and TCA
