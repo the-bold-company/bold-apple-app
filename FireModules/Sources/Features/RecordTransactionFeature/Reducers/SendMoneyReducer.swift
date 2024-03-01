@@ -7,14 +7,11 @@
 
 import ComposableArchitecture
 import Foundation
-import LoggedInUserService
-import PersistentService
-import TransactionsService
+import FundListUseCase
+import TransactionRecordUseCase
 
 @Reducer
 public struct SendMoneyReducer {
-    public init() {}
-
     public struct State: Equatable {
         public init(sourceFund: FundEntity) {
             self.sourceFund = sourceFund
@@ -28,7 +25,7 @@ public struct SendMoneyReducer {
         @BindingState var description: String = ""
         @PresentationState var fundPicker: FundPickerReducer.State?
         var isFormValid = false
-        var transactionRecordLoadingState: NetworkLoadingState<TransactionEntity> = .idle
+        var transactionRecordLoadingState: LoadingState<TransactionEntity> = .idle
 
         var sourceFundId: UUID {
             return sourceFund.id
@@ -47,7 +44,7 @@ public struct SendMoneyReducer {
         case delegate(Delegate)
 
         case transactionRecordedSuccessfully(TransactionEntity)
-        case transactionRecordedFailed(NetworkError)
+        case transactionRecordedFailed(DomainError)
 
         public enum Delegate {
             case fundPickerFieldTapped
@@ -56,9 +53,17 @@ public struct SendMoneyReducer {
     }
 
     @Dependency(\.dismiss) var dismiss
-    @Dependency(\.loggedInUserService) var loggedInUserService
-    @Dependency(\.transactionSerivce) var transactionService
-    @Dependency(\.persistentSerivce) var persistentSerivce
+
+    let transactionRecordUseCase: TransactionRecordUseCaseProtocol
+    let fundListUseCase: FundListUseCaseProtocol
+
+    public init(
+        transactionRecordUseCase: TransactionRecordUseCaseProtocol,
+        fundListUseCase: FundListUseCaseProtocol
+    ) {
+        self.transactionRecordUseCase = transactionRecordUseCase
+        self.fundListUseCase = fundListUseCase
+    }
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -68,27 +73,16 @@ public struct SendMoneyReducer {
             case .onAppear:
                 guard state.targetFunds.isEmpty else { return .none }
                 return .run { [sourceFundId = state.sourceFund.id] send in
-                    var possibleTargetFunds: IdentifiedArrayOf<FundEntity>?
-                    let persistedFunds = await (try? persistentSerivce.fetchFundList()) ?? []
+                    let result = await fundListUseCase.getFiatFundList()
 
-                    if !persistedFunds.isEmpty {
-                        possibleTargetFunds = IdentifiedArray(uniqueElements: persistedFunds)
-
-                    } else {
-                        let sessionPersistedFunds = await loggedInUserService.loadedFunds()
-
-                        if !sessionPersistedFunds.isEmpty {
-                            possibleTargetFunds = IdentifiedArray(uniqueElements: sessionPersistedFunds)
-                        } else {
-                            // Maybe re fetch the fund? But practically, it shouldn't goes here
-                        }
-                    }
-
-                    if var selectableFunds = possibleTargetFunds {
+                    switch result {
+                    case var .success(loadedFunds):
+                        var selectableFunds = IdentifiedArray(uniqueElements: loadedFunds)
                         selectableFunds.remove(id: sourceFundId)
                         await send(.targetFundsLoaded(selectableFunds))
-                    } else {
-                        // Maybe re fetch the fund? But practically, it shouldn't goes here
+                    case .failure:
+                        // Maybe re-fetch the fund? But practically, it shouldn't goes here
+                        break
                     }
                 }
             case let .targetFundsLoaded(targetFunds):
@@ -119,19 +113,17 @@ public struct SendMoneyReducer {
             case .delegate(.proceedButtonTapped):
                 state.transactionRecordLoadingState = .loading
                 return .run { [sourceID = state.sourceFundId, amount = state.amount, destinationId = state.destinationFundId, description = state.description] send in
-                    do {
-                        let res = try await transactionService.recordTransaction(
-                            sourceFundId: sourceID,
-                            amount: Decimal(amount),
-                            destinationFundId: destinationId,
-                            description: description,
-                            type: .inout
-                        )
-                        await send(.transactionRecordedSuccessfully(res))
-                    } catch let error as NetworkError {
+                    let result = await transactionRecordUseCase.recordInOutTransaction(
+                        sourceFundId: sourceID,
+                        amount: Decimal(amount),
+                        destinationFundId: destinationId,
+                        description: description
+                    )
+                    switch result {
+                    case let .success(recordedTransaction):
+                        await send(.transactionRecordedSuccessfully(recordedTransaction))
+                    case let .failure(error):
                         await send(.transactionRecordedFailed(error))
-                    } catch {
-                        await send(.transactionRecordedFailed(NetworkError.unknown(error)))
                     }
                 }
             case .binding:

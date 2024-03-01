@@ -19,7 +19,6 @@ xcuserdata/
 *.xcscmblueprint
 *.xcworkspacedata
 IDEWorkspaceChecks.plist
-*.generated.swift
 
 ## Obj-C/Swift specific
 *.hmap
@@ -39,7 +38,6 @@ playground.xcworkspace
 #
 Pods/
 Pods/CocoaPodsKeys
-*.generated.swift
 
 # fastlane
 #

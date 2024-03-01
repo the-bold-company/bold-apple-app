@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import CoreUI
 import CurrencyKit
-import SharedModels
+import DomainEntities
 import SwiftUI
 
 public struct SendMoneyPage: View {

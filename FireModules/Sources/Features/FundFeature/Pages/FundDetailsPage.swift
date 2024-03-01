@@ -9,20 +9,18 @@ import Charts
 import ComposableArchitecture
 import CoreUI
 import CurrencyKit
-import FundsService
-import Networking
+import DomainEntities
 import RecordTransactionFeature
-import SharedModels
 import SwiftUI
 
 public struct FundDetailsPage: View {
     @ObserveInjection private var iO
 
     struct ViewState: Equatable {
-        var fund: CreateFundResponse
-        var fundDetailsLoadingState: NetworkLoadingState<CreateFundResponse>
-        var fundDeletionState: NetworkLoadingState<DeleteFundResponse>
-        var transactionsLoadingState: NetworkLoadingState<PaginationEntity<TransactionEntity>>
+        var fund: FundEntity
+        var fundDetailsLoadingState: LoadingState<FundEntity>
+        var fundDeletionState: LoadingState<UUID>
+        var isTransactionsLoading: Bool
         var transactions: IdentifiedArrayOf<TransactionEntity>
     }
 
@@ -163,20 +161,20 @@ public struct FundDetailsPage: View {
                 }
                 Spacing(height: .size16)
                 ForEach(
-                    viewStore.transactionsLoadingState.isLoading
-                        ? [
+                    viewStore.isTransactionsLoading
+                        ? IdentifiedArray(uniqueElements: [
                             TransactionEntity.mock(id: UUID()),
                             TransactionEntity.mock(id: UUID()),
                             TransactionEntity.mock(id: UUID()),
                             TransactionEntity.mock(id: UUID()),
-                            TransactionEntity.mock(id: UUID())
-                        ]
+                            TransactionEntity.mock(id: UUID()),
+                        ])
                         : viewStore.transactions,
                     id: \.id
                 ) {
                     TransactionItemView(
                         transaction: $0,
-                        isLoading: viewStore.transactionsLoadingState.isLoading
+                        isLoading: viewStore.isTransactionsLoading
                     )
                 }
             }
@@ -217,7 +215,7 @@ extension BindingViewStore<FundDetailsReducer.State> {
             fund: self.fund,
             fundDetailsLoadingState: self.fundDetailsLoadingState,
             fundDeletionState: self.fundDeletionState,
-            transactionsLoadingState: self.transactionsLoadingState,
+            isTransactionsLoading: self.transactionsLoadingState.isLoading,
             transactions: self.transactions
         )
         // swiftformat:enable redundantSelf

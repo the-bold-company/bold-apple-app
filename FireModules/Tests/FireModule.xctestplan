@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "5199EBD2-DCBF-493A-809A-6EDEDA645957",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:..\/FireModules",
+        "identifier" : "LogInFeatureTests",
+        "name" : "LogInFeatureTests"
+      }
+    }
+  ],
+  "version" : 1
+}

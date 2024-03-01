@@ -11,7 +11,6 @@ import LogInFeature
 import OnboardingFeature
 import RecordTransactionFeature
 import SettingsFeature
-import SharedModels
 import SignUpFeature
 import SwiftUI
 import TCACoordinators

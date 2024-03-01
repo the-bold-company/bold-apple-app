@@ -5,8 +5,8 @@
 //  Created by Hien Tran on 30/01/2024.
 //
 
+import DomainEntities
 import Inject
-import SharedModels
 import SwiftUI
 
 struct TransactionItemView: View {

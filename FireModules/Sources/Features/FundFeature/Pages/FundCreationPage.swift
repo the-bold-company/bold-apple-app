@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import CoreUI
 import CurrencyKit
+import FundCreationUseCase
 import SwiftUI
 
 public struct FundCreationPage: View {
@@ -141,7 +142,9 @@ extension BindingViewStore<FundCreationReducer.State> {
     FundCreationPage(store: Store(
         initialState: .init(),
         reducer: {
-            FundCreationReducer()
+            FundCreationReducer(
+                fundCreationUseCase: FundCreationUseCaseProtocolMock()
+            )
         }
     ))
 }

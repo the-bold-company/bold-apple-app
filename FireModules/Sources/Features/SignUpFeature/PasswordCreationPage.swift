@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 import CoreUI
-import Networking
+import DomainEntities
 import SwiftUI
 
 public struct PasswordCreationPage: View {
@@ -18,7 +18,6 @@ public struct PasswordCreationPage: View {
         var passwordValidationError: String?
         var accountCreationError: String?
         var accountCreationInProgress: Bool
-        var accountCreationResult: LoginResponse?
     }
 
     let store: StoreOf<RegisterReducer>
@@ -78,8 +77,7 @@ extension BindingViewStore<RegisterReducer.State> {
             password: self.$password,
             passwordValidationError: self.passwordValidationError,
             accountCreationError: self.accountCreationError,
-            accountCreationInProgress: self.accountCreationInProgress,
-            accountCreationResult: self.accountCreationResult
+            accountCreationInProgress: self.accountCreationInProgress
         )
         // swiftformat:enable redundantSelf
     }

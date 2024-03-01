@@ -12,7 +12,6 @@ public struct LoginPage: View {
         var areInputsValid: Bool
         var logInError: String?
         var logInInProgress: Bool
-        var loggedInUser: UserDetails?
     }
 
     let store: StoreOf<LoginReducer>
@@ -86,8 +85,7 @@ extension BindingViewStore<LoginReducer.State> {
             password: self.$password,
             areInputsValid: self.areInputsValid,
             logInError: self.loginError,
-            logInInProgress: self.logInInProgress,
-            loggedInUser: self.loggedInUser
+            logInInProgress: self.logInInProgress
         )
         // swiftformat:enable redundantSelf
     }

@@ -7,29 +7,27 @@
 
 import ComposableArchitecture
 import Foundation
-import FundsService
 import RecordTransactionFeature
+
+import Factory
+import FundDetailsUseCase
 
 @Reducer
 public struct FundDetailsReducer {
-    public init() {}
-
-    let fundService = FundsService()
-
     public struct State: Equatable, Identifiable {
-        public init(fund: CreateFundResponse) {
+        public init(fund: FundEntity) {
             self.fund = fund
         }
 
-        public var id: String {
+        public var id: UUID {
             return fund.id
         }
 
         @PresentationState public var destination: Destination.State?
-        public var fund: CreateFundResponse
-        var fundDetailsLoadingState: NetworkLoadingState<CreateFundResponse> = .idle
-        var fundDeletionState: NetworkLoadingState<DeleteFundResponse> = .idle
-        var transactionsLoadingState: NetworkLoadingState<PaginationEntity<TransactionEntity>> = .idle
+        public var fund: FundEntity
+        var fundDetailsLoadingState: LoadingState<FundEntity> = .idle
+        var fundDeletionState: LoadingState<UUID> = .idle
+        var transactionsLoadingState: LoadingState<PaginationEntity<TransactionEntity>> = .idle
         var transactions: IdentifiedArrayOf<TransactionEntity> = []
     }
 
@@ -46,21 +44,26 @@ public struct FundDetailsReducer {
         }
 
         public enum Forward {
-            case loadFundDetailsSuccesfully(CreateFundResponse)
-            case failedToLoadFundDetails(NetworkError)
-            case deleteFundSuccesfully(DeleteFundResponse)
-            case failedToDeleteFund(NetworkError)
+            case loadFundDetailsSuccesfully(FundEntity)
+            case failedToLoadFundDetails(DomainError)
+            case deleteFundSuccesfully(UUID)
+            case failedToDeleteFund(DomainError)
             case loadFundDetails
             case loadTransactionHistory
             case loadTransactionsSuccesfully(PaginationEntity<TransactionEntity>)
-            case loadTransactionsFailure(NetworkError)
-            case fundDetailsUpdated(CreateFundResponse)
+            case loadTransactionsFailure(DomainError)
+            case fundDetailsUpdated(FundEntity)
         }
     }
 
     @Dependency(\.dismiss) var dismiss
     @Dependency(\.continuousClock) var clock
-    @Dependency(\.fundsSerivce) var fundsService
+
+    let fundDetailsUseCase: FundDetailsUseCaseProtocol
+
+    public init(fundDetailsUseCase: FundDetailsUseCaseProtocol) {
+        self.fundDetailsUseCase = fundDetailsUseCase
+    }
 
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
@@ -71,30 +74,29 @@ public struct FundDetailsReducer {
             case .delegate(.deleteFundButtonTapped):
                 state.fundDeletionState = .loading
                 return .run { [fundId = state.fund.id] send in
-                    do {
-                        let res = try await fundService.deleteFund(fundId: fundId)
-                        await send(.forward(.deleteFundSuccesfully(res)))
-                    } catch let error as NetworkError {
+                    let result = await fundDetailsUseCase.deleteFund(id: fundId)
+                    switch result {
+                    case let .success(id):
+                        await send(.forward(.deleteFundSuccesfully(id)))
+                    case let .failure(error):
                         await send(.forward(.failedToDeleteFund(error)))
-                    } catch {
-                        await send(.forward(.failedToDeleteFund(NetworkError.unknown(error))))
                     }
                 }
             case .delegate(.sendMoneyButtonTapped):
-                state.destination = .sendMoney(.init(sourceFund: state.fund.asFundEntity()))
+                state.destination = .sendMoney(.init(sourceFund: state.fund))
                 return .none
             case .forward(.loadFundDetails):
                 guard state.fundDetailsLoadingState != .loading else { return .none }
                 state.fundDetailsLoadingState = .loading
 
                 return .run { [fundId = state.fund.id] send in
-                    do {
-                        let res = try await fundService.getFundDetails(fundId: fundId)
-                        await send(.forward(.loadFundDetailsSuccesfully(res)))
-                    } catch let error as NetworkError {
+                    let result = await fundDetailsUseCase.loadFundDetails(id: fundId)
+
+                    switch result {
+                    case let .success(details):
+                        await send(.forward(.loadFundDetailsSuccesfully(details)))
+                    case let .failure(error):
                         await send(.forward(.failedToLoadFundDetails(error)))
-                    } catch {
-                        await send(.forward(.failedToLoadFundDetails(NetworkError.unknown(error))))
                     }
                 }
             case .forward(.loadTransactionHistory):
@@ -102,13 +104,12 @@ public struct FundDetailsReducer {
                 state.transactionsLoadingState = .loading
 
                 return .run { [fundId = state.fund.id] send in
-                    do {
-                        let res = try await fundService.getTransactions(fundId: fundId)
-                        await send(.forward(.loadTransactionsSuccesfully(res)))
-                    } catch let error as NetworkError {
+                    let result = await fundDetailsUseCase.loadTransactionHistory(fundId: fundId, order: .descending)
+                    switch result {
+                    case let .success(pagination):
+                        await send(.forward(.loadTransactionsSuccesfully(pagination)))
+                    case let .failure(error):
                         await send(.forward(.loadTransactionsFailure(error)))
-                    } catch {
-                        await send(.forward(.loadTransactionsFailure(NetworkError.unknown(error))))
                     }
                 }
             case let .forward(.loadTransactionsSuccesfully(pagination)):
@@ -176,7 +177,7 @@ public extension FundDetailsReducer {
 
         public var body: some ReducerOf<Self> {
             Scope(state: \.sendMoney, action: \.sendMoney) {
-                SendMoneyReducer()
+                resolve(\RecordTransactionFeatureContainer.sendMoneyReducer)
             }
         }
     }

@@ -6,22 +6,24 @@
 //
 
 import ComposableArchitecture
-import DevSettingsUseCases
+import DevSettingsUseCase
+import Factory
 import Foundation
-import KeychainStorageUseCases
-import Networking
+import LogInUseCase
 import Utilities
 
 @Reducer
 public struct LoginReducer {
-    let authService = AuthAPIService()
-    let keychainService = KeychainService()
-    public init() {}
+    let logInUseCase: LogInUseCaseProtocol
+
+    public init(logInUseCase: LogInUseCaseProtocol) {
+        self.logInUseCase = logInUseCase
+    }
 
     public struct State: Equatable {
         public init() {
             // TODO: Add if DEBUG handler for dev setting
-            @Dependency(\.devSettings) var devSettings
+            @Injected(\LogInFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
 
             self.email = devSettings.credentials.username
             self.password = devSettings.credentials.password
@@ -35,7 +37,6 @@ public struct LoginReducer {
         }
 
         var logInInProgress = false
-        var loggedInUser: UserDetails?
         var loginError: String?
     }
 
@@ -44,8 +45,8 @@ public struct LoginReducer {
         case binding(BindingAction<State>)
         case navigate(Route)
 
-        case logInSuccesfully(UserDetails)
-        case logInFailure(NetworkError)
+        case logInSuccesfully(AuthenticatedUserEntity)
+        case logInFailure(DomainError)
 
         public enum Route {
             case goToHome
@@ -67,24 +68,21 @@ public struct LoginReducer {
                 state.logInInProgress = true
 
                 return .run { [email = state.email, password = state.password] send in
-                    do {
-                        let response = try await authService.login(email: email, password: password)
 
-                        keychainService.setCredentials(accessToken: response.token, refreshToken: response.refreshToken)
+                    let result = await logInUseCase.login(email: email, password: password)
 
-                        await send(.logInSuccesfully(response.user))
-                    } catch let error as NetworkError {
+                    switch result {
+                    case let .success(authenticatedUser):
+                        await send(.logInSuccesfully(authenticatedUser))
+                    case let .failure(error):
                         await send(.logInFailure(error))
-                    } catch {
-                        await send(.logInFailure(.unknown(error)))
                     }
                 }
-            case let .logInSuccesfully(user):
-                state.loggedInUser = user
+            case .logInSuccesfully:
                 state.logInInProgress = false
                 return .send(.navigate(.goToHome))
             case let .logInFailure(error):
-                state.loginError = error.errorDescription
+                state.loginError = error.failureReason
                 state.logInInProgress = false
                 return .none
             case .navigate, .binding:

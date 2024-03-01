@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import KeychainStorageUseCases
+import KeychainService
 import Moya
 
 struct CommonHeadersPlugin: PluginType {
@@ -15,7 +15,7 @@ struct CommonHeadersPlugin: PluginType {
     func prepare(_ request: URLRequest, target: TargetType) -> URLRequest {
         var newRequest = request
 
-        if let accessToken = keychainService.getAccessToken() {
+        if let accessToken = try? keychainService.getAccessToken() {
             newRequest.headers.add(name: "authorization", value: accessToken)
         }
 

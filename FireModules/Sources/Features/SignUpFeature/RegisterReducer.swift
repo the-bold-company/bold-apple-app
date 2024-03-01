@@ -5,14 +5,18 @@
 //  Created by Hien Tran on 29/11/2023.
 //
 
+import AccountRegisterUseCase
 import ComposableArchitecture
 import Foundation
-import Networking
 import Utilities
 
 @Reducer
 public struct RegisterReducer {
-    public init() {}
+    let accountRegisterUseCase: AccountRegisterUseCaseProtocol
+
+    public init(accountRegisterUseCase: AccountRegisterUseCaseProtocol) {
+        self.accountRegisterUseCase = accountRegisterUseCase
+    }
 
     public struct State: Equatable {
         @BindingState var email: String = ""
@@ -22,7 +26,7 @@ public struct RegisterReducer {
         var passwordValidationError: String?
         var accountCreationError: String?
         var accountCreationInProgress = false
-        var accountCreationResult: LoginResponse?
+        var accountCreationResult: AuthenticatedUserEntity?
 
         public init() {}
     }
@@ -31,8 +35,8 @@ public struct RegisterReducer {
         case createUserButtonTapped
         case binding(BindingAction<State>)
 
-        case createUserSuccesfully(LoginResponse)
-        case createUserFailure(NetworkError)
+        case createUserSuccesfully(AuthenticatedUserEntity)
+        case createUserFailure(DomainError)
 
         case navigate(Route)
         case goToPasswordCreationButtonTapped
@@ -48,7 +52,7 @@ public struct RegisterReducer {
     public var body: some Reducer<State, Action> {
         BindingReducer()
         EmailRegistrationReducer()
-        PasswordCreationReducer()
+        PasswordCreationReducer(accountRegisterUseCase: accountRegisterUseCase)
     }
 }
 
@@ -77,7 +81,12 @@ private struct EmailRegistrationReducer {
 
 @Reducer
 private struct PasswordCreationReducer {
-    let authService = UserAPIService()
+    let accountRegisterUseCase: AccountRegisterUseCaseProtocol
+
+    init(accountRegisterUseCase: AccountRegisterUseCaseProtocol) {
+        self.accountRegisterUseCase = accountRegisterUseCase
+    }
+
     public var body: some ReducerOf<RegisterReducer> {
         Reduce { state, action in
             switch action {
@@ -101,13 +110,13 @@ private struct PasswordCreationReducer {
                 let password = state.password
 
                 return .run { send in
-                    do {
-                        let response = try await authService.signUp(email: email, password: password)
-                        await send(.createUserSuccesfully(response))
-                    } catch let error as NetworkError {
+                    let result = await accountRegisterUseCase.registerAccount(email: email, password: password)
+
+                    switch result {
+                    case let .success(authenticatedUser):
+                        await send(.createUserSuccesfully(authenticatedUser))
+                    case let .failure(error):
                         await send(.createUserFailure(error))
-                    } catch {
-                        await send(.createUserFailure(.unknown(error)))
                     }
                 }
             case let .createUserSuccesfully(response):

@@ -3,7 +3,7 @@
 
 # File Options
 #--exclude Stage,Tasks/.build,ThirdParty,**/SwiftGen/*,**/Sourcery/*,Frameworks/swift-composable-architecture,**.generated.swift
---exclude **/.generated.swift, **/.build, **/*.stencil 
+--exclude **/*/*.generated.swift, **/.build, **/*.stencil 
 
 # Format Options
 

@@ -6,17 +6,16 @@
 //
 
 import CoreUI
-import FundsService
-import Networking
+import DomainEntities
 import SwiftUI
 
 struct FundItemView: View {
     @ObserveInjection private var iO
 
-    let fund: CreateFundResponse
+    let fund: FundEntity
     let isLoading: Bool
 
-    init(fund: CreateFundResponse, isLoading: Bool) {
+    init(fund: FundEntity, isLoading: Bool) {
         self.fund = fund
         self.isLoading = isLoading
     }
@@ -49,11 +48,11 @@ struct FundItemView: View {
 #Preview {
     Group {
         FundItemView(
-            fund: CreateFundResponse.mockList.first!, // swiftlint:disable:this force_unwrapping
+            fund: FundEntity.mockList.first!, // swiftlint:disable:this force_unwrapping
             isLoading: true
         )
         FundItemView(
-            fund: CreateFundResponse.mockList.first!, // swiftlint:disable:this force_unwrapping
+            fund: FundEntity.mockList.first!, // swiftlint:disable:this force_unwrapping
             isLoading: false
         )
     }
