@@ -1,5 +1,6 @@
 import DomainEntities
 
+// sourcery: AutoMockable
 public protocol PersistenceServiceInterface {
     func saveFund(_ fund: FundEntity) async throws
     func saveFunds(_ funds: [FundEntity]) async throws

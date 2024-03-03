@@ -5,7 +5,6 @@
 //  Created by Hien Tran on 20/02/2024.
 //
 
-@_exported import Difference
 import XCTest
 
 public func XCAssertNoDifference<T: Equatable>(
