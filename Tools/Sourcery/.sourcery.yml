@@ -8,6 +8,27 @@ configurations:
     baseIndentation: 4
   - sources:
       include:
+        - ../../FireModules/Sources/Domains/UseCases/TransactionListUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/TransactionListUseCase/Generated
+    baseIndentation: 4
+  - sources:
+      include:
+        - ../../FireModules/Sources/Domains/UseCases/FundListUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/FundListUseCase/Generated
+    baseIndentation: 4
+  - sources:
+      include:
+        - ../../FireModules/Sources/Domains/UseCases/PortfolioUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/PortfolioUseCase/Generated
+    baseIndentation: 4
+  - sources:
+      include:
         - ../../FireModules/Sources/Domains/UseCases/FundCreationUseCase
     templates:
       - Templates/AutoMockable/AutoMockable.stencil
@@ -33,6 +54,17 @@ configurations:
       settingsExternalData: DevSettingsExternalData
       settingsImports:
         - DevSettingsUseCase
+  - sources:
+      include:
+        - ../../FireModules/Sources/Domains/DataInterfaces/PersistenceServiceInterface
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Data/PersistenceService/Generated/
+    baseIndentation: 4
+    args:
+      autoMockableImports:
+        - PersistenceServiceInterface
+        - DomainEntities
 
 
 

@@ -1,8 +1,13 @@
 // Generated using Sourcery 2.1.7 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
+// swiftlint:disable superfluous_disable_command
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
 // swiftlint:disable large_tuple
+// swiftlint:disable comment_spacing
+// swiftlint:disable shorthand_optional_binding
+// swiftlint:disable vertical_whitespace
+
 
 import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
@@ -13,7 +18,7 @@ import AppKit
 
 public class FundCreationUseCaseProtocolMock: FundCreationUseCaseProtocol {
     public init() {}
-    //MARK: - createFiatFund
+    // MARK: - createFiatFund
 
     public var createFiatFundNameStringBalanceDecimalCurrencyStringDescriptionStringResultFundEntityDomainErrorCallsCount = 0
     public var createFiatFundNameStringBalanceDecimalCurrencyStringDescriptionStringResultFundEntityDomainErrorCalled: Bool {
@@ -39,3 +44,7 @@ public class FundCreationUseCaseProtocolMock: FundCreationUseCaseProtocol {
 // swiftlint:enable line_length
 // swiftlint:enable variable_name
 // swiftlint:enable large_tuple
+// swiftlint:enable comment_spacing
+// swiftlint:enable shorthand_optional_binding
+// swiftlint:enable vertical_whitespace
+// swiftlint:enable superfluous_disable_command

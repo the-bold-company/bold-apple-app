@@ -5,57 +5,58 @@
 //  Created by Hien Tran on 20/02/2024.
 //
 
-import XCTest
-
 import ComposableArchitecture
 import DevSettingsUseCase
+import DI
 import DomainEntities
 @testable import LogInFeature
 import LogInUseCase
 import TestHelpers
+import XCTest
 
 @MainActor
 final class LogInReducerTests: XCTestCase {
     var initialState: LoginReducer.State!
 
     override func setUpWithError() throws {
+        Container.shared.manager.trace.toggle()
+        Container.shared.manager.push()
+
         initialState = LoginReducer.State()
         initialState.email = "user@fire.com"
         initialState.password = "P@ssword123"
     }
 
     override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+        Container.shared.manager.pop()
     }
 
     func testUsernameAndPassword_isPreFilled_whenDevSettingsAreSet() async throws {
         // Arrange
+        var mockCredentials = DevSettings.Credentials()
+        mockCredentials.username = "user@fire.com"
+        mockCredentials.password = "P@ssword123"
+        Container.shared.devSettingsUseCase.register {
+            DevSettingsUseCase.mock(
+                initialDevSettings: DevSettings(credentials: mockCredentials)
+            )
+        }
+
         let store = TestStore(
             initialState: LoginReducer.State(),
-            reducer: { LoginReducer(logInUseCase: LogInUseCaseProtocolMock()) },
-            withDependencies: { dependency in
-                var mockCredentials = DevSettings.Credentials()
-                mockCredentials.username = "user@fire.com"
-                mockCredentials.password = "P@ssword123"
-                dependency.devSettings = DevSettingsClient.mock(
-                    initialDevSettings: DevSettings(
-                        credentials: mockCredentials
-                    )
-                )
-            }
+            reducer: { LoginReducer(logInUseCase: LogInUseCaseProtocolMock()) }
         )
 
-        // Act
-        var expectedState = LoginReducer.State()
-        expectedState.email = "user@fire.com"
-        expectedState.password = "P@ssword123"
-
         // Assert
-        XCAssertTCAStateNoDifference(store.state, expectedState)
+        XCAssertNoDifference(store.state.email, "user@fire.com")
+        XCAssertNoDifference(store.state.password, "P@ssword123")
     }
 
     func testUsernameAndPassword_isEmpty_whenDevSettingsAreNotSet() async throws {
         // Arrange
+        Container.shared.devSettingsUseCase.register {
+            DevSettingsUseCase.mock(initialDevSettings: DevSettings())
+        }
         let store = TestStore(
             initialState: LoginReducer.State(),
             reducer: { LoginReducer(logInUseCase: LogInUseCaseProtocolMock()) }
@@ -102,7 +103,7 @@ final class LogInReducerTests: XCTestCase {
 
         // Assert
         await store.receive(\.logInFailure) {
-            $0.loginError = "Something's wrong"
+            $0.loginError = "An error has occured"
         }
     }
 

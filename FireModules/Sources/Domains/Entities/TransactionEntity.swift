@@ -22,12 +22,12 @@ public struct TransactionEntity: Equatable, Identifiable, Hashable {
         id: String,
         timestamp: Int,
         sourceFundId: String,
-        destinationFundId: String?,
+        destinationFundId: String? = nil,
         amount: Decimal,
         type: String,
         userId: String,
         currency: String,
-        description: String?
+        description: String? = nil
     ) {
         self.id = UUID(uuidString: id)! // swiftlint:disable:this force_unwrapping
         self.timestamp = timestamp

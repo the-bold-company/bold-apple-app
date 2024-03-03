@@ -76,7 +76,7 @@ public struct SendMoneyReducer {
                     let result = await fundListUseCase.getFiatFundList()
 
                     switch result {
-                    case var .success(loadedFunds):
+                    case let .success(loadedFunds):
                         var selectableFunds = IdentifiedArray(uniqueElements: loadedFunds)
                         selectableFunds.remove(id: sourceFundId)
                         await send(.targetFundsLoaded(selectableFunds))

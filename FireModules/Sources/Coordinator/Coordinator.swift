@@ -95,7 +95,9 @@ public struct Coordinator {
             switch action {
             case .onLaunch:
                 return .run { _ in
-                    try keychainService.removeCredentials()
+                    do {
+                        try keychainService.removeCredentials()
+                    } catch {}
                 }
 
             // MARK: - Landing routes

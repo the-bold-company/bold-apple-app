@@ -18,6 +18,13 @@
         "identifier" : "LogInFeatureTests",
         "name" : "LogInFeatureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/FireModules",
+        "identifier" : "HomeFeatureTests",
+        "name" : "HomeFeatureTests"
+      }
     }
   ],
   "version" : 1

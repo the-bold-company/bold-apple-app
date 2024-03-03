@@ -61,6 +61,7 @@ public extension Container {
 
     var persistenceService: Factory<PersistenceServiceInterface> {
         self { PersistenceService() }
+            .onTest { PersistenceServiceInterfaceMock() }
     }
 
     // MARK: Register use cases

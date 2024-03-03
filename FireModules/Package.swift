@@ -27,7 +27,6 @@ let package = Package(
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
-        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.2.0"),
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
         .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
@@ -248,7 +247,9 @@ let package = Package(
         .target(
             name: "TestHelpers",
             dependencies: [
+                "DI",
                 .product(name: "Difference", package: "difference"),
+                .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Shared/Kits/TestHelpers"
         ),
@@ -479,6 +480,16 @@ let package = Package(
             name: "LogInFeatureTests",
             dependencies: [
                 "LogInFeature",
+                "TestHelpers",
+                "DomainEntities",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ]
+            // exclude: ["__Snapshots__"]
+        ),
+        .testTarget(
+            name: "HomeFeatureTests",
+            dependencies: [
+                "HomeFeature",
                 "TestHelpers",
                 "DomainEntities",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
