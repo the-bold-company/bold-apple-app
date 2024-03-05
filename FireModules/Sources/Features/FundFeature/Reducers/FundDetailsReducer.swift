@@ -37,22 +37,22 @@ public struct FundDetailsReducer {
         case destination(PresentationAction<Destination.Action>)
         case binding(BindingAction<State>)
 
-        public enum Delegate {
+        @CasePathable
+        public enum Forward {
             case deleteFundButtonTapped
             case sendMoneyButtonTapped
-            case onApear
+            case loadFundDetails
+            case loadTransactionHistory
         }
 
-        public enum Forward {
+        @CasePathable
+        public enum Delegate {
             case loadFundDetailsSuccesfully(FundEntity)
             case failedToLoadFundDetails(DomainError)
             case deleteFundSuccesfully(UUID)
             case failedToDeleteFund(DomainError)
-            case loadFundDetails
-            case loadTransactionHistory
             case loadTransactionsSuccesfully(PaginationEntity<TransactionEntity>)
             case loadTransactionsFailure(DomainError)
-            case fundDetailsUpdated(FundEntity)
         }
     }
 
@@ -68,98 +68,92 @@ public struct FundDetailsReducer {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .delegate(.onApear):
-                guard state.transactionsLoadingState == .idle else { return .none }
-                return .send(.forward(.loadTransactionHistory))
-            case .delegate(.deleteFundButtonTapped):
-                state.fundDeletionState = .loading
-                return .run { [fundId = state.fund.id] send in
-                    let result = await fundDetailsUseCase.deleteFund(id: fundId)
-                    switch result {
-                    case let .success(id):
-                        await send(.forward(.deleteFundSuccesfully(id)))
-                    case let .failure(error):
-                        await send(.forward(.failedToDeleteFund(error)))
-                    }
-                }
-            case .delegate(.sendMoneyButtonTapped):
+            case .forward(.deleteFundButtonTapped):
+                return deleteFund(state: &state)
+            case .forward(.sendMoneyButtonTapped):
                 state.destination = .sendMoney(.init(sourceFund: state.fund))
                 return .none
             case .forward(.loadFundDetails):
-                guard state.fundDetailsLoadingState != .loading else { return .none }
-                state.fundDetailsLoadingState = .loading
-
-                return .run { [fundId = state.fund.id] send in
-                    let result = await fundDetailsUseCase.loadFundDetails(id: fundId)
-
-                    switch result {
-                    case let .success(details):
-                        await send(.forward(.loadFundDetailsSuccesfully(details)))
-                    case let .failure(error):
-                        await send(.forward(.failedToLoadFundDetails(error)))
-                    }
-                }
+                return loadFundDetails(state: &state)
             case .forward(.loadTransactionHistory):
-                guard state.transactionsLoadingState != .loading else { return .none }
-                state.transactionsLoadingState = .loading
-
-                return .run { [fundId = state.fund.id] send in
-                    let result = await fundDetailsUseCase.loadTransactionHistory(fundId: fundId, order: .descending)
-                    switch result {
-                    case let .success(pagination):
-                        await send(.forward(.loadTransactionsSuccesfully(pagination)))
-                    case let .failure(error):
-                        await send(.forward(.loadTransactionsFailure(error)))
-                    }
-                }
-            case let .forward(.loadTransactionsSuccesfully(pagination)):
+                return loadTransactionHistory(state: &state)
+            case let .delegate(.loadTransactionsSuccesfully(pagination)):
                 state.transactionsLoadingState = .loaded(pagination)
                 state.transactions.append(contentsOf: pagination.items)
                 return .none
-            case let .forward(.loadTransactionsFailure(error)):
+            case let .delegate(.loadTransactionsFailure(error)):
                 state.transactionsLoadingState = .failure(error)
                 return .none
-            case let .forward(.fundDetailsUpdated(newValue)):
-                state.fund = newValue
-                return .none.animation()
-            case let .forward(.loadFundDetailsSuccesfully(response)):
+            case let .delegate(.loadFundDetailsSuccesfully(response)):
                 state.fundDetailsLoadingState = .loaded(response)
-                return .send(.forward(.fundDetailsUpdated(response)))
-            case let .forward(.failedToLoadFundDetails(err)):
+                state.fund = response
+                return .none.animation()
+            case let .delegate(.failedToLoadFundDetails(err)):
                 state.fundDetailsLoadingState = .failure(err)
                 return .none
-            case let .forward(.deleteFundSuccesfully(response)):
+            case let .delegate(.deleteFundSuccesfully(response)):
                 state.fundDeletionState = .loaded(response)
                 return .run { _ in await dismiss() }
-            case let .forward(.failedToDeleteFund(err)):
+            case let .delegate(.failedToDeleteFund(err)):
                 state.fundDeletionState = .failure(err)
                 return .none
             case let .destination(.presented(.sendMoney(.transactionRecordedSuccessfully(addedTransaction)))):
-                state.transactions.insert(
-                    TransactionEntity(
-                        id: addedTransaction.id.uuidString,
-                        timestamp: addedTransaction.timestamp,
-                        sourceFundId: addedTransaction.sourceFundId.uuidString,
-                        destinationFundId: addedTransaction.destinationFundId?.uuidString,
-                        amount: addedTransaction.amount,
-                        type: "out",
-                        userId: addedTransaction.userId.uuidString,
-                        currency: addedTransaction.currency,
-                        description: addedTransaction.description
-                    ),
-                    at: 0
-                )
+                state.transactions.insert(addedTransaction, at: 0)
 
-                return .run { send in
-                    try await clock.sleep(for: .milliseconds(1000))
-                    await send(.forward(.loadFundDetails))
-                }
+                return loadFundDetails(state: &state)
             case .binding, .destination:
                 return .none
             }
         }
         .ifLet(\.$destination, action: \.destination) {
             Destination()
+        }
+    }
+
+    private func loadTransactionHistory(state: inout State) -> Effect<Action> {
+        guard state.transactionsLoadingState != .loading else { return .none }
+        state.transactionsLoadingState = .loading
+
+        return .run { [fundId = state.fund.id] send in
+            let result = await fundDetailsUseCase.loadTransactionHistory(fundId: fundId, order: .descending)
+            switch result {
+            case let .success(pagination):
+                await send(.delegate(.loadTransactionsSuccesfully(pagination)))
+            case let .failure(error):
+                await send(.delegate(.loadTransactionsFailure(error)))
+            }
+        }
+    }
+
+    private func loadFundDetails(state: inout State) -> Effect<Action> {
+        guard state.fundDetailsLoadingState != .loading else { return .none }
+        state.fundDetailsLoadingState = .loading
+
+        return .run { [fundId = state.fund.id] send in
+            let result = await fundDetailsUseCase.loadFundDetails(id: fundId)
+
+            switch result {
+            case let .success(details):
+                await send(.delegate(.loadFundDetailsSuccesfully(details)))
+            case let .failure(error):
+                await send(.delegate(.failedToLoadFundDetails(error)))
+            }
+        }
+    }
+
+    private func deleteFund(state: inout State) -> Effect<Action> {
+        guard state.fundDeletionState != .loading else { return .none }
+
+        state.fundDeletionState = .loading
+
+        return .run { [fundId = state.fund.id] send in
+            let result = await fundDetailsUseCase.deleteFund(id: fundId)
+            switch result {
+            case let .success(id):
+                await send(.delegate(.deleteFundSuccesfully(id)))
+            case let .failure(error):
+                await send(.delegate(.failedToDeleteFund(error)))
+            }
         }
     }
 }

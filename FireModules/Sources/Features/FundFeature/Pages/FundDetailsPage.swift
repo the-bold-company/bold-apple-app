@@ -50,7 +50,7 @@ public struct FundDetailsPage: View {
         }
         .navigationBarHidden(true)
         .task {
-            viewStore.send(.delegate(.onApear))
+            viewStore.send(.forward(.loadTransactionHistory))
         }
         .navigationDestination(
             store: store.scope(
@@ -67,7 +67,7 @@ public struct FundDetailsPage: View {
             Spacer()
             VStack(spacing: 8) {
                 Button(action: {
-                    viewStore.send(.delegate(.sendMoneyButtonTapped))
+                    viewStore.send(.forward(.sendMoneyButtonTapped))
                 }) {
                     Image(systemName: "arrow.up")
                         .foregroundColor(Color.coreui.forestGreen)
@@ -184,7 +184,7 @@ public struct FundDetailsPage: View {
     @ViewBuilder
     var deleteFundButton: some View {
         Button(action: {
-            viewStore.send(.delegate(.deleteFundButtonTapped))
+            viewStore.send(.forward(.deleteFundButtonTapped))
         }) {
             Text("Delete this fund")
                 .frame(maxWidth: .infinity)
