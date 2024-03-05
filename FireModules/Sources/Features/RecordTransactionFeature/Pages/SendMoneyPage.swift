@@ -51,9 +51,9 @@ public struct SendMoneyPage: View {
                 }
                 .frame(maxHeight: .infinity)
             }
-            .onAppear(perform: {
-                viewStore.send(.onAppear)
-            })
+            .task {
+                viewStore.send(.forward(.onAppear))
+            }
             .navigationBarHidden(true)
             .sheet(
                 store: store.scope(
@@ -92,7 +92,7 @@ public struct SendMoneyPage: View {
             Text("Destination Fund").typography(.bodyDefault)
             Spacing(height: .size8)
             Button(action: {
-                viewStore.send(.delegate(.fundPickerFieldTapped))
+                viewStore.send(.forward(.fundPickerFieldTapped))
             }) {
                 HStack {
                     Text(viewStore.selectedTargetFund?.name ?? "None").typography(.bodyDefault)
@@ -130,7 +130,7 @@ public struct SendMoneyPage: View {
     private var proceedButton: some View {
         VStack {
             Button(action: {
-                viewStore.send(.delegate(.proceedButtonTapped))
+                viewStore.send(.forward(.proceedButtonTapped))
             }) {
                 HStack {
                     Text("Proceed")

@@ -32,6 +32,13 @@
         "identifier" : "FundFeatureTests",
         "name" : "FundFeatureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/FireModules",
+        "identifier" : "RecordTransactionFeatureTests",
+        "name" : "RecordTransactionFeatureTests"
+      }
     }
   ],
   "version" : 1

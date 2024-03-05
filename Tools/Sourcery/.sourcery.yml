@@ -56,6 +56,13 @@ configurations:
         - DevSettingsUseCase
   - sources:
       include:
+        - ../../FireModules/Sources/Domains/UseCases/TransactionRecordUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/TransactionRecordUseCase/Generated
+    baseIndentation: 4
+  - sources:
+      include:
         - ../../FireModules/Sources/Domains/DataInterfaces/PersistenceServiceInterface
     templates:
       - Templates/AutoMockable/AutoMockable.stencil

@@ -11,24 +11,28 @@ import Foundation
 public extension FundEntity {
     static var fiatList1: [FundEntity] {
         [
-            FundEntity(
-                id: "c25d7db0-9944-42bd-9252-e4d240590ce2",
-                balance: 100,
-                name: "Eat out",
-                currency: "USD",
-                fundType: "fiat"
-            ),
-            FundEntity(
-                id: "abd5eedf-dd1d-41fd-95dd-beb803c20006",
-                balance: 10_000_000,
-                name: "2nd Home",
-                currency: "SGD",
-                fundType: "fiat"
-            ),
+            FundEntity.eatOut,
+            FundEntity.secondHome,
             FundEntity.payBills,
             FundEntity.freelance,
         ]
     }
+
+    static let eatOut = FundEntity(
+        id: "c25d7db0-9944-42bd-9252-e4d240590ce2",
+        balance: 100,
+        name: "Eat out",
+        currency: "USD",
+        fundType: "fiat"
+    )
+
+    static let secondHome = FundEntity(
+        id: "abd5eedf-dd1d-41fd-95dd-beb803c20006",
+        balance: 10_000_000,
+        name: "2nd Home",
+        currency: "SGD",
+        fundType: "fiat"
+    )
 
     static let payBills = FundEntity(
         id: "131e5bf0-1fb9-46ce-8b5c-57e16758ba15",

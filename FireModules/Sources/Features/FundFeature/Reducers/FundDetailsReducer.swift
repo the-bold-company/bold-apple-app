@@ -97,7 +97,7 @@ public struct FundDetailsReducer {
             case let .delegate(.failedToDeleteFund(err)):
                 state.fundDeletionState = .failure(err)
                 return .none
-            case let .destination(.presented(.sendMoney(.transactionRecordedSuccessfully(addedTransaction)))):
+            case let .destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(addedTransaction))))):
                 state.transactions.insert(addedTransaction, at: 0)
 
                 return loadFundDetails(state: &state)
