@@ -25,6 +25,13 @@
         "identifier" : "HomeFeatureTests",
         "name" : "HomeFeatureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/FireModules",
+        "identifier" : "FundFeatureTests",
+        "name" : "FundFeatureTests"
+      }
     }
   ],
   "version" : 1

@@ -48,7 +48,7 @@ public struct FundCreationPage: View {
 
                 Spacer()
                 Button(action: {
-                    viewStore.send(.delegate(.submitButtonTapped))
+                    viewStore.send(.forward(.submitButtonTapped))
                 }) {
                     HStack {
                         Text("Create fund")

@@ -31,12 +31,17 @@ public struct FundCreationReducer {
 
     public enum Action: BindableAction {
         case delegate(Delegate)
+        case forward(Forward)
         case binding(BindingAction<State>)
 
-        case fundCreatedSuccessfully(FundEntity)
-        case failedToCreateFund(DomainError)
-
+        @CasePathable
         public enum Delegate {
+            case fundCreatedSuccessfully(FundEntity)
+            case failedToCreateFund(DomainError)
+        }
+
+        @CasePathable
+        public enum Forward {
             case submitButtonTapped
         }
     }
@@ -56,7 +61,7 @@ public struct FundCreationReducer {
             switch action {
             case .binding:
                 return .none
-            case .delegate(.submitButtonTapped):
+            case .forward(.submitButtonTapped):
                 state.loadingState = .loading
 
                 return .run { [name = state.fundName, description = state.description, balance = state.balance] send in
@@ -69,15 +74,15 @@ public struct FundCreationReducer {
                     )
                     switch result {
                     case let .success(createdFund):
-                        await send(.fundCreatedSuccessfully(createdFund))
+                        await send(.delegate(.fundCreatedSuccessfully(createdFund)))
                     case let .failure(error):
-                        await send(.failedToCreateFund(error))
+                        await send(.delegate(.failedToCreateFund(error)))
                     }
                 }
-            case let .fundCreatedSuccessfully(response):
+            case let .delegate(.fundCreatedSuccessfully(response)):
                 state.loadingState = .loaded(response)
                 return .run { _ in await dismiss() }
-            case let .failedToCreateFund(err):
+            case let .delegate(.failedToCreateFund(err)):
                 state.loadingState = .failure(err)
                 return .none
             }

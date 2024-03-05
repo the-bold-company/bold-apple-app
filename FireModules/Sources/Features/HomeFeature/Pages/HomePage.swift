@@ -56,7 +56,9 @@ public struct HomePage: View {
             ) { FundCreationPage(store: $0) }
         }
         .task {
-            viewStore.send(.delegate(.onAppear))
+            viewStore.send(.forward(.loadPortfolio))
+            viewStore.send(.forward(.loadFundList))
+            viewStore.send(.forward(.loadTransactionHistory))
         }
         .enableInjection()
     }
@@ -134,7 +136,7 @@ public struct HomePage: View {
                     Text("Funds").typography(.bodyLarge)
                     Spacer()
                     Button(action: {
-                        viewStore.send(.delegate(.createFundButtonTapped))
+                        viewStore.send(.forward(.createFundButtonTapped))
                     }) {
                         Image(systemName: "rectangle.stack.badge.plus")
                     }
@@ -149,7 +151,7 @@ public struct HomePage: View {
                 ) { fund in
                     FundItemView(fund: fund, isLoading: !viewStore.fundLoadingState.hasResult)
                         .onTapGesture {
-                            viewStore.send(.delegate(.fundRowTapped(fund)))
+                            viewStore.send(.forward(.fundRowTapped(fund)))
                         }
                 }
             }

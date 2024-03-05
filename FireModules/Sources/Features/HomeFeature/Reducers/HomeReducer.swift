@@ -39,14 +39,18 @@ public struct HomeReducer {
         case delegate(Delegate)
         case forward(Forward)
 
-        public enum Delegate {
-            case onAppear
+        @CasePathable
+        public enum Forward {
             case refresh
             case fundRowTapped(FundEntity)
             case createFundButtonTapped
+            case loadPortfolio
+            case loadFundList
+            case loadTransactionHistory
         }
 
-        public enum Forward {
+        @CasePathable
+        public enum Delegate {
             case loadPortfolioSuccessfully(NetworthEntity)
             case loadPortfolioFailure(DomainError)
             case loadFundListSuccessfully([FundEntity])
@@ -79,122 +83,59 @@ public struct HomeReducer {
     public var body: some ReducerOf<Self> {
         Reduce { state, action in
             switch action {
-            case .delegate(.onAppear):
-                guard state.networthLoadingState == .idle,
-                      state.fundLoadingState == .idle,
-                      state.transactionLoadingState == .idle
-                else { return .none }
-
-                state.networthLoadingState = .loading
-                state.fundLoadingState = .loading
-                state.transactionLoadingState = .loading
-
-                return .run { send in
-                    async let networthResponse = portfolioUseCase.getNetworth()
-                    async let fundListResponse = fundListUseCase.getFiatFundList()
-                    async let transactionListResponse = transactionListUseCase.getInOutTransactions()
-
-                    switch await networthResponse {
-                    case let .success(networth):
-                        await send(.forward(.loadPortfolioSuccessfully(networth)))
-                    case .failure:
-                        break
-                    }
-
-                    switch await fundListResponse {
-                    case let .success(fundList):
-                        await send(.forward(.loadFundListSuccessfully(fundList)))
-                    case .failure:
-                        break
-                    }
-
-                    switch await transactionListResponse {
-                    case let .success(transactionList):
-                        await send(.forward(.loadTransactionsSuccessfully(transactionList)))
-                    case .failure:
-                        break
-                    }
-                }
-            case let .delegate(.fundRowTapped(fund)):
+            case .forward(.loadPortfolio):
+                return loadPortfolio(state: &state)
+            case .forward(.loadFundList):
+                return loadFundList(state: &state)
+            case .forward(.loadTransactionHistory):
+                return loadTransactionHistory(state: &state)
+            case let .forward(.fundRowTapped(fund)):
                 guard let fund = state.fundList[id: fund.id] else { return .none }
                 state.destination = .fundDetailsRoute(.init(fund: fund))
                 return .none
-            case .delegate(.createFundButtonTapped):
+            case .forward(.createFundButtonTapped):
                 state.destination = .fundCreationRoute(.init())
                 return .none
-            case .delegate(.refresh):
+            case .forward(.refresh):
                 return .none
-            case let .forward(.loadPortfolioSuccessfully(networth)):
+            case let .delegate(.loadPortfolioSuccessfully(networth)):
                 state.networthLoadingState = .loaded(networth)
                 return .none
-            case let .forward(.loadPortfolioFailure(error)):
+            case let .delegate(.loadPortfolioFailure(error)):
                 state.networthLoadingState = .failure(error)
                 return .none
-            case let .forward(.loadFundListSuccessfully(list)):
+            case let .delegate(.loadFundListSuccessfully(list)):
                 state.fundLoadingState = .loaded(list)
                 state.fundList = IdentifiedArray(uniqueElements: list)
                 return .none
-            case let .forward(.loadFundListFailure(error)):
+            case let .delegate(.loadFundListFailure(error)):
                 state.fundLoadingState = .failure(error)
                 return .none
-            case let .forward(.loadTransactionsSuccessfully(transactions)):
+            case let .delegate(.loadTransactionsSuccessfully(transactions)):
                 let mostRecentFiveTransactions = Array(transactions.prefix(3))
                 state.transactionLoadingState = .loaded(mostRecentFiveTransactions)
                 state.transactionList = IdentifiedArray(uniqueElements: mostRecentFiveTransactions)
                 return .none
-            case let .forward(.loadTransactionsFailed(error)):
+            case let .delegate(.loadTransactionsFailed(error)):
                 state.transactionLoadingState = .failure(error)
                 return .none
-            case let .forward(.updateFund(updatedFund)):
-                state.fundList[id: updatedFund.id] = updatedFund
-                return .none
-            case .destination(.presented(.fundDetailsRoute(.forward(.deleteFundSuccesfully)))):
+            case let .delegate(.updateFund(updatedFund)):
+                return updateFund(updatedFund, state: &state)
+            case .destination(.presented(.fundDetailsRoute(.delegate(.deleteFundSuccesfully)))):
                 guard let destination = state.destination,
                       case let .fundDetailsRoute(st) = destination
                 else { return .none }
                 state.fundList.remove(id: st.id)
                 return .none
-            case let .destination(.presented(.fundDetailsRoute(.forward(.fundDetailsUpdated(updatedFund))))):
-                return .send(.forward(.updateFund(updatedFund)))
+            case let .destination(.presented(.fundDetailsRoute(.delegate(.loadFundDetailsSuccesfully(updatedFund))))):
+                return updateFund(updatedFund, state: &state)
             case let .destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(transaction))))))):
-                guard state.networthLoadingState != .loading,
-                      state.transactionLoadingState != .loading
-                else { return .none }
-
-                state.networthLoadingState = .loading
-                state.transactionLoadingState = .loading
-
-                return .run { send in
-                    async let networthResponse = portfolioUseCase.getNetworth()
-                    async let loadTransactionsResult = transactionListUseCase.getInOutTransactions()
-
-                    if let destinationFundId = transaction.destinationFundId {
-                        try await clock.sleep(for: .milliseconds(1000))
-                        async let loadDestinationFundResult = fundDetailsUseCase.loadFundDetails(id: destinationFundId)
-
-                        switch await loadDestinationFundResult {
-                        case let .success(updatedDestinationFund):
-                            await send(.forward(.updateFund(updatedDestinationFund)))
-                        case .failure:
-                            break
-                        }
-                    }
-
-                    switch await networthResponse {
-                    case let .success(networth):
-                        await send(.forward(.loadPortfolioSuccessfully(networth)))
-                    case .failure:
-                        break
-                    }
-
-                    switch await loadTransactionsResult {
-                    case let .success(transactions):
-                        await send(.forward(.loadTransactionsSuccessfully(transactions)))
-                    case .failure:
-                        break
-                    }
-                }
-            case let .destination(.presented(.fundCreationRoute(.fundCreatedSuccessfully(createdFund)))):
+                return .merge(
+                    loadPortfolio(state: &state),
+                    loadTransactionHistory(state: &state),
+                    loadFundDetails(fundId: transaction.destinationFundId, state: &state)
+                )
+            case let .destination(.presented(.fundCreationRoute(.delegate(.fundCreatedSuccessfully(createdFund))))):
                 state.fundList.append(createdFund)
                 return .none
             case .destination(.dismiss):
@@ -205,6 +146,77 @@ public struct HomeReducer {
         }
         .ifLet(\.$destination, action: \.destination) {
             Destination()
+        }
+    }
+
+    private func updateFund(_ fund: FundEntity, state: inout State) -> Effect<Action> {
+        state.fundList[id: fund.id] = fund
+        return .none
+    }
+
+    private func loadFundDetails(fundId: UUID?, state _: inout State) -> Effect<Action> {
+        guard let fundId else { return .none }
+        return .run { send in
+            try await clock.sleep(for: .milliseconds(1000))
+            let loadDestinationFundResult = await fundDetailsUseCase.loadFundDetails(id: fundId)
+
+            switch loadDestinationFundResult {
+            case let .success(updatedDestinationFund):
+                await send(.delegate(.updateFund(updatedDestinationFund)))
+            case .failure:
+                break
+            }
+        }
+    }
+
+    private func loadPortfolio(state: inout State) -> Effect<Action> {
+        guard state.networthLoadingState != .loading else { return .none }
+
+        state.networthLoadingState = .loading
+
+        return .run { send in
+            let networthResponse = await portfolioUseCase.getNetworth()
+
+            switch networthResponse {
+            case let .success(networth):
+                await send(.delegate(.loadPortfolioSuccessfully(networth)))
+            case .failure:
+                break
+            }
+        }
+    }
+
+    private func loadFundList(state: inout State) -> Effect<Action> {
+        guard state.fundLoadingState != .loading else { return .none }
+
+        state.fundLoadingState = .loading
+
+        return .run { send in
+            let fundListResponse = await fundListUseCase.getFiatFundList()
+
+            switch fundListResponse {
+            case let .success(fundList):
+                await send(.delegate(.loadFundListSuccessfully(fundList)))
+            case .failure:
+                break
+            }
+        }
+    }
+
+    private func loadTransactionHistory(state: inout State) -> Effect<Action> {
+        guard state.transactionLoadingState != .loading else { return .none }
+
+        state.transactionLoadingState = .loading
+
+        return .run { send in
+            let transactionListResponse = await transactionListUseCase.getInOutTransactions()
+
+            switch transactionListResponse {
+            case let .success(transactionList):
+                await send(.delegate(.loadTransactionsSuccessfully(transactionList)))
+            case .failure:
+                break
+            }
         }
     }
 }

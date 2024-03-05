@@ -30,6 +30,7 @@ let package = Package(
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
         .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
+        .package(url: "https://github.com/pointfreeco/swift-overture", exact: "0.5.0"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -250,6 +251,7 @@ let package = Package(
                 "DI",
                 .product(name: "Difference", package: "difference"),
                 .product(name: "Factory", package: "factory"),
+                .product(name: "Overture", package: "swift-overture"),
             ],
             path: "Sources/Shared/Kits/TestHelpers"
         ),
@@ -482,7 +484,6 @@ let package = Package(
                 "LogInFeature",
                 "TestHelpers",
                 "DomainEntities",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
             // exclude: ["__Snapshots__"]
         ),
@@ -492,9 +493,16 @@ let package = Package(
                 "HomeFeature",
                 "TestHelpers",
                 "DomainEntities",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
             ]
             // exclude: ["__Snapshots__"]
+        ),
+        .testTarget(
+            name: "FundFeatureTests",
+            dependencies: [
+                "FundFeature",
+                "TestHelpers",
+                "DomainEntities",
+            ]
         ),
     ]
 )
