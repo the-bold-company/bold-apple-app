@@ -43,6 +43,7 @@ public extension FundEntity {
         balance: 10_000_000_000,
         name: "Freelance",
         currency: "VND",
+        description: "Freelance income",
         fundType: "fiat"
     )
 

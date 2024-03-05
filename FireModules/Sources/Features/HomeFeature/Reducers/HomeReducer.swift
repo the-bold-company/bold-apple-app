@@ -135,7 +135,7 @@ public struct HomeReducer {
                     loadTransactionHistory(state: &state),
                     loadFundDetails(fundId: transaction.destinationFundId, state: &state)
                 )
-            case let .destination(.presented(.fundCreationRoute(.fundCreatedSuccessfully(createdFund)))):
+            case let .destination(.presented(.fundCreationRoute(.delegate(.fundCreatedSuccessfully(createdFund))))):
                 state.fundList.append(createdFund)
                 return .none
             case .destination(.dismiss):

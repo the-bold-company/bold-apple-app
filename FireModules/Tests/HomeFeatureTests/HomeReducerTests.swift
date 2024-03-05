@@ -6,6 +6,7 @@
 //
 
 // swiftlint:disable type_body_length
+// swiftlint:disable file_length
 
 import ComposableArchitecture
 import DomainEntities
@@ -423,7 +424,7 @@ final class HomeReducerTests: XCTestCase {
         // Act & Assert
         var newList = IdentifiedArray(uniqueElements: FundEntity.fiatList1)
         newList.append(FundEntity.example1)
-        await store.send(.destination(.presented(.fundCreationRoute(.fundCreatedSuccessfully(FundEntity.example1))))) {
+        await store.send(.destination(.presented(.fundCreationRoute(.delegate(.fundCreatedSuccessfully(FundEntity.example1)))))) {
             $0.fundList = IdentifiedArray(
                 uniqueElements: update(
                     IdentifiedArray(uniqueElements: FundEntity.fiatList1),
@@ -435,3 +436,4 @@ final class HomeReducerTests: XCTestCase {
 }
 
 // swiftlint:enable type_body_length
+// swiftlint:enable file_length
