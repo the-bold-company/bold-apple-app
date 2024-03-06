@@ -29,6 +29,24 @@ public enum LoadingState<Success>: Equatable where Success: Equatable {
         }
     }
 
+    public var error: DomainError? {
+        if case let .failure(error) = self {
+            return error
+        } else {
+            return nil
+        }
+    }
+
+    /// Localized message for debuggin purposes. Don't show this to user
+    public var errorDescription: String? {
+        return error?.errorDescription
+    }
+
+    /// A localized message describing the reason for the failure. Use this to customize error message that is shown to user
+    public var failureReason: String? {
+        return error?.failureReason
+    }
+
     public var hasResult: Bool {
         return result != nil
     }

@@ -1,5 +1,5 @@
 //
-//  FundEntity+Ext.swift
+//  FundEntity+Mock.swift
 //
 //
 //  Created by Hien Tran on 03/03/2024.
