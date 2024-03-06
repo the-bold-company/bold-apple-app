@@ -282,7 +282,7 @@ final class HomeReducerTests: XCTestCase {
         store.exhaustivity = .off(showSkippedAssertions: false)
 
         // Act
-        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(TransactionEntity.spend))))))))
+        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(TransactionEntity.spend)))))))))
 
         // Assert
         await store.receive(\.delegate.loadPortfolioSuccessfully) {
@@ -321,7 +321,7 @@ final class HomeReducerTests: XCTestCase {
         store.exhaustivity = .off(showSkippedAssertions: false)
 
         // Act
-        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(TransactionEntity.spend))))))))
+        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(TransactionEntity.spend)))))))))
 
         // Assert
         await store.receive(\.delegate.loadTransactionsSuccessfully) {
@@ -360,7 +360,7 @@ final class HomeReducerTests: XCTestCase {
         store.exhaustivity = .off(showSkippedAssertions: false)
 
         // Act
-        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(TransactionEntity.transfer))))))))
+        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(TransactionEntity.transfer)))))))))
 
         // Assert
         await store.receive(\.delegate.updateFund) {
@@ -399,7 +399,7 @@ final class HomeReducerTests: XCTestCase {
         store.exhaustivity = .off(showSkippedAssertions: false)
 
         // Act
-        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(TransactionEntity.spend))))))))
+        await store.send(.destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(TransactionEntity.spend)))))))))
 
         // Assert
         XCAssertNoDifference(store.state.fundList, IdentifiedArray(uniqueElements: FundEntity.fiatList1))

@@ -129,7 +129,7 @@ public struct HomeReducer {
                 return .none
             case let .destination(.presented(.fundDetailsRoute(.delegate(.loadFundDetailsSuccesfully(updatedFund))))):
                 return updateFund(updatedFund, state: &state)
-            case let .destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(transaction))))))):
+            case let .destination(.presented(.fundDetailsRoute(.destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(transaction)))))))):
                 return .merge(
                     loadPortfolio(state: &state),
                     loadTransactionHistory(state: &state),

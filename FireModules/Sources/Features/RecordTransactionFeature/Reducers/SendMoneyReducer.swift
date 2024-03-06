@@ -37,16 +37,21 @@ public struct SendMoneyReducer {
     }
 
     public enum Action: BindableAction {
-        case onAppear
-        case targetFundsLoaded(IdentifiedArrayOf<FundEntity>)
         case binding(BindingAction<State>)
         case fundPicker(PresentationAction<FundPickerReducer.Action>)
         case delegate(Delegate)
+        case forward(Forward)
 
-        case transactionRecordedSuccessfully(TransactionEntity)
-        case transactionRecordedFailed(DomainError)
-
+        @CasePathable
         public enum Delegate {
+            case targetFundsLoaded(IdentifiedArrayOf<FundEntity>)
+            case transactionRecordedSuccessfully(TransactionEntity)
+            case transactionRecordedFailed(DomainError)
+        }
+
+        @CasePathable
+        public enum Forward {
+            case onAppear
             case fundPickerFieldTapped
             case proceedButtonTapped
         }
@@ -70,7 +75,7 @@ public struct SendMoneyReducer {
 
         Reduce { state, action in
             switch action {
-            case .onAppear:
+            case .forward(.onAppear):
                 guard state.targetFunds.isEmpty else { return .none }
                 return .run { [sourceFundId = state.sourceFund.id] send in
                     let result = await fundListUseCase.getFiatFundList()
@@ -79,13 +84,13 @@ public struct SendMoneyReducer {
                     case let .success(loadedFunds):
                         var selectableFunds = IdentifiedArray(uniqueElements: loadedFunds)
                         selectableFunds.remove(id: sourceFundId)
-                        await send(.targetFundsLoaded(selectableFunds))
+                        await send(.delegate(.targetFundsLoaded(selectableFunds)))
                     case .failure:
                         // Maybe re-fetch the fund? But practically, it shouldn't goes here
                         break
                     }
                 }
-            case let .targetFundsLoaded(targetFunds):
+            case let .delegate(.targetFundsLoaded(targetFunds)):
                 state.targetFunds = targetFunds
                 return .none
             case let .fundPicker(.presented(.saveSelection(id))):
@@ -100,17 +105,17 @@ public struct SendMoneyReducer {
                 }
 
                 return .none
-            case let .transactionRecordedSuccessfully(transaction):
+            case let .delegate(.transactionRecordedSuccessfully(transaction)):
                 state.transactionRecordLoadingState = .loaded(transaction)
                 return .run { _ in await dismiss() }
-            case let .transactionRecordedFailed(err):
+            case let .delegate(.transactionRecordedFailed(err)):
                 state.transactionRecordLoadingState = .failure(err)
                 return .none
-            case .delegate(.fundPickerFieldTapped):
+            case .forward(.fundPickerFieldTapped):
                 guard !state.targetFunds.isEmpty else { return .none }
                 state.fundPicker = .init(funds: state.targetFunds, selection: state.selectedTargetFund?.id)
                 return .none
-            case .delegate(.proceedButtonTapped):
+            case .forward(.proceedButtonTapped):
                 state.transactionRecordLoadingState = .loading
                 return .run { [sourceID = state.sourceFundId, amount = state.amount, destinationId = state.destinationFundId, description = state.description] send in
                     let result = await transactionRecordUseCase.recordInOutTransaction(
@@ -121,15 +126,15 @@ public struct SendMoneyReducer {
                     )
                     switch result {
                     case let .success(recordedTransaction):
-                        await send(.transactionRecordedSuccessfully(recordedTransaction))
+                        await send(.delegate(.transactionRecordedSuccessfully(recordedTransaction)))
                     case let .failure(error):
-                        await send(.transactionRecordedFailed(error))
+                        await send(.delegate(.transactionRecordedFailed(error)))
                     }
                 }
-            case .binding:
+            case .binding(\.$amount):
                 state.isFormValid = validateForm(currentState: state)
                 return .none
-            case .delegate, .fundPicker:
+            case .delegate, .fundPicker, .binding:
                 return .none
             }
         }

@@ -504,6 +504,14 @@ let package = Package(
                 "DomainEntities",
             ]
         ),
+        .testTarget(
+            name: "RecordTransactionFeatureTests",
+            dependencies: [
+                "RecordTransactionFeature",
+                "TestHelpers",
+                "DomainEntities",
+            ]
+        ),
     ]
 )
 

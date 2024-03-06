@@ -163,7 +163,7 @@ final class FundDetailsReducerTests: XCTestCase {
         store.exhaustivity = .off
 
         // Act & Assert
-        await store.send(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(TransactionEntity.spend2))))) {
+        await store.send(.destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(TransactionEntity.spend2)))))) {
             $0.transactions = IdentifiedArray(uniqueElements: [TransactionEntity.spend2])
         }
     }
@@ -182,7 +182,7 @@ final class FundDetailsReducerTests: XCTestCase {
         store.exhaustivity = .off
 
         // Act
-        await store.send(.destination(.presented(.sendMoney(.transactionRecordedSuccessfully(TransactionEntity.spend2)))))
+        await store.send(.destination(.presented(.sendMoney(.delegate(.transactionRecordedSuccessfully(TransactionEntity.spend2))))))
 
         // Assert
         await store.receive(\.delegate.loadFundDetailsSuccesfully) {

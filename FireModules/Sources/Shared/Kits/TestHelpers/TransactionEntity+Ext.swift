@@ -63,7 +63,7 @@ public extension TransactionEntity {
     static let transfer = TransactionEntity(
         id: "4b295da6-e8fd-43a7-b1c9-c7103a15abb0",
         timestamp: 1_709_372_124,
-        sourceFundId: "5cee8366-72e6-4372-be23-4e54aafa84a6",
+        sourceFundId: "d8394718-9e23-4680-a30c-2a0b14efd695",
         destinationFundId: "131e5bf0-1fb9-46ce-8b5c-57e16758ba15",
         amount: 100_000,
         type: "inout",
@@ -74,7 +74,7 @@ public extension TransactionEntity {
     static let spend = TransactionEntity(
         id: "86df35dd-be8a-4b10-bd8d-cfdac2b4c238",
         timestamp: 1_709_372_124,
-        sourceFundId: "5cee8366-72e6-4372-be23-4e54aafa84a6",
+        sourceFundId: "d8394718-9e23-4680-a30c-2a0b14efd695",
         amount: 100_000,
         type: "inout",
         userId: "ff63d6b0-4a45-49c2-90c7-9fa17418f06c",
