@@ -512,6 +512,14 @@ let package = Package(
                 "DomainEntities",
             ]
         ),
+        .testTarget(
+            name: "SignUpFeatureTests",
+            dependencies: [
+                "SignUpFeature",
+                "TestHelpers",
+                "DomainEntities",
+            ]
+        ),
     ]
 )
 

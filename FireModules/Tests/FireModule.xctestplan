@@ -39,6 +39,13 @@
         "identifier" : "RecordTransactionFeatureTests",
         "name" : "RecordTransactionFeatureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/FireModules",
+        "identifier" : "SignUpFeatureTests",
+        "name" : "SignUpFeatureTests"
+      }
     }
   ],
   "version" : 1

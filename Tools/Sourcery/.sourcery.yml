@@ -43,6 +43,13 @@ configurations:
     baseIndentation: 4
   - sources:
       include:
+        - ../../FireModules/Sources/Domains/UseCases/AccountRegisterUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/AccountRegisterUseCase/Generated
+    baseIndentation: 4
+  - sources:
+      include:
         - ../../FireModules/Sources/Domains/UseCases/DevSettingsUseCase
     templates:
       - Templates/AutomaticSettings/AutomaticSettings.stencil

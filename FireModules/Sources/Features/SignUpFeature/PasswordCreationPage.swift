@@ -16,8 +16,7 @@ public struct PasswordCreationPage: View {
     struct ViewState: Equatable {
         @BindingViewState var password: String
         var passwordValidationError: String?
-        var accountCreationError: String?
-        var accountCreationInProgress: Bool
+        var accountCreationState: LoadingState<AuthenticatedUserEntity>
     }
 
     let store: StoreOf<RegisterReducer>
@@ -29,7 +28,7 @@ public struct PasswordCreationPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.accountCreationInProgress) {
+        LoadingOverlay(loading: viewStore.accountCreationState.isLoading) {
             VStack(alignment: .leading) {
                 DismissButton()
                 Spacing(height: .size40)
@@ -50,7 +49,7 @@ public struct PasswordCreationPage: View {
 
                 Spacer()
 
-                Text(viewStore.accountCreationError ?? "")
+                Text(viewStore.accountCreationState.failureReason ?? "")
                     .typography(.bodyDefault)
                     .foregroundColor(.coreui.sentimentNegative)
 
@@ -76,8 +75,7 @@ extension BindingViewStore<RegisterReducer.State> {
         PasswordCreationPage.ViewState(
             password: self.$password,
             passwordValidationError: self.passwordValidationError,
-            accountCreationError: self.accountCreationError,
-            accountCreationInProgress: self.accountCreationInProgress
+            accountCreationState: self.accountCreationState
         )
         // swiftformat:enable redundantSelf
     }

@@ -24,9 +24,7 @@ public struct RegisterReducer {
 
         var emailValidationError: String?
         var passwordValidationError: String?
-        var accountCreationError: String?
-        var accountCreationInProgress = false
-        var accountCreationResult: AuthenticatedUserEntity?
+        var accountCreationState: LoadingState<AuthenticatedUserEntity> = .idle
 
         public init() {}
     }
@@ -93,7 +91,7 @@ private struct PasswordCreationReducer {
             case .binding(\.$password):
                 // TODO: Password Validator
                 if state.password.count <= 6 {
-                    state.passwordValidationError = "Password length must be greater than 8"
+                    state.passwordValidationError = "Password length must be greater than 6"
                 } else {
                     state.passwordValidationError = nil
                 }
@@ -104,7 +102,7 @@ private struct PasswordCreationReducer {
                       state.password.isNotEmpty // TODO: replace this with validation rules
                 else { return .none }
 
-                state.accountCreationInProgress = true
+                state.accountCreationState = .loading
 
                 let email = state.email
                 let password = state.password
@@ -120,12 +118,10 @@ private struct PasswordCreationReducer {
                     }
                 }
             case let .createUserSuccesfully(response):
-                state.accountCreationResult = response
-                state.accountCreationInProgress = false
+                state.accountCreationState = .loaded(response)
                 return .send(.navigate(.goToHome))
             case let .createUserFailure(error):
-                state.accountCreationInProgress = false
-                state.accountCreationError = error.errorDescription
+                state.accountCreationState = .failure(error)
                 return .none
             case .binding, .navigate, .goToPasswordCreationButtonTapped:
                 return .none
