@@ -97,7 +97,7 @@ final class InvestmentHomeReducerTests: XCTestCase {
         }
     }
 
-    func testCreatePortfolioName_NameIsEmpty_MustThrowError() async throws {
+    func testCreatePortfolio_NameIsEmpty_MustThrowError() async throws {
         // Arrange
         let store = TestStore(initialState: initialState, reducer: {
             InvestmentHomeReducer(investmentUseCase: investmentUseCase)
@@ -121,7 +121,7 @@ final class InvestmentHomeReducerTests: XCTestCase {
         }
     }
 
-    func testCreatePortfolioName_NameIsLongerThan50Chars_MustThrowError() async throws {
+    func testCreatePortfolio_NameIsLongerThan50Chars_MustThrowError() async throws {
         // Arrange
 
         let store = TestStore(initialState: initialState, reducer: {
@@ -174,7 +174,7 @@ final class InvestmentHomeReducerTests: XCTestCase {
         }
     }
 
-    func testCreatePortfolioNameSuccessfully() async throws {
+    func testCreatePortfolioSuccessfully() async throws {
         // Arrange
         investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.emptyPortfolioWithName("Lorem ipsum"))
         let store = TestStore(initialState: initialState, reducer: {
@@ -196,7 +196,7 @@ final class InvestmentHomeReducerTests: XCTestCase {
         }
     }
 
-    func testCreatePortfolioNameFailed() async throws {
+    func testCreatePortfolioFailed() async throws {
         // Arrange
         investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue = .failure(DomainError.custom(description: "Unable to create portfolio with name Lorem ipsum", reason: "Unable to create portfolio with name Lorem ipsum"))
         let store = TestStore(initialState: initialState, reducer: {
@@ -229,6 +229,26 @@ final class InvestmentHomeReducerTests: XCTestCase {
                 }
             )
         }
+    }
+
+    func testCreatePortfolioSuccessfully_MustRefetchPortfolioList() async throws {
+        // Arrange
+        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
+        investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.emptyPortfolioWithName("Lorem ipsum"))
+        let store = TestStore(initialState: initialState, reducer: {
+            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
+        })
+        store.exhaustivity = .off
+
+        // Act & Assert
+        await store.send(.forward(.onAppear))
+
+        XCAssertNoDifference(investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount, 1)
+        await store.receive(\.delegate.portfolioListLoaded)
+        await store.send(.set(\.$portfolioName, "Lorem ipsum"))
+        await store.send(.forward(.submitPortfolioCreationForm))
+        XCAssertNoDifference(investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount, 2)
+        await store.receive(\.delegate.portfolioListLoaded)
     }
 }
 

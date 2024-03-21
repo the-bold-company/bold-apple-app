@@ -51,16 +51,7 @@ public struct InvestmentHomeReducer {
             switch action {
             case .forward(.onAppear):
                 guard state.loadPortfoliosState == .idle else { return .none }
-                state.loadPortfoliosState = .loading
-                return .run { send in
-                    let result = await investmentUseCase.getPortfolioList()
-                    switch result {
-                    case let .success(portfolios):
-                        await send(.delegate(.portfolioListLoaded(portfolios)))
-                    case let .failure(error):
-                        await send(.delegate(.failedToLoadPortfolioList(error)))
-                    }
-                }
+                return loadPortfolioList(state: &state)
             case .forward(.submitPortfolioCreationForm):
                 guard state.portfolioName.isNotEmpty, state.portfolioName.count <= 50 else {
                     state.destination = .invalidPortfolioCreationAlert(
@@ -92,7 +83,7 @@ public struct InvestmentHomeReducer {
             case let .delegate(.portfolioCreated(portfolio)):
                 state.createPortfolioState = .loaded(portfolio)
                 state.destination = .portfolioDetailsRoute(.init(portfolio: portfolio))
-                return .none
+                return loadPortfolioList(state: &state)
             case let .delegate(.failedToCreatePorfolio(error)):
                 state.createPortfolioState = .failure(error)
                 state.destination = .invalidPortfolioCreationAlert(
@@ -120,6 +111,21 @@ public struct InvestmentHomeReducer {
                 return .none
             case .binding, .destination, .delegate:
                 return .none
+            }
+        }
+    }
+
+    private func loadPortfolioList(state: inout State) -> Effect<Action> {
+        guard state.loadPortfoliosState != .loading else { return .none }
+
+        state.loadPortfoliosState = .loading
+        return .run { send in
+            let result = await investmentUseCase.getPortfolioList()
+            switch result {
+            case let .success(portfolios):
+                await send(.delegate(.portfolioListLoaded(portfolios)))
+            case let .failure(error):
+                await send(.delegate(.failedToLoadPortfolioList(error)))
             }
         }
     }

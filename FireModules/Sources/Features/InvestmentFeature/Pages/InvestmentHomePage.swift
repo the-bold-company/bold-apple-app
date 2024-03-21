@@ -44,6 +44,7 @@ public struct InvestmentHomePage: View {
             }
             .alert("Enter portfolio name", isPresented: $showingCreatePorfolioAlert) {
                 TextField("Enter name", text: viewStore.$portfolioName)
+                    .autocorrectionDisabled()
                 Button("OK") {
                     viewStore.send(.forward(.submitPortfolioCreationForm))
                 }
@@ -114,6 +115,21 @@ public struct InvestmentHomePage: View {
                 GridItem(.flexible(minimum: 80, maximum: .infinity)),
             ],
             content: {
+                Button(action: {
+                    showingCreatePorfolioAlert = true
+                }) {
+                    VStack(alignment: .leading, spacing: 0) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Create new")
+                        }
+                        Rectangle()
+                            .frame(height: 0)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
+                .fireButtonStyle()
+                .redacted(reason: viewStore.loadPortfoliosState.isLoading ? .placeholder : [])
                 ForEach(viewStore.loadPortfoliosState.hasResult
                     ? viewStore.loadPortfoliosState.result!
                     : (0 ... 3).map { _ in InvestmentPortfolioEntity.placeholder() }

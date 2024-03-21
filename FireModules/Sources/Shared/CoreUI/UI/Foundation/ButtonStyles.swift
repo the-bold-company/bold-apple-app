@@ -78,10 +78,22 @@ public struct FireButtonStyle: ButtonStyle {
                     .fill(buttonType.backgroundColor)
                 )
             }
+            .if(buttonType == .primary(shape: .roundedCorner)) {
+                $0.overlay {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.coreui.brightGreen, lineWidth: 1)
+                }
+            }
             .if(buttonType == .secondary(shape: .roundedCorner)) {
                 $0.overlay {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.coreui.forestGreen, lineWidth: 1)
+                }
+            }
+            .if(buttonType == .primary(shape: .capsule)) {
+                $0.overlay {
+                    Capsule()
+                        .stroke(Color.coreui.brightGreen, lineWidth: 1)
                 }
             }
             .if(buttonType == .secondary(shape: .capsule)) {
