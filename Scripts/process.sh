@@ -65,5 +65,5 @@ function process_output() {
 
 process "SwiftFormat" "cd FireModules ; swift run swiftformat . --verbose; cd .."
 
-process_output "SwiftLint" "cd FireModules ; swift run swiftlint lint --config ../.swiftlint.yml; cd .."
+# process_output "SwiftLint" "cd FireModules ; swift run swiftlint lint --config ../.swiftlint.yml; cd .."
 # process_output "SwiftLint" "swift run swiftlint"

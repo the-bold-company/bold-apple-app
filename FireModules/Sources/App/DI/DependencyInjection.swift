@@ -10,6 +10,8 @@ import AuthAPIService
 import AuthAPIServiceInterface
 import FundsAPIService
 import FundsAPIServiceInterface
+import InvestmentAPIService
+import InvestmentAPIServiceInterface
 import KeychainService
 import KeychainServiceInterface
 import PersistenceService
@@ -27,6 +29,7 @@ import DevSettingsUseCase
 import FundCreationUseCase
 import FundDetailsUseCase
 import FundListUseCase
+import InvestmentUseCase
 import LogInUseCase
 import PortfolioUseCase
 import TransactionListUseCase
@@ -53,6 +56,10 @@ public extension Container {
 
     var portfolioAPIService: Factory<PortfolioAPIServiceInterface> {
         self { PortfolioAPIService() }
+    }
+
+    var investmentAPIService: Factory<InvestmentAPIServiceInterface> {
+        self { InvestmentService() }
     }
 
     var temporaryPersistenceService: Factory<TemporaryPersistenceService> {
@@ -103,6 +110,12 @@ public extension Container {
     var portfolioUseCase: Factory<PortfolioUseCaseInterface> {
         self {
             PortfolioUseCase(portfolioAPIService: self.portfolioAPIService.callAsFunction())
+        }
+    }
+
+    var investmentUseCase: Factory<InvestmentUseCaseInterface> {
+        self {
+            InvestmentUseCase(investmentAPIService: self.investmentAPIService.callAsFunction())
         }
     }
 

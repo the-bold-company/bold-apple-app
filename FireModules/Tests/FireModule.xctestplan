@@ -46,6 +46,13 @@
         "identifier" : "SignUpFeatureTests",
         "name" : "SignUpFeatureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:..\/FireModules",
+        "identifier" : "InvestmentFeatureTests",
+        "name" : "InvestmentFeatureTests"
+      }
     }
   ],
   "version" : 1

@@ -13,6 +13,7 @@ public enum Typography {
     case titleSubsection
     case titleBody
     case titleGroup
+    case titleSmall
     case bodyLarge
     case bodyLargeBold
     case bodyDefault
@@ -28,7 +29,7 @@ public enum Typography {
             return FontFamily.Inter.semiBold
         case .titleGroup:
             return FontFamily.Inter.medium
-        case .bodyLarge, .bodyDefault:
+        case .bodyLarge, .bodyDefault, .titleSmall:
             return FontFamily.Inter.regular
         }
     }
@@ -47,6 +48,8 @@ public enum Typography {
             return 14
         case .bodyLarge, .bodyLargeBold, .linkLarge:
             return 16
+        case .titleSmall:
+            return 12
         }
     }
 
@@ -64,6 +67,8 @@ public enum Typography {
             return 20
         case .bodyDefault, .bodyDefaultBold, .linkDefault:
             return 22
+        case .titleSmall:
+            return 16
         }
     }
 
@@ -81,7 +86,7 @@ public enum Typography {
             return -0.01 // -1%
         case .bodyLarge, .bodyLargeBold:
             return -0.005 // -0.5%
-        case .bodyDefaultBold, .linkDefault:
+        case .bodyDefaultBold, .linkDefault, .titleSmall:
             return -0.00125 // -1.25%
         }
     }

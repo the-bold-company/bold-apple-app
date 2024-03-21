@@ -10,6 +10,7 @@ import ComposableArchitecture
 import CoreUI
 import DomainEntities
 import FundFeature
+import InvestmentFeature
 import SwiftUI
 
 public struct HomePage: View {
@@ -37,6 +38,7 @@ public struct HomePage: View {
                 List {
                     networth
                     fundList
+                    investment
                     transactionList
                 }
             }
@@ -54,6 +56,12 @@ public struct HomePage: View {
                     action: \.destination.fundCreationRoute
                 )
             ) { FundCreationPage(store: $0) }
+            .navigationDestination(
+                store: store.scope(
+                    state: \.$destination.investmentHomeRoute,
+                    action: \.destination.investmentHomeRoute
+                )
+            ) { InvestmentHomePage(store: $0) }
         }
         .task {
             viewStore.send(.forward(.loadPortfolio))
@@ -192,6 +200,18 @@ public struct HomePage: View {
                     )
                 }
             }
+        }
+    }
+
+    @ViewBuilder
+    private var investment: some View {
+        Section {
+            Button(action: {
+                viewStore.send(.forward(.goToInvestmentPortfolio))
+            }) {
+                Text("Go to investment")
+            }
+            .buttonStyle(.plain)
         }
     }
 }

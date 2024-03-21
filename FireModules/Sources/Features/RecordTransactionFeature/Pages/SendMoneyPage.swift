@@ -65,6 +65,7 @@ public struct SendMoneyPage: View {
         .enableInjection()
     }
 
+    @ViewBuilder
     private var amountInput: some View {
         ZStack(alignment: .center) {
             CurrencyField(value: viewStore.$amount)
@@ -87,6 +88,7 @@ public struct SendMoneyPage: View {
         .frame(maxWidth: .infinity)
     }
 
+    @ViewBuilder
     private var fundPicker: some View {
         VStack(alignment: .leading) {
             Text("Destination Fund").typography(.bodyDefault)
@@ -107,6 +109,7 @@ public struct SendMoneyPage: View {
         .padding([.leading, .trailing], 16)
     }
 
+    @ViewBuilder
     private var descriptionInput: some View {
         VStack(alignment: .leading) {
             Text("Description").typography(.bodyDefault)
@@ -127,6 +130,7 @@ public struct SendMoneyPage: View {
         .padding([.leading, .trailing], 16)
     }
 
+    @ViewBuilder
     private var proceedButton: some View {
         VStack {
             Button(action: {

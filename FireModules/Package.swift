@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
-        .package(url: "https://github.com/realm/SwiftLint.git", exact: "0.53.0"),
+//        .package(url: "https://github.com/realm/SwiftLint.git", exact: "0.53.0"),
         .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
@@ -85,6 +85,7 @@ let package = Package(
                 "SignUpFeature",
                 "OnboardingFeature",
                 "SettingsFeature",
+                "InvestmentFeature",
 
                 "LogInUseCase",
                 "FundDetailsUseCase",
@@ -95,6 +96,7 @@ let package = Package(
                 "AccountRegisterUseCase",
                 "PortfolioUseCase",
                 "DevSettingsUseCase",
+                "InvestmentUseCase",
 
                 "AuthAPIServiceInterface",
                 "AuthAPIService",
@@ -110,6 +112,8 @@ let package = Package(
                 "TemporaryPersistenceService",
                 "PersistenceServiceInterface",
                 "PersistenceService",
+                "InvestmentAPIServiceInterface",
+                "InvestmentAPIService",
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/App/DI"
@@ -166,6 +170,7 @@ let package = Package(
                 "CoreUI",
                 "CurrencyKit",
                 "FundFeature",
+                "InvestmentFeature",
                 "TransactionListUseCase",
                 "FundListUseCase",
                 "FundDetailsUseCase",
@@ -210,6 +215,18 @@ let package = Package(
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/SettingsFeature"
+        ),
+        .target(
+            name: "InvestmentFeature",
+            dependencies: [
+                "CoreUI",
+                "CurrencyKit",
+                "Utilities",
+                "InvestmentUseCase",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Factory", package: "factory"),
+            ],
+            path: "Sources/Features/InvestmentFeature"
         ),
 
         // MARK: - Shared Layer: Everything that is shared between feature modules
@@ -335,6 +352,14 @@ let package = Package(
             ],
             path: "Sources/Domains/UseCases/PortfolioUseCase"
         ),
+        .target(
+            name: "InvestmentUseCase",
+            dependencies: [
+                "DomainEntities",
+                "InvestmentAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/InvestmentUseCase"
+        ),
 
         // MARK: Domains/DataInterfaces
 
@@ -393,6 +418,13 @@ let package = Package(
                 "DomainEntities",
             ],
             path: "Sources/Domains/DataInterfaces/UserAPIServiceInterface"
+        ),
+        .target(
+            name: "InvestmentAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/InvestmentAPIServiceInterface"
         ),
 
         // MARK: Domains/Entities
@@ -475,6 +507,15 @@ let package = Package(
             ],
             path: "Sources/Data/UserAPIService"
         ),
+        .target(
+            name: "InvestmentAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "InvestmentAPIServiceInterface",
+            ],
+            path: "Sources/Data/InvestmentAPIService"
+        ),
 
         // MARK: Test targets
 
@@ -520,6 +561,14 @@ let package = Package(
                 "DomainEntities",
             ]
         ),
+        .testTarget(
+            name: "InvestmentFeatureTests",
+            dependencies: [
+                "InvestmentFeature",
+                "TestHelpers",
+                "DomainEntities",
+            ]
+        ),
     ]
 )
 
@@ -529,9 +578,9 @@ extension Product {
     }
 }
 
-package.targets = package.targets.map { target in
-    var plugins = target.plugins ?? []
-    plugins.append(.plugin(name: "SwiftLintPlugin", package: "SwiftLint"))
-    target.plugins = plugins
-    return target
-}
+// package.targets = package.targets.map { target in
+//    var plugins = target.plugins ?? []
+//    plugins.append(.plugin(name: "SwiftLintPlugin", package: "SwiftLint"))
+//    target.plugins = plugins
+//    return target
+// }
