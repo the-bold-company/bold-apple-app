@@ -133,9 +133,12 @@ public struct InvestmentHomePage: View {
                 ForEach(viewStore.loadPortfoliosState.hasResult
                     ? viewStore.loadPortfoliosState.result!
                     : (0 ... 3).map { _ in InvestmentPortfolioEntity.placeholder() }
-                ) {
-                    PortfolioGridItem(portfolio: $0)
-                        .redacted(reason: viewStore.loadPortfoliosState.isLoading ? .placeholder : [])
+                ) { portfolio in
+                    PortfolioGridItem(portfolio: portfolio) {
+                        viewStore.send(.forward(.navigateToPortfolioPage(id: portfolio.id)))
+                    }
+                    .disabled(viewStore.loadPortfoliosState.isLoading)
+                    .redacted(reason: viewStore.loadPortfoliosState.isLoading ? .placeholder : [])
                 }
             }
         )

@@ -251,7 +251,7 @@ public extension HomeReducer {
             }
 
             Scope(state: \.investmentHomeRoute, action: \.investmentHomeRoute) {
-                resolve(\InvestmentFeatureContainer.investmentHomeReducer)?._printChanges()
+                resolve(\InvestmentFeatureContainer.investmentHomeReducer)
             }
         }
     }

@@ -27,6 +27,7 @@ public struct InvestmentHomeReducer {
         public enum Forward {
             case onAppear
             case submitPortfolioCreationForm
+            case navigateToPortfolioPage(id: ID)
         }
 
         @CasePathable
@@ -80,6 +81,10 @@ public struct InvestmentHomeReducer {
                         await send(.delegate(.failedToCreatePorfolio(error)))
                     }
                 }
+            case let .forward(.navigateToPortfolioPage(id)):
+                guard let portfolio = state.portfolioList[id: id] else { return .none }
+                state.destination = .portfolioDetailsRoute(.init(portfolio: portfolio))
+                return .none
             case let .delegate(.portfolioCreated(portfolio)):
                 state.createPortfolioState = .loaded(portfolio)
                 state.destination = .portfolioDetailsRoute(.init(portfolio: portfolio))
@@ -109,9 +114,12 @@ public struct InvestmentHomeReducer {
             case .destination(.presented(.invalidPortfolioCreationAlert(.okButtonTapped))):
                 state.destination = nil
                 return .none
-            case .binding, .destination, .delegate:
+            case .binding, .destination:
                 return .none
             }
+        }
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
         }
     }
 

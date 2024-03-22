@@ -4,15 +4,15 @@ import SwiftUI
 
 struct PortfolioGridItem: View {
     let portfolio: InvestmentPortfolioEntity
+    let onTap: () -> Void
 
-    init(portfolio: InvestmentPortfolioEntity) {
+    init(portfolio: InvestmentPortfolioEntity, onTap: @escaping () -> Void) {
         self.portfolio = portfolio
+        self.onTap = onTap
     }
 
     var body: some View {
-        Button(action: {
-//                    viewStore.send(.forward(.submitButtonTapped))
-        }) {
+        Button(action: onTap) {
             VStack(alignment: .leading, spacing: 0) {
                 Text(portfolio.name)
                     .typography(.titleSmall)

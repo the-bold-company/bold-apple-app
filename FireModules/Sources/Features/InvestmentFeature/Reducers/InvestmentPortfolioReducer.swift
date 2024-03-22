@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import DomainEntities
+import Factory
 import InvestmentUseCase
 import SwiftUI
 
@@ -28,6 +29,7 @@ public struct InvestmentPortfolioReducer {
         @CasePathable
         public enum Forward {
             case onAppear
+            case navigateToTradeImportOptions
         }
 
         @CasePathable
@@ -45,15 +47,21 @@ public struct InvestmentPortfolioReducer {
     public var body: some ReducerOf<Self> {
         BindingReducer()
 
-        Reduce { _, action in
+        Reduce { state, action in
             switch action {
             case .delegate:
                 return .none
-            case .forward:
+            case .forward(.onAppear):
+                return .none
+            case .forward(.navigateToTradeImportOptions):
+                state.destination = .investmentTradeImportOptionsRoute(.init())
                 return .none
             case .binding, .destination:
                 return .none
             }
+        }
+        .ifLet(\.$destination, action: \.destination) {
+            Destination()
         }
     }
 
@@ -79,18 +87,19 @@ public extension InvestmentPortfolioReducer {
     @Reducer
     struct Destination: Equatable {
         public enum State: Equatable {
-            case addTradeOptionPickerRoute(AddInvestmentTradeOptionsReducer.State)
+            case investmentTradeImportOptionsRoute(InvestmentTradeImportOptionsReducer.State)
             case addTransactionRoute(AddPortfolioTransactionReducer.State)
         }
 
         public enum Action {
-            case addTradeOptionPickerRoute(AddInvestmentTradeOptionsReducer.Action)
+            case investmentTradeImportOptionsRoute(InvestmentTradeImportOptionsReducer.Action)
             case addTransactionRoute(AddPortfolioTransactionReducer.Action)
         }
 
         public var body: some ReducerOf<Self> {
-            Scope(state: \.addTradeOptionPickerRoute, action: \.addTradeOptionPickerRoute) {
-                AddInvestmentTradeOptionsReducer()
+            Scope(state: \.investmentTradeImportOptionsRoute, action: \.investmentTradeImportOptionsRoute) {
+                InvestmentTradeImportOptionsReducer()
+                resolve(\InvestmentFeatureContainer.investmentTradeImportOptionsReducer)
             }
 
             Scope(state: \.addTransactionRoute, action: \.addTransactionRoute) {

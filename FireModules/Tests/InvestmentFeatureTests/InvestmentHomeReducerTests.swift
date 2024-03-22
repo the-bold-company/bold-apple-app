@@ -176,6 +176,7 @@ final class InvestmentHomeReducerTests: XCTestCase {
 
     func testCreatePortfolioSuccessfully() async throws {
         // Arrange
+        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
         investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.emptyPortfolioWithName("Lorem ipsum"))
         let store = TestStore(initialState: initialState, reducer: {
             InvestmentHomeReducer(investmentUseCase: investmentUseCase)

@@ -16,6 +16,12 @@ extension InvestmentFeatureContainer: AutoRegistering {
         investmentPortfolioReducer.register {
             InvestmentPortfolioReducer(investmentUseCase: self.investmentUseCase.resolve()!)
         }
+        investmentTradeImportOptionsReducer.register {
+            InvestmentTradeImportOptionsReducer()
+        }
+        addInvestmentTradeReducer.register {
+            AddPortfolioTransactionReducer()
+        }
     }
 }
 

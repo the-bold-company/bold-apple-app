@@ -5,28 +5,23 @@ import SwiftUI
 public struct InvestmentPortfolioPage: View {
     @ObserveInjection private var iO
 
-    struct ViewState: Equatable {}
-
-    let store: StoreOf<InvestmentPortfolioReducer>
-//    @ObservedObject var viewStore: ViewStore<ViewState, InvestmentPortfolioReducer.Action>
+    private let store: StoreOf<InvestmentPortfolioReducer>
 
     public init(store: StoreOf<InvestmentPortfolioReducer>) {
         self.store = store
-//        self.viewStore = ViewStore(store, observe: \.viewState)
     }
 
     public var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack(alignment: .leading) {
-                HStack(alignment: .center, spacing: 12) {
-                    DismissButton()
-
-                    Spacer()
-
-                    Text(viewStore.portfolio.name)
-
-                    Spacer()
-                }
+                FireNavBar(
+                    leading: {
+                        DismissButton()
+                    },
+                    center: {
+                        Text(viewStore.portfolio.name)
+                    }
+                )
 
                 Spacing(size: .size8)
                 VStack {
@@ -44,7 +39,7 @@ public struct InvestmentPortfolioPage: View {
                         .padding()
 
                     Button {
-                        //                    showingAlert.toggle()
+                        viewStore.send(.forward(.navigateToTradeImportOptions))
                     } label: {
                         Text("Add transaction")
                     }
@@ -56,6 +51,12 @@ public struct InvestmentPortfolioPage: View {
             }
             .navigationBarHidden(true)
             .padding()
+            .fullScreenCover(
+                store: store.scope(
+                    state: \.$destination.investmentTradeImportOptionsRoute,
+                    action: \.destination.investmentTradeImportOptionsRoute
+                )
+            ) { InvestmentTradeImportOptionsPage(store: $0) }
             .navigationDestination(
                 store: store.scope(
                     state: \.$destination.addTransactionRoute,
@@ -64,15 +65,5 @@ public struct InvestmentPortfolioPage: View {
             ) { AddPortfolioTransactionPage(store: $0) }
         }
         .enableInjection()
-    }
-}
-
-extension BindingViewStore<InvestmentPortfolioReducer.State> {
-    var viewState: InvestmentPortfolioPage.ViewState {
-        // swiftformat:disable redundantSelf
-        InvestmentPortfolioPage.ViewState(
-            //            portfolioName: self.$portfolioName
-        )
-        // swiftformat:enable redundantSelf
     }
 }
