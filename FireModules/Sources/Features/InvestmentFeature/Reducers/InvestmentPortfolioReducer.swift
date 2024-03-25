@@ -38,6 +38,7 @@ public struct InvestmentPortfolioReducer {
         }
     }
 
+    @Dependency(\.dismiss) var dismiss
     private let investmentUseCase: InvestmentUseCaseInterface
 
     public init(investmentUseCase: InvestmentUseCaseInterface) {
@@ -49,13 +50,15 @@ public struct InvestmentPortfolioReducer {
 
         Reduce { state, action in
             switch action {
-            case .delegate:
-                return .none
             case .forward(.onAppear):
                 return .none
             case .forward(.navigateToTradeImportOptions):
-                state.destination = .investmentTradeImportOptionsRoute(.init())
+                state.destination = .investmentTradeImportOptionsRoute(.init(portfolio: state.portfolio))
                 return .none
+            case .delegate:
+                return .none
+            case .destination(.presented(.investmentTradeImportOptionsRoute(.destination(.presented(.addTransactionRoute(.delegate(.transactionAdded(_)))))))):
+                return .run { _ in await dismiss() }
             case .binding, .destination:
                 return .none
             }
@@ -64,23 +67,6 @@ public struct InvestmentPortfolioReducer {
             Destination()
         }
     }
-
-//    private func loadTradeHistory(state: inout State) -> Effect<Action> {
-//        guard state.transactionLoadingState != .loading else { return .none }
-//
-//        state.transactionLoadingState = .loading
-//
-//        return .run { send in
-//            let transactionListResponse = await transactionListUseCase.getInOutTransactions()
-//
-//            switch transactionListResponse {
-//            case let .success(transactionList):
-//                await send(.delegate(.loadTransactionsSuccessfully(transactionList)))
-//            case .failure:
-//                break
-//            }
-//        }
-//    }
 }
 
 public extension InvestmentPortfolioReducer {
@@ -88,22 +74,21 @@ public extension InvestmentPortfolioReducer {
     struct Destination: Equatable {
         public enum State: Equatable {
             case investmentTradeImportOptionsRoute(InvestmentTradeImportOptionsReducer.State)
-            case addTransactionRoute(AddPortfolioTransactionReducer.State)
+            case addTransactionRoute(RecordPortfolioTransactionReducer.State)
         }
 
         public enum Action {
             case investmentTradeImportOptionsRoute(InvestmentTradeImportOptionsReducer.Action)
-            case addTransactionRoute(AddPortfolioTransactionReducer.Action)
+            case addTransactionRoute(RecordPortfolioTransactionReducer.Action)
         }
 
         public var body: some ReducerOf<Self> {
             Scope(state: \.investmentTradeImportOptionsRoute, action: \.investmentTradeImportOptionsRoute) {
-                InvestmentTradeImportOptionsReducer()
                 resolve(\InvestmentFeatureContainer.investmentTradeImportOptionsReducer)
             }
 
             Scope(state: \.addTransactionRoute, action: \.addTransactionRoute) {
-                AddPortfolioTransactionReducer()
+                resolve(\InvestmentFeatureContainer.recordPortfolioTransactionReducer)
             }
         }
     }

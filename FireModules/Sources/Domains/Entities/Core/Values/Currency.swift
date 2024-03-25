@@ -1,13 +1,15 @@
 import Foundation
 
 public struct Currency: Value, Equatable {
-    let currencyValidator = CurrencyValidator()
+    private let currencyValidator = CurrencyValidator()
 
     public let value: Result<String, CurrencyValidationError>
     public let validated: Validated<String, CurrencyValidationError>
+    public let currencyCode: String
 
-    init(currency: String) {
-        self.validated = currencyValidator.callAsFunction(currency)
+    public init(currencyCode: String) {
+        self.currencyCode = currencyCode
+        self.validated = currencyValidator.callAsFunction(currencyCode)
         self.value = validated.asResult
     }
 
@@ -20,6 +22,11 @@ public struct Currency: Value, Equatable {
 
         return symbol
     }
+
+    public var locale: Locale {
+        let localeIdentifier = Locale.identifier(fromComponents: [NSLocale.Key.currencyCode.rawValue: currencyCode])
+        return Locale(identifier: localeIdentifier)
+    }
 }
 
 public enum CurrencyValidationError: LocalizedError {
@@ -28,7 +35,7 @@ public enum CurrencyValidationError: LocalizedError {
 
 public struct CurrencyValidator: Validator {
     public func validate(_ input: String) -> Validated<String, CurrencyValidationError> {
-        guard let symbol = CurrencyKit.shared.findSymbol(for: input) else {
+        guard let _ = CurrencyKit.shared.findSymbol(for: input) else {
             return .invalid(input, .symbolNotFound)
         }
 

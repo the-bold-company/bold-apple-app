@@ -62,7 +62,7 @@ public struct InvestmentPortfolioPage: View {
                     state: \.$destination.addTransactionRoute,
                     action: \.destination.addTransactionRoute
                 )
-            ) { AddPortfolioTransactionPage(store: $0) }
+            ) { RecordPortfolioTransactionPage(store: $0) }
         }
         .enableInjection()
     }

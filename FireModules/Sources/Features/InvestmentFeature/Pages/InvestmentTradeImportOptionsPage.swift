@@ -15,7 +15,7 @@ public struct InvestmentTradeImportOptionsPage: View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             NavigationStack {
                 VStack(alignment: .leading) {
-                    NavigationBar(
+                    FireNavBar(
                         trailing: {
                             DismissButton(image: {
                                 Image(systemName: "xmark")
@@ -48,7 +48,7 @@ public struct InvestmentTradeImportOptionsPage: View {
                         state: \.$destination.addTransactionRoute,
                         action: \.destination.addTransactionRoute
                     )
-                ) { AddPortfolioTransactionPage(store: $0) }
+                ) { RecordPortfolioTransactionPage(store: $0) }
             }
         }
         .enableInjection()

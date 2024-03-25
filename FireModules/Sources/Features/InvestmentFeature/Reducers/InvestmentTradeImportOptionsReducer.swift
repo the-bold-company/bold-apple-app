@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DomainEntities
 import Factory
 import SwiftUI
 
@@ -15,7 +16,10 @@ public struct InvestmentTradeImportOptionsReducer {
             ImportOption.importCSV,
         ]
 
-        public init() {}
+        let portfolio: InvestmentPortfolioEntity
+        public init(portfolio: InvestmentPortfolioEntity) {
+            self.portfolio = portfolio
+        }
     }
 
     public enum Action: BindableAction {
@@ -50,7 +54,7 @@ public struct InvestmentTradeImportOptionsReducer {
                 guard let option = state.importOptions[id: id] else { return .none }
 
                 if option == ImportOption.manual {
-                    state.destination = .addTransactionRoute(.init())
+                    state.destination = .addTransactionRoute(.init(portfolio: state.portfolio))
                 } else {
                     state.destination = .underConstructionRoute
                 }
@@ -70,12 +74,12 @@ public extension InvestmentTradeImportOptionsReducer {
     @Reducer
     struct Destination: Equatable {
         public enum State: Equatable {
-            case addTransactionRoute(AddPortfolioTransactionReducer.State)
+            case addTransactionRoute(RecordPortfolioTransactionReducer.State)
             case underConstructionRoute
         }
 
         public enum Action {
-            case addTransactionRoute(AddPortfolioTransactionReducer.Action)
+            case addTransactionRoute(RecordPortfolioTransactionReducer.Action)
             case underConstructionRoute
         }
 

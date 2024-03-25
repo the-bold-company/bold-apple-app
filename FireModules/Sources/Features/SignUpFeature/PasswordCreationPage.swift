@@ -59,7 +59,7 @@ public struct PasswordCreationPage: View {
                     Text("Continue")
                         .frame(maxWidth: .infinity)
                 }
-                .fireButtonStyle()
+                .fireButtonStyle(isActive: viewStore.passwordValidationError == nil)
                 .disabled(viewStore.passwordValidationError != nil)
             }
             .padding()

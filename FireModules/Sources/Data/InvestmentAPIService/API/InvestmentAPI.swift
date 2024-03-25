@@ -1,8 +1,16 @@
+import Foundation
 import Networking
 
 enum InvestmentAPI {
     case createPortfolio(name: String)
     case getPortfolioList
+    case recordTransaction(
+        portfolioId: String,
+        type: String,
+        amount: Decimal,
+        currency: String,
+        notes: String?
+    )
 }
 
 extension InvestmentAPI: BaseTargetType {
@@ -12,12 +20,14 @@ extension InvestmentAPI: BaseTargetType {
             return "/investment/create-porfolio"
         case .getPortfolioList:
             return "/investment/portfolio/list"
+        case let .recordTransaction(portfolioId, _, _, _, _):
+            return "/investment/portfolio/\(portfolioId)/record-transaction"
         }
     }
 
-    var method: Method {
+    var method: Moya.Method {
         switch self {
-        case .createPortfolio:
+        case .createPortfolio, .recordTransaction:
             return .post
         case .getPortfolioList:
             return .get
@@ -33,6 +43,20 @@ extension InvestmentAPI: BaseTargetType {
             )
         case .getPortfolioList:
             return .requestPlain
+        case let .recordTransaction(_, type, amount, currency, notes):
+            var parameters: [String: Any] = [
+                "type": type,
+                "amount": amount,
+                "currency": currency,
+            ]
+
+            if let notes {
+                parameters["notes"] = notes
+            }
+            return .requestParameters(
+                parameters: parameters,
+                encoding: JSONEncoding.default
+            )
         }
     }
 }

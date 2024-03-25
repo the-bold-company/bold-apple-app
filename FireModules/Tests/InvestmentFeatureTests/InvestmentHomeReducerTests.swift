@@ -11,16 +11,20 @@ import XCTest
 final class InvestmentHomeReducerTests: XCTestCase {
     private var initialState: InvestmentHomeReducer.State!
     private var investmentUseCase: InvestmentUseCaseInterfaceMock!
+    private var store: TestStoreOf<InvestmentHomeReducer>!
 
     override func setUpWithError() throws {
         initialState = InvestmentHomeReducer.State()
         investmentUseCase = InvestmentUseCaseInterfaceMock()
+        store = TestStore(initialState: initialState, reducer: {
+            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
+        })
     }
 
     func testOnApearAction_OnlyCallsAPI_WhenStateIsIdle() async throws {
         // Arrange
-        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
-        let store = TestStore(
+        investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
+        store = TestStore(
             initialState: update(initialState) {
                 $0.loadPortfoliosState = .idle
             },
@@ -34,13 +38,13 @@ final class InvestmentHomeReducerTests: XCTestCase {
         await store.send(.forward(.onAppear))
 
         // Assert
-        XCAssertNoDifference(investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount, 1)
+        XCAssertNoDifference(investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount, 1)
     }
 
     func testOnApearAction_NotCallingAPI_WhenStateIsLoading() async throws {
         // Arrange
-        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
-        let store = TestStore(
+        investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
+        store = TestStore(
             initialState: update(initialState) {
                 $0.loadPortfoliosState = .loading
             },
@@ -54,13 +58,13 @@ final class InvestmentHomeReducerTests: XCTestCase {
         await store.send(.forward(.onAppear))
 
         // Assert
-        XCAssertNoDifference(investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount, 0)
+        XCAssertNoDifference(investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount, 0)
     }
 
     func testOnApearAction_NotCallingAPI_WhenStateIsLoaded() async throws {
         // Arrange
-        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
-        let store = TestStore(
+        investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
+        store = TestStore(
             initialState: update(initialState) {
                 $0.loadPortfoliosState = .loaded(InvestmentPortfolioEntity.portfolioList)
             },
@@ -74,15 +78,12 @@ final class InvestmentHomeReducerTests: XCTestCase {
         await store.send(.forward(.onAppear))
 
         // Assert
-        XCAssertNoDifference(investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount, 0)
+        XCAssertNoDifference(investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount, 0)
     }
 
     func testGetPortfolioListSuccessfully() async throws {
         // Arrange
-        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
-        let store = TestStore(initialState: initialState, reducer: {
-            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
-        })
+        investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
         store.exhaustivity = .off
 
         // Act
@@ -99,9 +100,6 @@ final class InvestmentHomeReducerTests: XCTestCase {
 
     func testCreatePortfolio_NameIsEmpty_MustThrowError() async throws {
         // Arrange
-        let store = TestStore(initialState: initialState, reducer: {
-            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
-        })
         store.exhaustivity = .off
 
         // Act & Assert
@@ -123,10 +121,6 @@ final class InvestmentHomeReducerTests: XCTestCase {
 
     func testCreatePortfolio_NameIsLongerThan50Chars_MustThrowError() async throws {
         // Arrange
-
-        let store = TestStore(initialState: initialState, reducer: {
-            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
-        })
         store.exhaustivity = .off
 
         // Act & Assert
@@ -148,7 +142,7 @@ final class InvestmentHomeReducerTests: XCTestCase {
 
     func testInvalidPortfolioCreationAlert_TapOk_DestinationMustBeSetBackToNil() async throws {
         // Arrange
-        let store = TestStore(
+        store = TestStore(
             initialState: update(initialState) {
                 $0.destination = .invalidPortfolioCreationAlert(
                     AlertState {
@@ -176,11 +170,8 @@ final class InvestmentHomeReducerTests: XCTestCase {
 
     func testCreatePortfolioSuccessfully() async throws {
         // Arrange
-        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
-        investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.emptyPortfolioWithName("Lorem ipsum"))
-        let store = TestStore(initialState: initialState, reducer: {
-            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
-        })
+        investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
+        investmentUseCase.createPortfolioNameStringDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.emptyPortfolioWithName("Lorem ipsum"))
         store.exhaustivity = .off
 
         // Act
@@ -192,17 +183,14 @@ final class InvestmentHomeReducerTests: XCTestCase {
         // Assert
         await store.receive(\.delegate.portfolioCreated) {
             $0.createPortfolioState = .loaded(
-                InvestmentPortfolioEntity.emptyPortfolioWithName(self.investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReceivedName!)
+                InvestmentPortfolioEntity.emptyPortfolioWithName(self.investmentUseCase.createPortfolioNameStringDomainResultInvestmentPortfolioEntityReceivedName!)
             )
         }
     }
 
     func testCreatePortfolioFailed() async throws {
         // Arrange
-        investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue = .failure(DomainError.custom(description: "Unable to create portfolio with name Lorem ipsum", reason: "Unable to create portfolio with name Lorem ipsum"))
-        let store = TestStore(initialState: initialState, reducer: {
-            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
-        })
+        investmentUseCase.createPortfolioNameStringDomainResultInvestmentPortfolioEntityReturnValue = .failure(DomainError.custom(description: "Unable to create portfolio with name Lorem ipsum", reason: "Unable to create portfolio with name Lorem ipsum"))
         store.exhaustivity = .off
 
         // Act
@@ -213,7 +201,7 @@ final class InvestmentHomeReducerTests: XCTestCase {
 
         // Assert
         await store.receive(\.delegate.failedToCreatePorfolio) {
-            let errorMessage = "Unable to create portfolio with name \(self.investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReceivedName!)"
+            let errorMessage = "Unable to create portfolio with name \(self.investmentUseCase.createPortfolioNameStringDomainResultInvestmentPortfolioEntityReceivedName!)"
 
             $0.createPortfolioState = .failure(
                 DomainError.custom(description: errorMessage, reason: errorMessage)
@@ -234,21 +222,18 @@ final class InvestmentHomeReducerTests: XCTestCase {
 
     func testCreatePortfolioSuccessfully_MustRefetchPortfolioList() async throws {
         // Arrange
-        investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
-        investmentUseCase.createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue = .success(InvestmentPortfolioEntity.emptyPortfolioWithName("Lorem ipsum"))
-        let store = TestStore(initialState: initialState, reducer: {
-            InvestmentHomeReducer(investmentUseCase: investmentUseCase)
-        })
+        investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.portfolioList)
+        investmentUseCase.createPortfolioNameStringDomainResultInvestmentPortfolioEntityReturnValue = .success(InvestmentPortfolioEntity.emptyPortfolioWithName("Lorem ipsum"))
         store.exhaustivity = .off
 
         // Act & Assert
         await store.send(.forward(.onAppear))
 
-        XCAssertNoDifference(investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount, 1)
+        XCAssertNoDifference(investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount, 1)
         await store.receive(\.delegate.portfolioListLoaded)
         await store.send(.set(\.$portfolioName, "Lorem ipsum"))
         await store.send(.forward(.submitPortfolioCreationForm))
-        XCAssertNoDifference(investmentUseCase.getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount, 2)
+        XCAssertNoDifference(investmentUseCase.getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount, 2)
         await store.receive(\.delegate.portfolioListLoaded)
     }
 }

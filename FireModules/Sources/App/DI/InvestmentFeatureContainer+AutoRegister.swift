@@ -20,7 +20,11 @@ extension InvestmentFeatureContainer: AutoRegistering {
             InvestmentTradeImportOptionsReducer()
         }
         addInvestmentTradeReducer.register {
-            AddPortfolioTransactionReducer()
+            RecordPortfolioTransactionReducer(investmentUseCase: self.investmentUseCase.resolve()!)
+        }
+
+        currencyPickerReducer.register {
+            CurrencyPickerReducer()
         }
     }
 }

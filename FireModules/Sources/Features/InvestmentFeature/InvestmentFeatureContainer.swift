@@ -11,5 +11,7 @@ public extension InvestmentFeatureContainer {
     var investmentHomeReducer: Factory<InvestmentHomeReducer?> { self { nil } }
     var investmentPortfolioReducer: Factory<InvestmentPortfolioReducer?> { self { nil } }
     var investmentTradeImportOptionsReducer: Factory<InvestmentTradeImportOptionsReducer?> { self { nil } }
-    var addInvestmentTradeReducer: Factory<AddPortfolioTransactionReducer?> { self { nil } }
+    var addInvestmentTradeReducer: Factory<RecordPortfolioTransactionReducer?> { self { nil } }
+    var recordPortfolioTransactionReducer: Factory<RecordPortfolioTransactionReducer?> { self { nil } }
+    var currencyPickerReducer: Factory<CurrencyPickerReducer?> { self { nil } }
 }

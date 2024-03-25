@@ -50,6 +50,7 @@ public struct FireNavBar<Leading, Center, Trailing>: View where Leading: View, C
             .frame(idealWidth: .infinity)
 
             center()
+                .layoutPriority(1000)
 
             HStack {
                 Rectangle()

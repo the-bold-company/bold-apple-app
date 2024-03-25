@@ -21,7 +21,7 @@ public enum Typography {
     case linkLarge
     case linkDefault
 
-    var font: FontConvertible {
+    public var font: FontConvertible {
         switch self {
         case .titleScreen, .titleSection, .titleSubsection, .titleBody,
              .bodyLargeBold, .bodyDefaultBold,
@@ -34,7 +34,7 @@ public enum Typography {
         }
     }
 
-    var fontSize: CGFloat {
+    public var fontSize: CGFloat {
         switch self {
         case .titleScreen:
             return 30
@@ -53,7 +53,7 @@ public enum Typography {
         }
     }
 
-    var lineHeight: CGFloat {
+    public var lineHeight: CGFloat {
         switch self {
         case .titleScreen:
             return 34
@@ -72,11 +72,11 @@ public enum Typography {
         }
     }
 
-    var lineSpacing: CGFloat {
+    public var lineSpacing: CGFloat {
         return lineHeight - fontSize
     }
 
-    var letterSpacing: CGFloat {
+    public var letterSpacing: CGFloat {
         switch self {
         case .titleScreen:
             return -0.025 // -2.5%

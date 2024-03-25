@@ -20,41 +20,63 @@ public class InvestmentUseCaseInterfaceMock: InvestmentUseCaseInterface {
     public init() {}
     // MARK: - createPortfolio
 
-    public var createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorCallsCount = 0
-    public var createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorCalled: Bool {
-        return createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorCallsCount > 0
+    public var createPortfolioNameStringDomainResultInvestmentPortfolioEntityCallsCount = 0
+    public var createPortfolioNameStringDomainResultInvestmentPortfolioEntityCalled: Bool {
+        return createPortfolioNameStringDomainResultInvestmentPortfolioEntityCallsCount > 0
     }
-    public var createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReceivedName: (String)?
-    public var createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReceivedInvocations: [(String)] = []
-    public var createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue: Result<InvestmentPortfolioEntity, DomainError>!
-    public var createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorClosure: ((String) async -> Result<InvestmentPortfolioEntity, DomainError>)?
+    public var createPortfolioNameStringDomainResultInvestmentPortfolioEntityReceivedName: (String)?
+    public var createPortfolioNameStringDomainResultInvestmentPortfolioEntityReceivedInvocations: [(String)] = []
+    public var createPortfolioNameStringDomainResultInvestmentPortfolioEntityReturnValue: DomainResult<InvestmentPortfolioEntity>!
+    public var createPortfolioNameStringDomainResultInvestmentPortfolioEntityClosure: ((String) async -> DomainResult<InvestmentPortfolioEntity>)?
 
-    public func createPortfolio(name: String) async -> Result<InvestmentPortfolioEntity, DomainError> {
-        createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorCallsCount += 1
-        createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReceivedName = name
-        createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReceivedInvocations.append(name)
-        if let createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorClosure = createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorClosure {
-            return await createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorClosure(name)
+    public func createPortfolio(name: String) async -> DomainResult<InvestmentPortfolioEntity> {
+        createPortfolioNameStringDomainResultInvestmentPortfolioEntityCallsCount += 1
+        createPortfolioNameStringDomainResultInvestmentPortfolioEntityReceivedName = name
+        createPortfolioNameStringDomainResultInvestmentPortfolioEntityReceivedInvocations.append(name)
+        if let createPortfolioNameStringDomainResultInvestmentPortfolioEntityClosure = createPortfolioNameStringDomainResultInvestmentPortfolioEntityClosure {
+            return await createPortfolioNameStringDomainResultInvestmentPortfolioEntityClosure(name)
         } else {
-            return createPortfolioNameStringResultInvestmentPortfolioEntityDomainErrorReturnValue
+            return createPortfolioNameStringDomainResultInvestmentPortfolioEntityReturnValue
         }
     }
 
     // MARK: - getPortfolioList
 
-    public var getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount = 0
-    public var getPortfolioListResultInvestmentPortfolioEntityDomainErrorCalled: Bool {
-        return getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount > 0
+    public var getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount = 0
+    public var getPortfolioListDomainResultInvestmentPortfolioEntityCalled: Bool {
+        return getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount > 0
     }
-    public var getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue: Result<[InvestmentPortfolioEntity], DomainError>!
-    public var getPortfolioListResultInvestmentPortfolioEntityDomainErrorClosure: (() async -> Result<[InvestmentPortfolioEntity], DomainError>)?
+    public var getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue: DomainResult<[InvestmentPortfolioEntity]>!
+    public var getPortfolioListDomainResultInvestmentPortfolioEntityClosure: (() async -> DomainResult<[InvestmentPortfolioEntity]>)?
 
-    public func getPortfolioList() async -> Result<[InvestmentPortfolioEntity], DomainError> {
-        getPortfolioListResultInvestmentPortfolioEntityDomainErrorCallsCount += 1
-        if let getPortfolioListResultInvestmentPortfolioEntityDomainErrorClosure = getPortfolioListResultInvestmentPortfolioEntityDomainErrorClosure {
-            return await getPortfolioListResultInvestmentPortfolioEntityDomainErrorClosure()
+    public func getPortfolioList() async -> DomainResult<[InvestmentPortfolioEntity]> {
+        getPortfolioListDomainResultInvestmentPortfolioEntityCallsCount += 1
+        if let getPortfolioListDomainResultInvestmentPortfolioEntityClosure = getPortfolioListDomainResultInvestmentPortfolioEntityClosure {
+            return await getPortfolioListDomainResultInvestmentPortfolioEntityClosure()
         } else {
-            return getPortfolioListResultInvestmentPortfolioEntityDomainErrorReturnValue
+            return getPortfolioListDomainResultInvestmentPortfolioEntityReturnValue
+        }
+    }
+
+    // MARK: - recordTransaction
+
+    public var recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityCallsCount = 0
+    public var recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityCalled: Bool {
+        return recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityCallsCount > 0
+    }
+    public var recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityReceivedArguments: (amount: Decimal, portfolioId: ID, type: String, currency: String, notes: String?)?
+    public var recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityReceivedInvocations: [(amount: Decimal, portfolioId: ID, type: String, currency: String, notes: String?)] = []
+    public var recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityReturnValue: DomainResult<InvestmentTransactionEntity>!
+    public var recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityClosure: ((Decimal, ID, String, String, String?) async -> DomainResult<InvestmentTransactionEntity>)?
+
+    public func recordTransaction(amount: Decimal, portfolioId: ID, type: String, currency: String, notes: String?) async -> DomainResult<InvestmentTransactionEntity> {
+        recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityCallsCount += 1
+        recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityReceivedArguments = (amount: amount, portfolioId: portfolioId, type: type, currency: currency, notes: notes)
+        recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityReceivedInvocations.append((amount: amount, portfolioId: portfolioId, type: type, currency: currency, notes: notes))
+        if let recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityClosure = recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityClosure {
+            return await recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityClosure(amount, portfolioId, type, currency, notes)
+        } else {
+            return recordTransactionAmountDecimalPortfolioIdIDTypeStringCurrencyStringNotesStringDomainResultInvestmentTransactionEntityReturnValue
         }
     }
 

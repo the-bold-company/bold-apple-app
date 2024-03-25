@@ -7,6 +7,11 @@ public struct ID: Value, Equatable, Hashable {
         return getOrCrash()
     }
 
+    /// Because Swift uses uppercased UUID string while dynamodb accepts lowercased. Use this to send to server
+    public var dynamodbCompartibleUUIDString: String {
+        return id.uuidString.lowercased()
+    }
+
     public init(uuidString: String) {
         self.value = .success(UUID(uuidString: uuidString) ?? UUID())
     }

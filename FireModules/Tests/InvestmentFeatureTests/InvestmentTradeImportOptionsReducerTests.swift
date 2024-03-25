@@ -2,6 +2,7 @@
 // swiftlint:disable file_length
 
 import ComposableArchitecture
+import DomainEntities
 @testable import InvestmentFeature
 import TestHelpers
 import XCTest
@@ -9,30 +10,17 @@ import XCTest
 @MainActor
 final class InvestmentTradeImportOptionsReducerTests: XCTestCase {
     private var initialState: InvestmentTradeImportOptionsReducer.State!
+    private var store: TestStoreOf<InvestmentTradeImportOptionsReducer>!
     override func setUpWithError() throws {
-        initialState = InvestmentTradeImportOptionsReducer.State()
-    }
-
-    func testSelectImportMethod_AbleToSelectManual_() async throws {
-        // Arrange
-        let store = TestStore(
+        initialState = InvestmentTradeImportOptionsReducer.State(portfolio: InvestmentPortfolioEntity.stockPortfolio)
+        store = TestStore(
             initialState: initialState,
             reducer: { InvestmentTradeImportOptionsReducer() }
         )
-        store.exhaustivity = .off
-
-        // Act & Assert
-        await store.send(.forward(.selectImportMethod(ImportOption.manual.id))) {
-            $0.destination = .addTransactionRoute(.init())
-        }
     }
 
     func testSelectImportMethod_SelectInDevelopementMethods_MustNavigateToUnderConstructionScreen() async throws {
         // Arrange
-        let store = TestStore(
-            initialState: initialState,
-            reducer: { InvestmentTradeImportOptionsReducer() }
-        )
         store.exhaustivity = .off
 
         // Act & Assert
@@ -43,6 +31,21 @@ final class InvestmentTradeImportOptionsReducerTests: XCTestCase {
 
             await store.send(.destination(.dismiss))
         }
+    }
+
+    func testRecordTransactionSuccessfully_MustDismiss() async throws {
+        // Arrange
+        store = TestStore(
+            initialState: update(initialState) {
+                $0.destination = .addTransactionRoute(.init(portfolio: InvestmentPortfolioEntity.stockPortfolio))
+            },
+            reducer: { InvestmentTradeImportOptionsReducer() }
+        )
+        store.exhaustivity = .off
+
+        // Act & Assert
+        await store.send(.destination(.presented(.addTransactionRoute(.delegate(.transactionAdded(InvestmentTransactionEntity.stockTransaction))))))
+        await store.receive(\.destination.dismiss)
     }
 }
 
