@@ -80,6 +80,28 @@ public class InvestmentUseCaseInterfaceMock: InvestmentUseCaseInterface {
         }
     }
 
+    // MARK: - getPortfolioDetails
+
+    public var getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityCallsCount = 0
+    public var getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityCalled: Bool {
+        return getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityCallsCount > 0
+    }
+    public var getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityReceivedId: (String)?
+    public var getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityReceivedInvocations: [(String)] = []
+    public var getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityReturnValue: DomainResult<InvestmentPortfolioEntity>!
+    public var getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityClosure: ((String) async -> DomainResult<InvestmentPortfolioEntity>)?
+
+    public func getPortfolioDetails(id: String) async -> DomainResult<InvestmentPortfolioEntity> {
+        getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityCallsCount += 1
+        getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityReceivedId = id
+        getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityReceivedInvocations.append(id)
+        if let getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityClosure = getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityClosure {
+            return await getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityClosure(id)
+        } else {
+            return getPortfolioDetailsIdStringDomainResultInvestmentPortfolioEntityReturnValue
+        }
+    }
+
 }
 // swiftlint:enable line_length
 // swiftlint:enable variable_name

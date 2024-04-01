@@ -23,7 +23,7 @@ struct CurrencyPickerPage: View {
                         viewStore.send(.selectCurrency(currency))
                     } label: {
                         HStack {
-                            Text(currency.currencyCode)
+                            Text(currency.currencyCodeString)
                                 .typography(.bodyDefault)
                                 .foregroundColor(.coreui.forestGreen)
                             Spacer()

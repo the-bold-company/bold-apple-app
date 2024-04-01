@@ -1,10 +1,3 @@
-//
-//  InvestmentFeatureContainer+AutoRegister.swift
-//
-//
-//  Created by Hien Tran on 18/03/2024.
-//
-
 // swiftlint:disable force_unwrapping
 
 extension InvestmentFeatureContainer: AutoRegistering {
@@ -14,7 +7,10 @@ extension InvestmentFeatureContainer: AutoRegistering {
             InvestmentHomeReducer(investmentUseCase: self.investmentUseCase.resolve()!)
         }
         investmentPortfolioReducer.register {
-            InvestmentPortfolioReducer(investmentUseCase: self.investmentUseCase.resolve()!)
+            InvestmentPortfolioReducer(
+                investmentUseCase: self.investmentUseCase.resolve()!,
+                liveMarketUseCase: resolve(\.liveMarketUseCase)
+            )
         }
         investmentTradeImportOptionsReducer.register {
             InvestmentTradeImportOptionsReducer()
@@ -25,6 +21,10 @@ extension InvestmentFeatureContainer: AutoRegistering {
 
         currencyPickerReducer.register {
             CurrencyPickerReducer()
+        }
+
+        investmentCashBalanceReducer.register {
+            InvestmentCashBalanceReducer()
         }
     }
 }

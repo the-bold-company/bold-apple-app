@@ -97,6 +97,7 @@ let package = Package(
                 "PortfolioUseCase",
                 "DevSettingsUseCase",
                 "InvestmentUseCase",
+                "LiveMarketUseCase",
 
                 "AuthAPIServiceInterface",
                 "AuthAPIService",
@@ -114,6 +115,8 @@ let package = Package(
                 "PersistenceService",
                 "InvestmentAPIServiceInterface",
                 "InvestmentAPIService",
+                "MarketAPIServiceInterface",
+                "MarketAPIService",
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/App/DI"
@@ -223,6 +226,7 @@ let package = Package(
                 "CurrencyKit",
                 "Utilities",
                 "InvestmentUseCase",
+                "LiveMarketUseCase",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Factory", package: "factory"),
             ],
@@ -360,6 +364,14 @@ let package = Package(
             ],
             path: "Sources/Domains/UseCases/InvestmentUseCase"
         ),
+        .target(
+            name: "LiveMarketUseCase",
+            dependencies: [
+                "DomainEntities",
+                "MarketAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/LiveMarketUseCase"
+        ),
 
         // MARK: Domains/DataInterfaces
 
@@ -426,12 +438,27 @@ let package = Package(
             ],
             path: "Sources/Domains/DataInterfaces/InvestmentAPIServiceInterface"
         ),
+        .target(
+            name: "MarketAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/MarketAPIServiceInterface"
+        ),
 
         // MARK: Domains/Entities
 
         .target(
             name: "DomainEntities",
+            dependencies: [
+                "DomainUtilities",
+            ],
             path: "Sources/Domains/Entities"
+        ),
+
+        .target(
+            name: "DomainUtilities",
+            path: "Sources/Domains/DomainUtilities"
         ),
 
         // MARK: Data Layer
@@ -515,6 +542,15 @@ let package = Package(
                 "InvestmentAPIServiceInterface",
             ],
             path: "Sources/Data/InvestmentAPIService"
+        ),
+        .target(
+            name: "MarketAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "MarketAPIServiceInterface",
+            ],
+            path: "Sources/Data/MarketAPIService"
         ),
 
         // MARK: Test targets

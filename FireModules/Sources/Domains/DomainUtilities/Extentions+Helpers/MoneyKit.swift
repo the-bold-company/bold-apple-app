@@ -1,21 +1,14 @@
-//
-//  MoneyKit.swift
-//
-//
-//  Created by Hien Tran on 20/03/2024.
-//
-
 import Foundation
 
 /// Original link: https://gist.github.com/iwasrobbed/f32c01c6965665f5823d0e0c683867e2
-final class CurrencyKit {
-    static let shared = CurrencyKit()
+public final class MoneyKit {
+    public static let shared = MoneyKit()
 
-    init() {}
+    private init() {}
 
-    var symbolCache = [String: String]()
-    var currencyCodeFormatterCache = [String: NumberFormatter]()
-    var currencySymbolFormatterCache = [String: NumberFormatter]()
+    private var symbolCache = [String: String]()
+    private var currencyCodeFormatterCache = [String: NumberFormatter]()
+    private var currencySymbolFormatterCache = [String: NumberFormatter]()
 
     /// Finds the shortest currency symbol possible and formats the amount with it
     /// Note: this works around using `currencyCode` and how it displays `CA$1234.56` instead of `$1234.56`
@@ -23,14 +16,14 @@ final class CurrencyKit {
     ///   - amount: The amount you want to format
     ///   - isoCurrencyCode: ISO currency code. E.g: VND, USD, EUR
     /// - Returns: The formatted amount. Calling `currencyString(for: 1000, isoCurrencyCode: "VND")` returns "₫221,920,450.00"
-    func currencyString(for amount: Decimal, isoCurrencyCode: String?) -> String {
+    public func currencyString(for amount: Decimal, isoCurrencyCode: String?) -> String {
         guard let isoCurrencyCode,
               let currencySymbol = findSymbol(for: isoCurrencyCode)
         else { return String(describing: amount) }
         return currencyCodeFormatter(for: currencySymbol).string(for: amount) ?? String(describing: amount)
     }
 
-    func currencyCodeFormatter(for currencyCode: String) -> NumberFormatter {
+    public func currencyCodeFormatter(for currencyCode: String) -> NumberFormatter {
         if let cachedFormatter = currencyCodeFormatterCache[currencyCode] { return cachedFormatter }
         let formatter = NumberFormatter()
         formatter.currencySymbol = currencyCode
@@ -39,7 +32,7 @@ final class CurrencyKit {
         return formatter
     }
 
-    func currencySymbolFormatter(for currencyCode: String) -> NumberFormatter {
+    public func currencySymbolFormatter(for currencyCode: String) -> NumberFormatter {
         if let cachedFormatter = currencySymbolFormatterCache[currencyCode] { return cachedFormatter }
         let formatter = NumberFormatter()
         formatter.currencySymbol = findSymbol(for: currencyCode)
@@ -48,7 +41,7 @@ final class CurrencyKit {
         return formatter
     }
 
-    func findSymbol(for currencyCode: String) -> String? {
+    public func findSymbol(for currencyCode: String) -> String? {
         if let cachedCurrencyCode = symbolCache[currencyCode] { return cachedCurrencyCode }
         guard currencyCode.count < 4 else { return nil }
         let symbol = findShortestSymbol(for: currencyCode)

@@ -91,7 +91,7 @@ public enum Typography {
         }
     }
 
-    var kerning: CGFloat {
+    public var kerning: CGFloat {
         return fontSize * letterSpacing
     }
 }

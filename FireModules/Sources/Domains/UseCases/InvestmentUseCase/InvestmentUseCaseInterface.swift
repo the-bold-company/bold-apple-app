@@ -11,4 +11,5 @@ public protocol InvestmentUseCaseInterface {
         currency: String,
         notes: String?
     ) async -> DomainResult<InvestmentTransactionEntity>
+    func getPortfolioDetails(id: String) async -> DomainResult<InvestmentPortfolioEntity>
 }

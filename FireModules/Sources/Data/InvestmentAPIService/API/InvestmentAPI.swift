@@ -4,6 +4,7 @@ import Networking
 enum InvestmentAPI {
     case createPortfolio(name: String)
     case getPortfolioList
+    case portfolioDetails(id: String)
     case recordTransaction(
         portfolioId: String,
         type: String,
@@ -22,6 +23,8 @@ extension InvestmentAPI: BaseTargetType {
             return "/investment/portfolio/list"
         case let .recordTransaction(portfolioId, _, _, _, _):
             return "/investment/portfolio/\(portfolioId)/record-transaction"
+        case let .portfolioDetails(id):
+            return "/investment/portfolio/\(id)"
         }
     }
 
@@ -29,7 +32,7 @@ extension InvestmentAPI: BaseTargetType {
         switch self {
         case .createPortfolio, .recordTransaction:
             return .post
-        case .getPortfolioList:
+        case .getPortfolioList, .portfolioDetails:
             return .get
         }
     }
@@ -41,7 +44,7 @@ extension InvestmentAPI: BaseTargetType {
                 parameters: ["portfolioName": name],
                 encoding: JSONEncoding.default
             )
-        case .getPortfolioList:
+        case .getPortfolioList, .portfolioDetails:
             return .requestPlain
         case let .recordTransaction(_, type, amount, currency, notes):
             var parameters: [String: Any] = [

@@ -15,7 +15,8 @@ public struct InvestmentPortfolioEntity: Equatable, Identifiable {
     public let timestamp: Int
     public let description: String?
     public let lastModified: Int
-//    public let balances: [String: Decimal]
+    public let balances: [Money]
+    public let baseCurrency: Currency
 
     public init(
         id: ID,
@@ -24,7 +25,9 @@ public struct InvestmentPortfolioEntity: Equatable, Identifiable {
         name: String,
         timestamp: Int,
         description: String? = nil,
-        lastModified: Int
+        lastModified: Int,
+        balances: [Money] = [],
+        baseCurrency: Currency
     ) {
         self.id = id
         self.totalInvestment = totalInvestment
@@ -33,5 +36,11 @@ public struct InvestmentPortfolioEntity: Equatable, Identifiable {
         self.timestamp = timestamp
         self.description = description
         self.lastModified = lastModified
+        self.balances = balances
+        self.baseCurrency = baseCurrency
     }
+}
+
+public extension [Money] {
+    static let empty: [Money] = []
 }

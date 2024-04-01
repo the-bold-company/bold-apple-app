@@ -14,4 +14,5 @@ public extension InvestmentFeatureContainer {
     var addInvestmentTradeReducer: Factory<RecordPortfolioTransactionReducer?> { self { nil } }
     var recordPortfolioTransactionReducer: Factory<RecordPortfolioTransactionReducer?> { self { nil } }
     var currencyPickerReducer: Factory<CurrencyPickerReducer?> { self { nil } }
+    var investmentCashBalanceReducer: Factory<InvestmentCashBalanceReducer?> { self { nil } }
 }

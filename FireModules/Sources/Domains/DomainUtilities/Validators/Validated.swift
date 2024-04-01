@@ -48,7 +48,7 @@ public extension Validated {
     }
 }
 
-extension Validated where Error: LocalizedError {
+public extension Validated where Error: LocalizedError {
     func localizeError() -> Validated<Value, DomainError> {
         switch self {
         case let .idle(value):

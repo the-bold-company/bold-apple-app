@@ -36,11 +36,11 @@ public struct CurrencyPickerReducer {
 
 extension Currency: Identifiable {
     public var id: String {
-        return getOrCrash()
+        return code.rawValue
     }
 }
 
 extension Currency {
-    static let usd = Currency(currencyCode: "USD")
-    static let vnd = Currency(currencyCode: "VND")
+    static let usd = Currency(code: .unitedStatesDollar)
+    static let vnd = Currency(code: .dong)
 }

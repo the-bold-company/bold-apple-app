@@ -14,6 +14,8 @@ import InvestmentAPIService
 import InvestmentAPIServiceInterface
 import KeychainService
 import KeychainServiceInterface
+import MarketAPIService
+import MarketAPIServiceInterface
 import PersistenceService
 import PersistenceServiceInterface
 import PortfolioAPIService
@@ -30,6 +32,7 @@ import FundCreationUseCase
 import FundDetailsUseCase
 import FundListUseCase
 import InvestmentUseCase
+import LiveMarketUseCase
 import LogInUseCase
 import PortfolioUseCase
 import TransactionListUseCase
@@ -40,6 +43,15 @@ public extension Container {
 
     var keychainService: Factory<KeychainServiceProtocol> {
         self { KeychainService() }
+    }
+
+    var temporaryPersistenceService: Factory<TemporaryPersistenceService> {
+        self { TemporaryPersistenceService.live }.singleton
+    }
+
+    var persistenceService: Factory<PersistenceServiceInterface> {
+        self { PersistenceService() }
+            .onTest { PersistenceServiceInterfaceMock() }
     }
 
     var authAPIService: Factory<AuthAPIServiceProtocol> {
@@ -62,16 +74,15 @@ public extension Container {
         self { InvestmentService() }
     }
 
-    var temporaryPersistenceService: Factory<TemporaryPersistenceService> {
-        self { TemporaryPersistenceService.live }.singleton
-    }
-
-    var persistenceService: Factory<PersistenceServiceInterface> {
-        self { PersistenceService() }
-            .onTest { PersistenceServiceInterfaceMock() }
+    var marketAPIService: Factory<MarketAPIServiceInterface> {
+        self { MarketAPIService() }
     }
 
     // MARK: Register use cases
+
+    var devSettingsUseCase: Factory<DevSettingsUseCase> {
+        self { DevSettingsUseCase.live }.singleton
+    }
 
     var logInUseCase: Factory<LogInUseCaseProtocol> {
         self { LogInUseCase(authService: self.authAPIService.callAsFunction(), keychainService: self.keychainService.callAsFunction()) }
@@ -119,7 +130,9 @@ public extension Container {
         }
     }
 
-    var devSettingsUseCase: Factory<DevSettingsUseCase> {
-        self { DevSettingsUseCase.live }.singleton
+    var liveMarketUseCase: Factory<LiveMarketUseCaseInterface> {
+        self {
+            LiveMarketUseCase(marketAPIService: self.marketAPIService.callAsFunction())
+        }
     }
 }

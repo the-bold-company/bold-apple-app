@@ -60,6 +60,8 @@ public struct InvestmentTradeImportOptionsReducer {
                 }
 
                 return .none
+            case .destination(.presented(.addTransactionRoute(.delegate(.transactionAdded(_))))):
+                return .run { _ in await dismiss() }
             case .binding, .destination:
                 return .none
             }

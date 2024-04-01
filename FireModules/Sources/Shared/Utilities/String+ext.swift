@@ -10,3 +10,9 @@ public extension String {
         return !isEmpty
     }
 }
+
+public extension Array {
+    var isNotEmpty: Bool {
+        return !isEmpty
+    }
+}

@@ -20,7 +20,7 @@ struct PortfolioGridItem: View {
                     .frame(height: 0)
                     .frame(maxWidth: .infinity)
                 Spacing(size: .size4)
-                Text("$\(portfolio.totalValue.formatUsingLocale())")
+                Text(portfolio.totalValue.formattedString)
                     .typography(.titleBody)
                     .foregroundColor(.coreui.forestGreen)
                 Spacing(size: .size4)

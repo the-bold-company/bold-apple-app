@@ -9,6 +9,7 @@ public protocol Value<Object, Err>: CustomStringConvertible {
     var isValid: Bool { get }
 
     func getOrCrash() -> Object
+    func getOrThrow() throws -> Object
     func getOrNil() -> Object?
 
     var errorOnly: EitherThisOrNothing<Err> { get }
@@ -38,6 +39,10 @@ public extension Value {
 
     func getOrCrash() -> Object {
         return try! value.get()
+    }
+
+    func getOrThrow() throws -> Object {
+        return try value.get()
     }
 
     func getOrNil() -> Object? {

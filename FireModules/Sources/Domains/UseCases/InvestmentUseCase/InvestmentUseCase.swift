@@ -46,4 +46,13 @@ public struct InvestmentUseCase: InvestmentUseCaseInterface {
             return .failure(error.eraseToDomainError())
         }
     }
+
+    public func getPortfolioDetails(id: String) async -> DomainResult<InvestmentPortfolioEntity> {
+        do {
+            let portfolio = try await investmentAPIService.getPortfolioDetails(id: id)
+            return .success(portfolio)
+        } catch {
+            return .failure(error.eraseToDomainError())
+        }
+    }
 }

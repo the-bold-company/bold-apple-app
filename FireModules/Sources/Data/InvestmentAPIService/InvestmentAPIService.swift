@@ -49,4 +49,13 @@ public struct InvestmentService: InvestmentAPIServiceInterface {
             .eraseToAnyPublisher()
             .async()
     }
+
+    public func getPortfolioDetails(id: String) async throws -> InvestmentPortfolioEntity {
+        return try await client
+            .requestPublisher(.portfolioDetails(id: id))
+            .map(GetPortfolioResponse.self)
+            .map { $0.asPortfolioEntity() }
+            .eraseToAnyPublisher()
+            .async()
+    }
 }

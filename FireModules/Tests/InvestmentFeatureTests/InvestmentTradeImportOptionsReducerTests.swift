@@ -39,7 +39,10 @@ final class InvestmentTradeImportOptionsReducerTests: XCTestCase {
             initialState: update(initialState) {
                 $0.destination = .addTransactionRoute(.init(portfolio: InvestmentPortfolioEntity.stockPortfolio))
             },
-            reducer: { InvestmentTradeImportOptionsReducer() }
+            reducer: { InvestmentTradeImportOptionsReducer() },
+            withDependencies: {
+                $0.dismiss = DismissEffect {}
+            }
         )
         store.exhaustivity = .off
 

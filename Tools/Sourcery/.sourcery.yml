@@ -1,6 +1,30 @@
 configurations:
   - sources:
       include:
+        - ../../FireModules/Sources/Domains/UseCases/DevSettingsUseCase
+    templates:
+      - Templates/AutomaticSettings/AutomaticSettings.stencil
+    output: ../../FireModules/Sources/Features/SettingsFeature/CodeGen/
+    baseIndentation: 4
+    args:
+      settingsView: DevSettingsView
+      settingsStructure: DevSettings
+      settingsExternalData: DevSettingsExternalData
+      settingsImports:
+        - DevSettingsUseCase
+  - sources:
+      include:
+        - ../../FireModules/Sources/Domains/DataInterfaces/PersistenceServiceInterface
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Data/PersistenceService/Generated/
+    baseIndentation: 4
+    args:
+      autoMockableImports:
+        - PersistenceServiceInterface
+        - DomainEntities
+  - sources:
+      include:
         - ../../FireModules/Sources/Domains/UseCases/LogInUseCase
     templates:
       - Templates/AutoMockable/AutoMockable.stencil
@@ -50,26 +74,6 @@ configurations:
     baseIndentation: 4
   - sources:
       include:
-        - ../../FireModules/Sources/Domains/UseCases/InvestmentUseCase
-    templates:
-      - Templates/AutoMockable/AutoMockable.stencil
-    output: ../../FireModules/Sources/Domains/UseCases/InvestmentUseCase/Generated
-    baseIndentation: 4
-  - sources:
-      include:
-        - ../../FireModules/Sources/Domains/UseCases/DevSettingsUseCase
-    templates:
-      - Templates/AutomaticSettings/AutomaticSettings.stencil
-    output: ../../FireModules/Sources/Features/SettingsFeature/CodeGen/
-    baseIndentation: 4
-    args:
-      settingsView: DevSettingsView
-      settingsStructure: DevSettings
-      settingsExternalData: DevSettingsExternalData
-      settingsImports:
-        - DevSettingsUseCase
-  - sources:
-      include:
         - ../../FireModules/Sources/Domains/UseCases/TransactionRecordUseCase
     templates:
       - Templates/AutoMockable/AutoMockable.stencil
@@ -77,15 +81,19 @@ configurations:
     baseIndentation: 4
   - sources:
       include:
-        - ../../FireModules/Sources/Domains/DataInterfaces/PersistenceServiceInterface
+        - ../../FireModules/Sources/Domains/UseCases/InvestmentUseCase
     templates:
       - Templates/AutoMockable/AutoMockable.stencil
-    output: ../../FireModules/Sources/Data/PersistenceService/Generated/
+    output: ../../FireModules/Sources/Domains/UseCases/InvestmentUseCase/Generated
     baseIndentation: 4
-    args:
-      autoMockableImports:
-        - PersistenceServiceInterface
-        - DomainEntities
+  - sources:
+      include:
+        - ../../FireModules/Sources/Domains/UseCases/LiveMarketUseCase
+    templates:
+      - Templates/AutoMockable/AutoMockable.stencil
+    output: ../../FireModules/Sources/Domains/UseCases/LiveMarketUseCase/Generated
+    baseIndentation: 4
+
 
 
 

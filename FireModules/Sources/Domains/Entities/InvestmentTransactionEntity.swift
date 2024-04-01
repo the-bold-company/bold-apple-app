@@ -8,7 +8,6 @@ public struct InvestmentTransactionEntity: Equatable, Identifiable {
     public let portfolioId: ID
     public let type: InvestmentTransactionType
     public let amount: Money
-    public let currency: Currency
     public let timestamp: Int
     public let notes: String?
     public let reason: String
@@ -20,7 +19,6 @@ public struct InvestmentTransactionEntity: Equatable, Identifiable {
         portfolioId: ID,
         type: InvestmentTransactionType,
         amount: Money,
-        currency: Currency,
         timestamp: Int,
         notes: String? = nil,
         reason: String,
@@ -31,7 +29,6 @@ public struct InvestmentTransactionEntity: Equatable, Identifiable {
         self.portfolioId = portfolioId
         self.type = type
         self.amount = amount
-        self.currency = currency
         self.timestamp = timestamp
         self.notes = notes
         self.reason = reason

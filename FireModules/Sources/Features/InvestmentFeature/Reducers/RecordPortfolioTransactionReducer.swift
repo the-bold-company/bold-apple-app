@@ -81,12 +81,12 @@ public struct RecordPortfolioTransactionReducer {
                 guard state.isFormValid else { return .none }
                 state.submissionState = .loading
 
-                return .run { [amount = state.actualAmount, portfolioId = state.portfolio.id, type = state.transactionType.rawValue, currency = state.currency.currencyCode, notes = state.notes] send in
+                return .run { [amount = state.actualAmount, portfolioId = state.portfolio.id, type = state.transactionType.rawValue, currencyCode = state.currency.code, notes = state.notes] send in
                     let result = await investmentUseCase.recordTransaction(
                         amount: amount,
                         portfolioId: portfolioId,
                         type: type,
-                        currency: currency,
+                        currency: currencyCode.rawValue,
                         notes: notes
                     )
                     switch result {

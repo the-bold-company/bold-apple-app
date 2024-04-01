@@ -27,7 +27,7 @@ public struct RecordPortfolioTransactionPage: View {
     private var amountformatter: NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
-        formatter.locale = viewStore.currency.locale
+        formatter.locale = viewStore.currency.currencyLocale
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         return formatter
@@ -109,7 +109,7 @@ public struct RecordPortfolioTransactionPage: View {
                         .foregroundColor(.coreui.forestGreen)
                     Spacing(size: .size4)
                     HStack {
-                        Text(viewStore.currency.currencyCode)
+                        Text(viewStore.currency.currencyCodeString)
                             .typography(.bodyLargeBold)
                             .foregroundColor(.coreui.forestGreen)
                         Spacer()
