@@ -8,6 +8,7 @@ public struct InvestmentCashBalancePage: View {
 
     struct ViewState: Equatable {
         let portfolio: InvestmentPortfolioEntity
+        let transactionHistoryLoadingState: LoadingState<[InvestmentTransactionEntity]>
     }
 
     let store: StoreOf<InvestmentCashBalanceReducer>
@@ -22,10 +23,19 @@ public struct InvestmentCashBalancePage: View {
         VStack(alignment: .leading) {
             navBar
             Spacing(size: .size8)
-            availableCash
+
+            List {
+                availableCash
+                addTransactionButton
+                transactionHistory
+            }
+            .listStyle(.plain)
         }
         .navigationBarHidden(true)
         .padding(.vertical)
+        .task {
+            viewStore.send(.forward(.onAppear))
+        }
         .enableInjection()
     }
 
@@ -49,13 +59,50 @@ public struct InvestmentCashBalancePage: View {
 
     @ViewBuilder
     private var availableCash: some View {
-        ScrollView(.horizontal) {
-            LazyHStack(spacing: 8) {
-                ForEach(viewStore.portfolio.balances.map { IdentifiableWrapper(value: $0) }) {
-                    AvailableCashItem(money: $0.value)
+        Section {
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: 8) {
+                    Spacing(size: .size12)
+                    ForEach(viewStore.portfolio.balances.map { IdentifiableWrapper(value: $0) }) {
+                        AvailableCashItem(money: $0.value)
+                    }
                 }
             }
-            .padding(.horizontal)
+            .listRowInsets(.zero)
+            .listRowSeparator(.hidden)
+            .padding(.horizontal, 0)
+            .frame(height: 80)
+        }
+    }
+
+    @ViewBuilder
+    private var addTransactionButton: some View {
+        Section {
+            HStack(spacing: 8) {
+                Button(action: {
+                    //            viewStore.send(.forward(.sendMoneyButtonTapped))
+                }) {
+                    Image(systemName: "plus")
+                        .foregroundColor(Color.coreui.forestGreen)
+                }
+                .fireButtonStyle()
+                .clipShape(Circle())
+
+                Text("Add transaction")
+                    .typography(.titleSmall)
+            }
+            .listRowSeparator(.hidden)
+        }
+    }
+
+    @ViewBuilder
+    private var transactionHistory: some View {
+        if viewStore.transactionHistoryLoadingState.hasResult {
+            Section {
+                ForEach(viewStore.transactionHistoryLoadingState.result!) {
+                    InvestmentTransactionItem(transaction: $0)
+                }
+            }
         }
     }
 }
@@ -64,40 +111,9 @@ extension BindingViewStore<InvestmentCashBalanceReducer.State> {
     var viewState: InvestmentCashBalancePage.ViewState {
         // swiftformat:disable redundantSelf
         InvestmentCashBalancePage.ViewState(
-            portfolio: self.portfolio
+            portfolio: self.portfolio,
+            transactionHistoryLoadingState: self.transactionHistoryLoadingState
         )
         // swiftformat:enable redundantSelf
-    }
-}
-
-struct AvailableCashItem: View {
-    let money: Money
-
-    var body: some View {
-        VStack {
-            Text(money.formattedString)
-                .typography(.titleSmall)
-                .bold()
-                .foregroundColor(.coreui.brightGreen)
-        }
-        .padding()
-        .frame(height: 80)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(
-                    Color.coreui.forestGreen
-                        .opacity(0.8)
-                )
-        )
-    }
-}
-
-public struct IdentifiableWrapper<Item>: Identifiable {
-    public let id: UUID
-    public let value: Item
-
-    public init(value: Item) {
-        self.id = UUID()
-        self.value = value
     }
 }

@@ -12,4 +12,5 @@ public protocol InvestmentAPIServiceInterface {
         notes: String?
     ) async throws -> InvestmentTransactionEntity
     func getPortfolioDetails(id: String) async throws -> InvestmentPortfolioEntity
+    func getTransactionHistory(portfolioId: String) async throws -> [InvestmentTransactionEntity]
 }

@@ -2,7 +2,7 @@ import Foundation
 import InvestmentAPIServiceInterface
 
 public struct InvestmentUseCase: InvestmentUseCaseInterface {
-    let investmentAPIService: InvestmentAPIServiceInterface
+    private let investmentAPIService: InvestmentAPIServiceInterface
 
     public init(investmentAPIService: InvestmentAPIServiceInterface) {
         self.investmentAPIService = investmentAPIService
@@ -53,6 +53,12 @@ public struct InvestmentUseCase: InvestmentUseCaseInterface {
             return .success(portfolio)
         } catch {
             return .failure(error.eraseToDomainError())
+        }
+    }
+
+    public func getTransactionHistory(portfolioId: ID) async -> DomainResult<[InvestmentTransactionEntity]> {
+        return await autoCatch {
+            return try await investmentAPIService.getTransactionHistory(portfolioId: portfolioId.dynamodbCompartibleUUIDString)
         }
     }
 }

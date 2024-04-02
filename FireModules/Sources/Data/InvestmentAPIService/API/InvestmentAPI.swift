@@ -12,6 +12,7 @@ enum InvestmentAPI {
         currency: String,
         notes: String?
     )
+    case getTransactionHistory(portfolioId: String)
 }
 
 extension InvestmentAPI: BaseTargetType {
@@ -25,6 +26,8 @@ extension InvestmentAPI: BaseTargetType {
             return "/investment/portfolio/\(portfolioId)/record-transaction"
         case let .portfolioDetails(id):
             return "/investment/portfolio/\(id)"
+        case let .getTransactionHistory(portfolioId):
+            return "/investment/portfolio/\(portfolioId)/transaction-list"
         }
     }
 
@@ -32,7 +35,7 @@ extension InvestmentAPI: BaseTargetType {
         switch self {
         case .createPortfolio, .recordTransaction:
             return .post
-        case .getPortfolioList, .portfolioDetails:
+        case .getPortfolioList, .portfolioDetails, .getTransactionHistory:
             return .get
         }
     }
@@ -44,7 +47,7 @@ extension InvestmentAPI: BaseTargetType {
                 parameters: ["portfolioName": name],
                 encoding: JSONEncoding.default
             )
-        case .getPortfolioList, .portfolioDetails:
+        case .getPortfolioList, .portfolioDetails, .getTransactionHistory:
             return .requestPlain
         case let .recordTransaction(_, type, amount, currency, notes):
             var parameters: [String: Any] = [

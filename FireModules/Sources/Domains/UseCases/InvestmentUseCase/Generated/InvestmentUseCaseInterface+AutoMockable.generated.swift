@@ -102,6 +102,28 @@ public class InvestmentUseCaseInterfaceMock: InvestmentUseCaseInterface {
         }
     }
 
+    // MARK: - getTransactionHistory
+
+    public var getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityCallsCount = 0
+    public var getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityCalled: Bool {
+        return getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityCallsCount > 0
+    }
+    public var getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityReceivedPortfolioId: (ID)?
+    public var getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityReceivedInvocations: [(ID)] = []
+    public var getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityReturnValue: DomainResult<[InvestmentTransactionEntity]>!
+    public var getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityClosure: ((ID) async -> DomainResult<[InvestmentTransactionEntity]>)?
+
+    public func getTransactionHistory(portfolioId: ID) async -> DomainResult<[InvestmentTransactionEntity]> {
+        getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityCallsCount += 1
+        getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityReceivedPortfolioId = portfolioId
+        getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityReceivedInvocations.append(portfolioId)
+        if let getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityClosure = getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityClosure {
+            return await getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityClosure(portfolioId)
+        } else {
+            return getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityReturnValue
+        }
+    }
+
 }
 // swiftlint:enable line_length
 // swiftlint:enable variable_name

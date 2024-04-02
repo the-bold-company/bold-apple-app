@@ -1,6 +1,15 @@
 public enum InvestmentTransactionType: String {
     case deposit
     case withdraw
+
+    public var displayText: String {
+        switch self {
+        case .deposit:
+            return "Deposit"
+        case .withdraw:
+            return "Withdrawal"
+        }
+    }
 }
 
 public struct InvestmentTransactionEntity: Equatable, Identifiable {

@@ -24,7 +24,7 @@ extension InvestmentFeatureContainer: AutoRegistering {
         }
 
         investmentCashBalanceReducer.register {
-            InvestmentCashBalanceReducer()
+            InvestmentCashBalanceReducer(investmentUseCase: resolve(\.investmentUseCase))
         }
     }
 }

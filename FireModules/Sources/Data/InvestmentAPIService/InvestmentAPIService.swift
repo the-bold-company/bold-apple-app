@@ -4,7 +4,7 @@ import InvestmentAPIServiceInterface
 import Networking
 
 public struct InvestmentService: InvestmentAPIServiceInterface {
-    let client = MoyaClient<InvestmentAPI>()
+    private let client = MoyaClient<InvestmentAPI>()
 
     public init() {}
 
@@ -55,6 +55,16 @@ public struct InvestmentService: InvestmentAPIServiceInterface {
             .requestPublisher(.portfolioDetails(id: id))
             .map(GetPortfolioResponse.self)
             .map { $0.asPortfolioEntity() }
+            .eraseToAnyPublisher()
+            .async()
+    }
+
+    public func getTransactionHistory(portfolioId: String) async throws -> [InvestmentTransactionEntity] {
+        return try await client
+            .requestPublisher(.getTransactionHistory(portfolioId: portfolioId))
+            .mapToResponse(GetInvestmentTransactionListResponse.self)
+            .map { $0.asInvestmentTransactionEntities() }
+            .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
             .async()
     }
