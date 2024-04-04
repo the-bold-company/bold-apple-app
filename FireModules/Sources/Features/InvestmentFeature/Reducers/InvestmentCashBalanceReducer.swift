@@ -8,11 +8,13 @@ public struct InvestmentCashBalanceReducer {
     public struct State: Equatable {
         @PresentationState var destination: Destination.State?
         var portfolio: InvestmentPortfolioEntity
+        var totalBalance: Money
 
         var transactionHistoryLoadingState: LoadingState<[InvestmentTransactionEntity]> = .idle
 
-        public init(portfolio: InvestmentPortfolioEntity) {
+        public init(portfolio: InvestmentPortfolioEntity, totalBalance: Money) {
             self.portfolio = portfolio
+            self.totalBalance = totalBalance
         }
     }
 

@@ -83,7 +83,8 @@ public struct InvestmentPortfolioReducer {
                 state.destination = .investmentTradeImportOptionsRoute(.init(portfolio: state.portfolio))
                 return .none
             case .forward(.onCashBalanceTapped):
-                state.destination = .investmentCashBalanceRoute(.init(portfolio: state.portfolio))
+                guard let totalBalance = state.calculatingAvailableCashState.result else { return .none }
+                state.destination = .investmentCashBalanceRoute(.init(portfolio: state.portfolio, totalBalance: totalBalance))
                 return .none
             case let .delegate(.portfolioReloaded(portfolio)):
                 state.reloadPortfolioState = .loaded(portfolio)
@@ -98,8 +99,6 @@ public struct InvestmentPortfolioReducer {
             case let .delegate(.failedToConvertAvailableCash(error)):
                 state.calculatingAvailableCashState = .failure(error)
                 return .none
-            case .destination(.presented(.investmentTradeImportOptionsRoute(.destination(.presented(.addTransactionRoute(.delegate(.transactionAdded(_)))))))):
-                return loadPortfolio(state: &state)
             case .binding, .destination:
                 return .none
             }

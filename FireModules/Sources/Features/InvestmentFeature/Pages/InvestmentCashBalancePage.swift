@@ -8,6 +8,7 @@ public struct InvestmentCashBalancePage: View {
 
     struct ViewState: Equatable {
         let portfolio: InvestmentPortfolioEntity
+        let totalBalance: Money
         let transactionHistoryLoadingState: LoadingState<[InvestmentTransactionEntity]>
     }
 
@@ -48,8 +49,8 @@ public struct InvestmentCashBalancePage: View {
             center: {
                 VStack {
                     Text("Available cash")
-                        .typography(.titleSmall)
-                    Text("Total balance: $29,549")
+                        .typography(.titleGroup)
+                    Text("Total balance: \(viewStore.totalBalance.formattedString)")
                         .typography(.titleSmall)
                 }
             }
@@ -112,6 +113,7 @@ extension BindingViewStore<InvestmentCashBalanceReducer.State> {
         // swiftformat:disable redundantSelf
         InvestmentCashBalancePage.ViewState(
             portfolio: self.portfolio,
+            totalBalance: self.totalBalance,
             transactionHistoryLoadingState: self.transactionHistoryLoadingState
         )
         // swiftformat:enable redundantSelf

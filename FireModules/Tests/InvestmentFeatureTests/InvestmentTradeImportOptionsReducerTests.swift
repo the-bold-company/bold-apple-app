@@ -32,24 +32,6 @@ final class InvestmentTradeImportOptionsReducerTests: XCTestCase {
             await store.send(.destination(.dismiss))
         }
     }
-
-    func testRecordTransactionSuccessfully_MustDismiss() async throws {
-        // Arrange
-        store = TestStore(
-            initialState: update(initialState) {
-                $0.destination = .addTransactionRoute(.init(portfolio: InvestmentPortfolioEntity.stockPortfolio))
-            },
-            reducer: { InvestmentTradeImportOptionsReducer() },
-            withDependencies: {
-                $0.dismiss = DismissEffect {}
-            }
-        )
-        store.exhaustivity = .off
-
-        // Act & Assert
-        await store.send(.destination(.presented(.addTransactionRoute(.delegate(.transactionAdded(InvestmentTransactionEntity.stockTransaction))))))
-        await store.receive(\.destination.dismiss)
-    }
 }
 
 // swiftlint:enable line_length

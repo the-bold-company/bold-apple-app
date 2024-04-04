@@ -13,4 +13,10 @@ public struct LiveMarketUseCase: LiveMarketUseCaseInterface {
             return conversion
         }
     }
+
+    public func searchSymbol(_ searchedString: String) async -> DomainResult<[SymbolDisplayEntity]> {
+        return await autoCatch {
+            try await marketAPIService.searchSymbol(searchedString)
+        }
+    }
 }

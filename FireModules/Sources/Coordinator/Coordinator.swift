@@ -73,7 +73,8 @@ public struct Coordinator {
         )
 
         public static let unAuthenticatedInitialState = State(
-            routes: [.root(.landingRoute(.init()), embedInNavigationView: true)]
+            //            routes: [.root(.landingRoute(.init()), embedInNavigationView: true)]
+            routes: [.root(.loginRoute(.init()), embedInNavigationView: true)]
         )
 
         public var routes: [Route<Destination.State>]

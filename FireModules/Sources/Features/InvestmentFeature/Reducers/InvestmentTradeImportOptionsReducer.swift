@@ -54,14 +54,12 @@ public struct InvestmentTradeImportOptionsReducer {
                 guard let option = state.importOptions[id: id] else { return .none }
 
                 if option == ImportOption.manual {
-                    state.destination = .addTransactionRoute(.init(portfolio: state.portfolio))
+                    state.destination = .assetPickerRoute(.init())
                 } else {
                     state.destination = .underConstructionRoute
                 }
 
                 return .none
-            case .destination(.presented(.addTransactionRoute(.delegate(.transactionAdded(_))))):
-                return .run { _ in await dismiss() }
             case .binding, .destination:
                 return .none
             }
@@ -76,18 +74,18 @@ public extension InvestmentTradeImportOptionsReducer {
     @Reducer
     struct Destination: Equatable {
         public enum State: Equatable {
-            case addTransactionRoute(RecordPortfolioTransactionReducer.State)
+            case assetPickerRoute(InvestmentTradeAssetPickerReducer.State)
             case underConstructionRoute
         }
 
         public enum Action {
-            case addTransactionRoute(RecordPortfolioTransactionReducer.Action)
+            case assetPickerRoute(InvestmentTradeAssetPickerReducer.Action)
             case underConstructionRoute
         }
 
         public var body: some ReducerOf<Self> {
-            Scope(state: \.addTransactionRoute, action: \.addTransactionRoute) {
-                resolve(\InvestmentFeatureContainer.addInvestmentTradeReducer)
+            Scope(state: \.assetPickerRoute, action: \.assetPickerRoute) {
+                resolve(\InvestmentFeatureContainer.investmentTradeAssetPickerReducer)
             }
         }
     }

@@ -2,13 +2,12 @@
 
 extension InvestmentFeatureContainer: AutoRegistering {
     public func autoRegister() {
-        investmentUseCase.register { resolve(\.investmentUseCase) }
         investmentHomeReducer.register {
-            InvestmentHomeReducer(investmentUseCase: self.investmentUseCase.resolve()!)
+            InvestmentHomeReducer(investmentUseCase: resolve(\.investmentUseCase))
         }
         investmentPortfolioReducer.register {
             InvestmentPortfolioReducer(
-                investmentUseCase: self.investmentUseCase.resolve()!,
+                investmentUseCase: resolve(\.investmentUseCase),
                 liveMarketUseCase: resolve(\.liveMarketUseCase)
             )
         }
@@ -16,7 +15,7 @@ extension InvestmentFeatureContainer: AutoRegistering {
             InvestmentTradeImportOptionsReducer()
         }
         addInvestmentTradeReducer.register {
-            RecordPortfolioTransactionReducer(investmentUseCase: self.investmentUseCase.resolve()!)
+            RecordPortfolioTransactionReducer(investmentUseCase: resolve(\.investmentUseCase))
         }
 
         currencyPickerReducer.register {
@@ -25,6 +24,14 @@ extension InvestmentFeatureContainer: AutoRegistering {
 
         investmentCashBalanceReducer.register {
             InvestmentCashBalanceReducer(investmentUseCase: resolve(\.investmentUseCase))
+        }
+
+        investmentTradeAssetPickerReducer.register {
+            InvestmentTradeAssetPickerReducer()
+        }
+
+        stockSearchReducer.register {
+            StockSearchReducer(liveMarketUseCase: resolve(\.liveMarketUseCase))
         }
     }
 }

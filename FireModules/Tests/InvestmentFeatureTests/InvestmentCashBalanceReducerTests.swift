@@ -14,7 +14,10 @@ final class InvestmentCashBalanceReducerTests: XCTestCase {
     private var store: TestStoreOf<InvestmentCashBalanceReducer>!
 
     override func setUpWithError() throws {
-        initialState = InvestmentCashBalanceReducer.State(portfolio: InvestmentPortfolioEntity.stockPortfolio1)
+        initialState = InvestmentCashBalanceReducer.State(
+            portfolio: InvestmentPortfolioEntity.stockPortfolio1,
+            totalBalance: Money(3250, currency: Currency(code: .unitedStatesDollar))
+        )
         investmentUseCase = InvestmentUseCaseInterfaceMock()
         investmentUseCase.getTransactionHistoryPortfolioIdIDDomainResultInvestmentTransactionEntityReturnValue = .success(.mock)
         store = TestStore(initialState: initialState) {

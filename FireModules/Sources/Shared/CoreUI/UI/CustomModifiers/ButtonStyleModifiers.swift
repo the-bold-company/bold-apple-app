@@ -12,7 +12,13 @@ public extension View {
         buttonStyle(FireButtonStyle(buttonType: type, isActive: isActive))
     }
 
-    func secondaryButtomCustomBorderStyle(shape: FireButtonShape = .roundedCorner, borderColor: Color, isActive: Bool = true) -> some View {
-        buttonStyle(SecondaryCustomBorderStyle(shape: shape, borderColor: borderColor, isActive: isActive))
+    func secondaryButtomCustomBorderStyle(
+        shape: FireButtonShape = .roundedCorner,
+        borderColor: Color,
+        backgroundColor: Color? = nil,
+        textColor: Color? = nil,
+        isActive: Bool = true
+    ) -> some View {
+        buttonStyle(SecondaryCustomBorderStyle(shape: shape, borderColor: borderColor, backgroundColor: backgroundColor, textColor: textColor, isActive: isActive))
     }
 }

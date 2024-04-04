@@ -40,6 +40,28 @@ public class LiveMarketUseCaseInterfaceMock: LiveMarketUseCaseInterface {
         }
     }
 
+    // MARK: - searchSymbol
+
+    public var searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityCallsCount = 0
+    public var searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityCalled: Bool {
+        return searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityCallsCount > 0
+    }
+    public var searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityReceivedSearchedString: (String)?
+    public var searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityReceivedInvocations: [(String)] = []
+    public var searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityReturnValue: DomainResult<[SymbolDisplayEntity]>!
+    public var searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityClosure: ((String) async -> DomainResult<[SymbolDisplayEntity]>)?
+
+    public func searchSymbol(_ searchedString: String) async -> DomainResult<[SymbolDisplayEntity]> {
+        searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityCallsCount += 1
+        searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityReceivedSearchedString = searchedString
+        searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityReceivedInvocations.append(searchedString)
+        if let searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityClosure = searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityClosure {
+            return await searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityClosure(searchedString)
+        } else {
+            return searchSymbolSearchedStringStringDomainResultSymbolDisplayEntityReturnValue
+        }
+    }
+
 }
 // swiftlint:enable line_length
 // swiftlint:enable variable_name

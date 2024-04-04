@@ -8,9 +8,11 @@
 import SwiftUI
 
 public extension Text {
-    func typography(_ typography: Typography) -> some View {
+    func typography(_ typography: Typography, ignoreLineSpacing: Bool = false) -> some View {
         font(.custom(typography.font, size: typography.fontSize))
             .kerning(typography.kerning)
-            .lineSpacing(typography.lineSpacing)
+            .if(!ignoreLineSpacing) {
+                $0.lineSpacing(typography.lineSpacing)
+            }
     }
 }

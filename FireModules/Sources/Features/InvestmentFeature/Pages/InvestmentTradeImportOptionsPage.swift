@@ -45,10 +45,10 @@ public struct InvestmentTradeImportOptionsPage: View {
                 ) { _ in return UnderConstructionPage() }
                 .navigationDestination(
                     store: store.scope(
-                        state: \.$destination.addTransactionRoute,
-                        action: \.destination.addTransactionRoute
+                        state: \.$destination.assetPickerRoute,
+                        action: \.destination.assetPickerRoute
                     )
-                ) { RecordPortfolioTransactionPage(store: $0) }
+                ) { InvestmentTradeAssetPickerPage(store: $0) }
             }
         }
         .enableInjection()
