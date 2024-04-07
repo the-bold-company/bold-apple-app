@@ -30,6 +30,10 @@ extension InvestmentFeatureContainer: AutoRegistering {
             InvestmentTradeAssetPickerReducer()
         }
 
+        stockSearchHomeReducer.register {
+            StockSearchHomeReducer(liveMarketUseCase: resolve(\.liveMarketUseCase))
+        }
+
         stockSearchReducer.register {
             StockSearchReducer(liveMarketUseCase: resolve(\.liveMarketUseCase))
         }

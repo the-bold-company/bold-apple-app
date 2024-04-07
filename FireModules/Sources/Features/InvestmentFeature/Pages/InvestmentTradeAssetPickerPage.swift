@@ -37,10 +37,10 @@ public struct InvestmentTradeAssetPickerPage: View {
         ) { _ in return UnderConstructionPage() }
         .navigationDestination(
             store: store.scope(
-                state: \.$destination.stockSearchRoute,
-                action: \.destination.stockSearchRoute
+                state: \.$destination.stockSearchHomeRoute,
+                action: \.destination.stockSearchHomeRoute
             )
-        ) { StockSearchPage(store: $0) }
+        ) { StockSearchHomePage(store: $0) }
         .enableInjection()
     }
 

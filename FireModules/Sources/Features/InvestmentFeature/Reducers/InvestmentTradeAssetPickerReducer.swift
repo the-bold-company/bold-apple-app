@@ -33,7 +33,7 @@ public struct InvestmentTradeAssetPickerReducer {
                 guard let selection = state.assetTypes[id: asset] else { return .none }
 
                 if selection == AssetType.stocks {
-                    state.destination = .stockSearchRoute(.init())
+                    state.destination = .stockSearchHomeRoute(.init())
                 } else {
                     state.destination = .underConstructionRoute
                 }
@@ -54,17 +54,17 @@ public extension InvestmentTradeAssetPickerReducer {
     struct Destination: Equatable {
         public enum State: Equatable {
             case underConstructionRoute
-            case stockSearchRoute(StockSearchReducer.State)
+            case stockSearchHomeRoute(StockSearchHomeReducer.State)
         }
 
         public enum Action {
             case underConstructionRoute
-            case stockSearchRoute(StockSearchReducer.Action)
+            case stockSearchHomeRoute(StockSearchHomeReducer.Action)
         }
 
         public var body: some ReducerOf<Self> {
-            Scope(state: \.stockSearchRoute, action: \.stockSearchRoute) {
-                resolve(\InvestmentFeatureContainer.stockSearchReducer)?._printChanges()
+            Scope(state: \.stockSearchHomeRoute, action: \.stockSearchHomeRoute) {
+                resolve(\InvestmentFeatureContainer.stockSearchHomeReducer)
             }
         }
     }
