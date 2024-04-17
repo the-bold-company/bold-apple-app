@@ -24,6 +24,14 @@ final class RecordPortfolioTransactionReducerTests: XCTestCase {
         }
     }
 
+    override func invokeTest() {
+        withDependencies {
+            $0.date.now = Date(timeIntervalSince1970: 0)
+        } operation: {
+            super.invokeTest()
+        }
+    }
+
     func testSelectCurrency_MustDismissAfter() async throws {
         // Arrange
         store.exhaustivity = .off

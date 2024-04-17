@@ -14,7 +14,7 @@ public struct RecordPortfolioTransactionReducer {
     public struct State: Equatable {
         @PresentationState var destination: Destination.State?
         var currency = Currency.usd
-        @BindingState var tradeTime = Date.now
+        @BindingState var tradeTime: Date
         @BindingState var amount: Int = 0
         @BindingState var notes = ""
         var transactionType: TransactionType = .deposit
@@ -31,6 +31,8 @@ public struct RecordPortfolioTransactionReducer {
 
         let portfolio: InvestmentPortfolioEntity
         public init(portfolio: InvestmentPortfolioEntity) {
+            @Dependency(\.date) var date
+            self.tradeTime = date.now
             self.portfolio = portfolio
         }
     }

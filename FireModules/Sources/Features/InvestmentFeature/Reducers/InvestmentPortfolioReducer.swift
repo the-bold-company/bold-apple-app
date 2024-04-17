@@ -62,6 +62,7 @@ public struct InvestmentPortfolioReducer {
         }
     }
 
+    private enum CancelId { case availableBalance }
     @Dependency(\.dismiss) var dismiss
     private let investmentUseCase: InvestmentUseCaseInterface
     private let liveMarketUseCase: LiveMarketUseCaseInterface
@@ -84,7 +85,11 @@ public struct InvestmentPortfolioReducer {
                 return .none
             case .forward(.onCashBalanceTapped):
                 guard let totalBalance = state.calculatingAvailableCashState.result else { return .none }
-                state.destination = .investmentCashBalanceRoute(.init(portfolio: state.portfolio, totalBalance: totalBalance))
+                if state.isBalanceNotEmpty {
+                    state.destination = .investmentCashBalanceRoute(.init(portfolio: state.portfolio, totalBalance: totalBalance))
+                } else {
+                    state.destination = .recordTransactionRoute(.init(portfolio: state.portfolio))
+                }
                 return .none
             case let .delegate(.portfolioReloaded(portfolio)):
                 state.reloadPortfolioState = .loaded(portfolio)
@@ -124,9 +129,11 @@ public struct InvestmentPortfolioReducer {
     }
 
     private func calculateAvailableCash(state: inout State) -> Effect<Action> {
-        guard state.isBalanceNotEmpty,
-              state.calculatingAvailableCashState != .loading
-        else { return .none }
+        guard state.calculatingAvailableCashState != .loading else { return .none }
+
+        guard state.isBalanceNotEmpty else {
+            return .send(.delegate(.availableCashConverted(Money.zero(currency: state.portfolio.baseCurrency))))
+        }
 
         if case let .failure(error) = state.areBalancesValid {
             state.calculatingAvailableCashState = .failure(error)
@@ -156,6 +163,7 @@ public struct InvestmentPortfolioReducer {
 
                 await send(.delegate(.availableCashConverted(totalAmount)))
             }
+            .cancellable(id: CancelId.availableBalance, cancelInFlight: true)
         }
     }
 }
@@ -166,11 +174,13 @@ public extension InvestmentPortfolioReducer {
         public enum State: Equatable {
             case investmentTradeImportOptionsRoute(InvestmentTradeImportOptionsReducer.State)
             case investmentCashBalanceRoute(InvestmentCashBalanceReducer.State)
+            case recordTransactionRoute(RecordPortfolioTransactionReducer.State)
         }
 
         public enum Action {
             case investmentTradeImportOptionsRoute(InvestmentTradeImportOptionsReducer.Action)
             case investmentCashBalanceRoute(InvestmentCashBalanceReducer.Action)
+            case recordTransactionRoute(RecordPortfolioTransactionReducer.Action)
         }
 
         public var body: some ReducerOf<Self> {
@@ -180,6 +190,10 @@ public extension InvestmentPortfolioReducer {
 
             Scope(state: \.investmentCashBalanceRoute, action: \.investmentCashBalanceRoute) {
                 resolve(\InvestmentFeatureContainer.investmentCashBalanceReducer)
+            }
+
+            Scope(state: \.recordTransactionRoute, action: \.recordTransactionRoute) {
+                resolve(\InvestmentFeatureContainer.recordPortfolioTransactionReducer)
             }
         }
     }

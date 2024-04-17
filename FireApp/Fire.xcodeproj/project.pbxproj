@@ -10,79 +10,41 @@
 		0E04472A2B02FD17005CE582 /* FirePlaybookApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447292B02FD17005CE582 /* FirePlaybookApp.swift */; };
 		0E04472E2B02FD19005CE582 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E04472D2B02FD19005CE582 /* Assets.xcassets */; };
 		0E0447312B02FD19005CE582 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E0447302B02FD19005CE582 /* Preview Assets.xcassets */; };
-		0E04473B2B02FD19005CE582 /* FirePlaybookTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E04473A2B02FD19005CE582 /* FirePlaybookTests.swift */; };
-		0E0447452B02FD1A005CE582 /* FirePlaybookUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447442B02FD1A005CE582 /* FirePlaybookUITests.swift */; };
-		0E0447472B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E0447462B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift */; };
 		0E1FF2692B01F66E00A77369 /* FireApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2682B01F66E00A77369 /* FireApp.swift */; };
 		0E1FF26D2B01F67000A77369 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E1FF26C2B01F67000A77369 /* Assets.xcassets */; };
 		0E1FF2712B01F67000A77369 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0E1FF2702B01F67000A77369 /* Preview Assets.xcassets */; };
-		0E1FF27B2B01F67000A77369 /* FireTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF27A2B01F67000A77369 /* FireTests.swift */; };
-		0E1FF2852B01F67000A77369 /* FireUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2842B01F67000A77369 /* FireUITests.swift */; };
-		0E1FF2872B01F67000A77369 /* FireUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E1FF2862B01F67000A77369 /* FireUITestsLaunchTests.swift */; };
 		0E24093A2B24A1BE00903A46 /* App in Frameworks */ = {isa = PBXBuildFile; productRef = 0E2409392B24A1BE00903A46 /* App */; };
 		0E24093C2B24A37E00903A46 /* AppPlaybook in Frameworks */ = {isa = PBXBuildFile; productRef = 0E24093B2B24A37E00903A46 /* AppPlaybook */; };
 		395A5D062B74897D008D53BB /* TransactionRecordingIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395A5D052B74897D008D53BB /* TransactionRecordingIntent.swift */; };
 		396F57CE2B835318000674A6 /* TransactionOverview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 396F57CD2B835318000674A6 /* TransactionOverview.swift */; };
+		3981A9C52BC2F00D00335C00 /* MiniFireApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3981A9C42BC2F00D00335C00 /* MiniFireApp.swift */; };
+		3981A9C92BC2F00F00335C00 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3981A9C82BC2F00F00335C00 /* Assets.xcassets */; };
+		3981A9CC2BC2F00F00335C00 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3981A9CB2BC2F00F00335C00 /* Preview Assets.xcassets */; };
+		3981A9D12BC2F08F00335C00 /* MiniApp in Frameworks */ = {isa = PBXBuildFile; productRef = 3981A9D02BC2F08F00335C00 /* MiniApp */; };
 		39B35D182B7D04A200CC00AB /* FireShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D172B7D04A200CC00AB /* FireShortcuts.swift */; };
 		39B35D1A2B7DC20600CC00AB /* Intents in Frameworks */ = {isa = PBXBuildFile; productRef = 39B35D192B7DC20600CC00AB /* Intents */; };
 		39B35D1F2B83161900CC00AB /* SourceFundIntentEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */; };
 		39B35D212B83167C00CC00AB /* DestinationFundIntentEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D202B83167C00CC00AB /* DestinationFundIntentEntity.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		0E0447372B02FD19005CE582 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0E1FF25D2B01F66E00A77369 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0E0447262B02FD17005CE582;
-			remoteInfo = FirePlaybook;
-		};
-		0E0447412B02FD19005CE582 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0E1FF25D2B01F66E00A77369 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0E0447262B02FD17005CE582;
-			remoteInfo = FirePlaybook;
-		};
-		0E1FF2772B01F67000A77369 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0E1FF25D2B01F66E00A77369 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0E1FF2642B01F66E00A77369;
-			remoteInfo = Fire;
-		};
-		0E1FF2812B01F67000A77369 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0E1FF25D2B01F66E00A77369 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0E1FF2642B01F66E00A77369;
-			remoteInfo = Fire;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		0E0447272B02FD17005CE582 /* FirePlaybook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FirePlaybook.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E0447292B02FD17005CE582 /* FirePlaybookApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookApp.swift; sourceTree = "<group>"; };
 		0E04472D2B02FD19005CE582 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0E0447302B02FD19005CE582 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0E0447362B02FD19005CE582 /* FirePlaybookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FirePlaybookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E04473A2B02FD19005CE582 /* FirePlaybookTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookTests.swift; sourceTree = "<group>"; };
-		0E0447402B02FD19005CE582 /* FirePlaybookUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FirePlaybookUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E0447442B02FD1A005CE582 /* FirePlaybookUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookUITests.swift; sourceTree = "<group>"; };
-		0E0447462B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePlaybookUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		0E1FF2652B01F66E00A77369 /* Fire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fire.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E1FF2682B01F66E00A77369 /* FireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireApp.swift; sourceTree = "<group>"; };
 		0E1FF26C2B01F67000A77369 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0E1FF26E2B01F67000A77369 /* Fire.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Fire.entitlements; sourceTree = "<group>"; };
 		0E1FF2702B01F67000A77369 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		0E1FF2762B01F67000A77369 /* FireTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FireTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E1FF27A2B01F67000A77369 /* FireTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireTests.swift; sourceTree = "<group>"; };
-		0E1FF2802B01F67000A77369 /* FireUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FireUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		0E1FF2842B01F67000A77369 /* FireUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireUITests.swift; sourceTree = "<group>"; };
-		0E1FF2862B01F67000A77369 /* FireUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		393409F02B48688900611270 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		395A5D052B74897D008D53BB /* TransactionRecordingIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecordingIntent.swift; sourceTree = "<group>"; };
 		396F57CD2B835318000674A6 /* TransactionOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionOverview.swift; sourceTree = "<group>"; };
+		3981A9C22BC2F00D00335C00 /* MiniFireApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MiniFireApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3981A9C42BC2F00D00335C00 /* MiniFireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniFireApp.swift; sourceTree = "<group>"; };
+		3981A9C82BC2F00F00335C00 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3981A9CB2BC2F00F00335C00 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		39B35D172B7D04A200CC00AB /* FireShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireShortcuts.swift; sourceTree = "<group>"; };
 		39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFundIntentEntity.swift; sourceTree = "<group>"; };
 		39B35D202B83167C00CC00AB /* DestinationFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationFundIntentEntity.swift; sourceTree = "<group>"; };
@@ -97,20 +59,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0E0447332B02FD19005CE582 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0E04473D2B02FD19005CE582 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		0E1FF2622B01F66E00A77369 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -120,17 +68,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0E1FF2732B01F67000A77369 /* Frameworks */ = {
+		3981A9BF2BC2F00D00335C00 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0E1FF27D2B01F67000A77369 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				3981A9D12BC2F08F00335C00 /* MiniApp in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -155,32 +97,13 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		0E0447392B02FD19005CE582 /* FirePlaybookTests */ = {
-			isa = PBXGroup;
-			children = (
-				0E04473A2B02FD19005CE582 /* FirePlaybookTests.swift */,
-			);
-			path = FirePlaybookTests;
-			sourceTree = "<group>";
-		};
-		0E0447432B02FD1A005CE582 /* FirePlaybookUITests */ = {
-			isa = PBXGroup;
-			children = (
-				0E0447442B02FD1A005CE582 /* FirePlaybookUITests.swift */,
-				0E0447462B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift */,
-			);
-			path = FirePlaybookUITests;
-			sourceTree = "<group>";
-		};
 		0E1FF25C2B01F66E00A77369 = {
 			isa = PBXGroup;
 			children = (
 				0E1FF2672B01F66E00A77369 /* Fire */,
 				0E1FF2792B01F67000A77369 /* FireTests */,
-				0E1FF2832B01F67000A77369 /* FireUITests */,
 				0E0447282B02FD17005CE582 /* FirePlaybook */,
-				0E0447392B02FD19005CE582 /* FirePlaybookTests */,
-				0E0447432B02FD1A005CE582 /* FirePlaybookUITests */,
+				3981A9C32BC2F00D00335C00 /* MiniFireApp */,
 				0E1FF2662B01F66E00A77369 /* Products */,
 				0E1FF2932B01F72500A77369 /* Frameworks */,
 			);
@@ -190,11 +113,8 @@
 			isa = PBXGroup;
 			children = (
 				0E1FF2652B01F66E00A77369 /* Fire.app */,
-				0E1FF2762B01F67000A77369 /* FireTests.xctest */,
-				0E1FF2802B01F67000A77369 /* FireUITests.xctest */,
 				0E0447272B02FD17005CE582 /* FirePlaybook.app */,
-				0E0447362B02FD19005CE582 /* FirePlaybookTests.xctest */,
-				0E0447402B02FD19005CE582 /* FirePlaybookUITests.xctest */,
+				3981A9C22BC2F00D00335C00 /* MiniFireApp.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -227,15 +147,6 @@
 			path = FireTests;
 			sourceTree = "<group>";
 		};
-		0E1FF2832B01F67000A77369 /* FireUITests */ = {
-			isa = PBXGroup;
-			children = (
-				0E1FF2842B01F67000A77369 /* FireUITests.swift */,
-				0E1FF2862B01F67000A77369 /* FireUITestsLaunchTests.swift */,
-			);
-			path = FireUITests;
-			sourceTree = "<group>";
-		};
 		0E1FF2932B01F72500A77369 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -249,6 +160,24 @@
 				396F57CD2B835318000674A6 /* TransactionOverview.swift */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		3981A9C32BC2F00D00335C00 /* MiniFireApp */ = {
+			isa = PBXGroup;
+			children = (
+				3981A9C42BC2F00D00335C00 /* MiniFireApp.swift */,
+				3981A9C82BC2F00F00335C00 /* Assets.xcassets */,
+				3981A9CA2BC2F00F00335C00 /* Preview Content */,
+			);
+			path = MiniFireApp;
+			sourceTree = "<group>";
+		};
+		3981A9CA2BC2F00F00335C00 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				3981A9CB2BC2F00F00335C00 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 		398C0EDC2B83563C00872813 /* Intents */ = {
@@ -311,42 +240,6 @@
 			productReference = 0E0447272B02FD17005CE582 /* FirePlaybook.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0E0447352B02FD19005CE582 /* FirePlaybookTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0E04474F2B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookTests" */;
-			buildPhases = (
-				0E0447322B02FD19005CE582 /* Sources */,
-				0E0447332B02FD19005CE582 /* Frameworks */,
-				0E0447342B02FD19005CE582 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				0E0447382B02FD19005CE582 /* PBXTargetDependency */,
-			);
-			name = FirePlaybookTests;
-			productName = FirePlaybookTests;
-			productReference = 0E0447362B02FD19005CE582 /* FirePlaybookTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		0E04473F2B02FD19005CE582 /* FirePlaybookUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0E0447502B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookUITests" */;
-			buildPhases = (
-				0E04473C2B02FD19005CE582 /* Sources */,
-				0E04473D2B02FD19005CE582 /* Frameworks */,
-				0E04473E2B02FD19005CE582 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				0E0447422B02FD19005CE582 /* PBXTargetDependency */,
-			);
-			name = FirePlaybookUITests;
-			productName = FirePlaybookUITests;
-			productReference = 0E0447402B02FD19005CE582 /* FirePlaybookUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 		0E1FF2642B01F66E00A77369 /* Fire */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0E1FF28A2B01F67000A77369 /* Build configuration list for PBXNativeTarget "Fire" */;
@@ -368,41 +261,25 @@
 			productReference = 0E1FF2652B01F66E00A77369 /* Fire.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0E1FF2752B01F67000A77369 /* FireTests */ = {
+		3981A9C12BC2F00D00335C00 /* MiniFireApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0E1FF28D2B01F67000A77369 /* Build configuration list for PBXNativeTarget "FireTests" */;
+			buildConfigurationList = 3981A9CF2BC2F00F00335C00 /* Build configuration list for PBXNativeTarget "MiniFireApp" */;
 			buildPhases = (
-				0E1FF2722B01F67000A77369 /* Sources */,
-				0E1FF2732B01F67000A77369 /* Frameworks */,
-				0E1FF2742B01F67000A77369 /* Resources */,
+				3981A9BE2BC2F00D00335C00 /* Sources */,
+				3981A9BF2BC2F00D00335C00 /* Frameworks */,
+				3981A9C02BC2F00D00335C00 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				0E1FF2782B01F67000A77369 /* PBXTargetDependency */,
 			);
-			name = FireTests;
-			productName = FireTests;
-			productReference = 0E1FF2762B01F67000A77369 /* FireTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		0E1FF27F2B01F67000A77369 /* FireUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0E1FF2902B01F67000A77369 /* Build configuration list for PBXNativeTarget "FireUITests" */;
-			buildPhases = (
-				0E1FF27C2B01F67000A77369 /* Sources */,
-				0E1FF27D2B01F67000A77369 /* Frameworks */,
-				0E1FF27E2B01F67000A77369 /* Resources */,
+			name = MiniFireApp;
+			packageProductDependencies = (
+				3981A9D02BC2F08F00335C00 /* MiniApp */,
 			);
-			buildRules = (
-			);
-			dependencies = (
-				0E1FF2822B01F67000A77369 /* PBXTargetDependency */,
-			);
-			name = FireUITests;
-			productName = FireUITests;
-			productReference = 0E1FF2802B01F67000A77369 /* FireUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
+			productName = MiniFireApp;
+			productReference = 3981A9C22BC2F00D00335C00 /* MiniFireApp.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -411,30 +288,17 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1420;
+				LastSwiftUpdateCheck = 1510;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
 					0E0447262B02FD17005CE582 = {
 						CreatedOnToolsVersion = 14.2;
 					};
-					0E0447352B02FD19005CE582 = {
-						CreatedOnToolsVersion = 14.2;
-						TestTargetID = 0E0447262B02FD17005CE582;
-					};
-					0E04473F2B02FD19005CE582 = {
-						CreatedOnToolsVersion = 14.2;
-						TestTargetID = 0E0447262B02FD17005CE582;
-					};
 					0E1FF2642B01F66E00A77369 = {
 						CreatedOnToolsVersion = 14.2;
 					};
-					0E1FF2752B01F67000A77369 = {
-						CreatedOnToolsVersion = 14.2;
-						TestTargetID = 0E1FF2642B01F66E00A77369;
-					};
-					0E1FF27F2B01F67000A77369 = {
-						CreatedOnToolsVersion = 14.2;
-						TestTargetID = 0E1FF2642B01F66E00A77369;
+					3981A9C12BC2F00D00335C00 = {
+						CreatedOnToolsVersion = 15.1;
 					};
 				};
 			};
@@ -452,11 +316,8 @@
 			projectRoot = "";
 			targets = (
 				0E1FF2642B01F66E00A77369 /* Fire */,
-				0E1FF2752B01F67000A77369 /* FireTests */,
-				0E1FF27F2B01F67000A77369 /* FireUITests */,
 				0E0447262B02FD17005CE582 /* FirePlaybook */,
-				0E0447352B02FD19005CE582 /* FirePlaybookTests */,
-				0E04473F2B02FD19005CE582 /* FirePlaybookUITests */,
+				3981A9C12BC2F00D00335C00 /* MiniFireApp */,
 			);
 		};
 /* End PBXProject section */
@@ -471,20 +332,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0E0447342B02FD19005CE582 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0E04473E2B02FD19005CE582 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		0E1FF2632B01F66E00A77369 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -494,17 +341,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0E1FF2742B01F67000A77369 /* Resources */ = {
+		3981A9C02BC2F00D00335C00 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0E1FF27E2B01F67000A77369 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				3981A9CC2BC2F00F00335C00 /* Preview Assets.xcassets in Resources */,
+				3981A9C92BC2F00F00335C00 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -516,23 +358,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0E04472A2B02FD17005CE582 /* FirePlaybookApp.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0E0447322B02FD19005CE582 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0E04473B2B02FD19005CE582 /* FirePlaybookTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0E04473C2B02FD19005CE582 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0E0447452B02FD1A005CE582 /* FirePlaybookUITests.swift in Sources */,
-				0E0447472B02FD1A005CE582 /* FirePlaybookUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -549,47 +374,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0E1FF2722B01F67000A77369 /* Sources */ = {
+		3981A9BE2BC2F00D00335C00 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0E1FF27B2B01F67000A77369 /* FireTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0E1FF27C2B01F67000A77369 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0E1FF2872B01F67000A77369 /* FireUITestsLaunchTests.swift in Sources */,
-				0E1FF2852B01F67000A77369 /* FireUITests.swift in Sources */,
+				3981A9C52BC2F00D00335C00 /* MiniFireApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		0E0447382B02FD19005CE582 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0E0447262B02FD17005CE582 /* FirePlaybook */;
-			targetProxy = 0E0447372B02FD19005CE582 /* PBXContainerItemProxy */;
-		};
-		0E0447422B02FD19005CE582 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0E0447262B02FD17005CE582 /* FirePlaybook */;
-			targetProxy = 0E0447412B02FD19005CE582 /* PBXContainerItemProxy */;
-		};
-		0E1FF2782B01F67000A77369 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0E1FF2642B01F66E00A77369 /* Fire */;
-			targetProxy = 0E1FF2772B01F67000A77369 /* PBXContainerItemProxy */;
-		};
-		0E1FF2822B01F67000A77369 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0E1FF2642B01F66E00A77369 /* Fire */;
-			targetProxy = 0E1FF2812B01F67000A77369 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		0E0447482B02FD1A005CE582 /* Debug */ = {
@@ -651,86 +444,6 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		0E04474A2B02FD1A005CE582 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FirePlaybook.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FirePlaybook";
-			};
-			name = Debug;
-		};
-		0E04474B2B02FD1A005CE582 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FirePlaybook.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/FirePlaybook";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		0E04474C2B02FD1A005CE582 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FirePlaybook;
-			};
-			name = Debug;
-		};
-		0E04474D2B02FD1A005CE582 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fireplaybook.app.FirePlaybookUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = FirePlaybook;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -930,89 +643,71 @@
 			};
 			name = Release;
 		};
-		0E1FF28E2B01F67000A77369 /* Debug */ = {
+		3981A9CD2BC2F00F00335C00 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MiniFireApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				INFOPLIST_FILE = MiniFireApp/Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.app.FireTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fire.mini.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SWIFT_EMIT_LOC_STRINGS = NO;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Fire.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Fire";
 			};
 			name = Debug;
 		};
-		0E1FF28F2B01F67000A77369 /* Release */ = {
+		3981A9CE2BC2F00F00335C00 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MiniFireApp/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				INFOPLIST_FILE = MiniFireApp/Info.plist;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.app.FireTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fire.mini.ios;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SWIFT_EMIT_LOC_STRINGS = NO;
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Fire.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Fire";
-			};
-			name = Release;
-		};
-		0E1FF2912B01F67000A77369 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.app.FireUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Fire;
-			};
-			name = Debug;
-		};
-		0E1FF2922B01F67000A77369 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.2;
-				MACOSX_DEPLOYMENT_TARGET = 13.1;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.app.FireUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Fire;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -1024,24 +719,6 @@
 			buildConfigurations = (
 				0E0447482B02FD1A005CE582 /* Debug */,
 				0E0447492B02FD1A005CE582 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		0E04474F2B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0E04474A2B02FD1A005CE582 /* Debug */,
-				0E04474B2B02FD1A005CE582 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		0E0447502B02FD1A005CE582 /* Build configuration list for PBXNativeTarget "FirePlaybookUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0E04474C2B02FD1A005CE582 /* Debug */,
-				0E04474D2B02FD1A005CE582 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1064,20 +741,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0E1FF28D2B01F67000A77369 /* Build configuration list for PBXNativeTarget "FireTests" */ = {
+		3981A9CF2BC2F00F00335C00 /* Build configuration list for PBXNativeTarget "MiniFireApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				0E1FF28E2B01F67000A77369 /* Debug */,
-				0E1FF28F2B01F67000A77369 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		0E1FF2902B01F67000A77369 /* Build configuration list for PBXNativeTarget "FireUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0E1FF2912B01F67000A77369 /* Debug */,
-				0E1FF2922B01F67000A77369 /* Release */,
+				3981A9CD2BC2F00F00335C00 /* Debug */,
+				3981A9CE2BC2F00F00335C00 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1092,6 +760,10 @@
 		0E24093B2B24A37E00903A46 /* AppPlaybook */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = AppPlaybook;
+		};
+		3981A9D02BC2F08F00335C00 /* MiniApp */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MiniApp;
 		};
 		39B35D192B7DC20600CC00AB /* Intents */ = {
 			isa = XCSwiftPackageProductDependency;

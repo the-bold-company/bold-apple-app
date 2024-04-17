@@ -35,6 +35,14 @@ final class InvestmentPortfolioReducerTests: XCTestCase {
         store.exhaustivity = .off
     }
 
+    override func invokeTest() {
+        withDependencies {
+            $0.date.now = Date(timeIntervalSince1970: 0)
+        } operation: {
+            super.invokeTest()
+        }
+    }
+
     func testOnApearAction_OnlyCallsAPIOnce_WhenStateIsIdle() async throws {
         // Act & Assert
         await store.send(.forward(.onAppear))
@@ -114,14 +122,74 @@ final class InvestmentPortfolioReducerTests: XCTestCase {
     }
 
     func testCalculateAvailableCashSuccessfully() async throws {
-        // Aranage
-
         // Act
         await store.send(.forward(.onAppear))
 
         // Assert
         await store.receive(\.delegate.availableCashConverted) {
             $0.calculatingAvailableCashState = .loaded(Money(3250, currency: Currency(code: .unitedStatesDollar)))
+        }
+    }
+
+    func testCalculateAvailableCash_IfBalanceIsEmpty_ReturnImmediatelyWithoutCallingAPI() async throws {
+        // Arrange
+        initialState = update(initialState) {
+            $0.portfolio = InvestmentPortfolioEntity.emptyPortfolio
+        }
+        store = TestStore(initialState: initialState) {
+            InvestmentPortfolioReducer(
+                investmentUseCase: investmentUseCase,
+                liveMarketUseCase: liveMarketUseCase
+            )
+        }
+        store.exhaustivity = .off
+
+        // Act
+        await store.send(.forward(.onAppear))
+
+        // Assert
+        await store.receive(\.delegate.availableCashConverted) {
+            $0.calculatingAvailableCashState = .loaded(Money.zero(currency: Currency(code: .unitedStatesDollar)))
+        }
+        XCAssertNoDifference(liveMarketUseCase.convertCurrencyMoneyMoneyToToCurrencyCurrencyDomainResultCurrencyConversionEntityCallsCount, 0)
+    }
+
+    func testOnCashBalanceTapped_CashBalanceNotEmpty_NavigateToCashBalancePage() async throws {
+        // Arrange
+        initialState = update(initialState) {
+            $0.calculatingAvailableCashState = .loaded(Money(3250, currency: Currency(code: .unitedStatesDollar)))
+        }
+        store = TestStore(initialState: initialState) {
+            InvestmentPortfolioReducer(
+                investmentUseCase: investmentUseCase,
+                liveMarketUseCase: liveMarketUseCase
+            )
+        }
+        store.exhaustivity = .off
+
+        // Act & Assert
+        await store.send(.forward(.onCashBalanceTapped)) {
+            $0.destination = .investmentCashBalanceRoute(.init(portfolio: InvestmentPortfolioEntity.stockPortfolio1, totalBalance: Money(3250, currency: Currency(code: .unitedStatesDollar))))
+        }
+    }
+
+    func testOnCashBalanceTapped_CashBalanceEmpty_NavigateToRecordTransactionPage() async throws {
+        // Arrange
+        initialState = update(initialState) {
+            $0.portfolio = InvestmentPortfolioEntity.emptyPortfolio
+            $0.calculatingAvailableCashState = .loaded(Money.zero(currency: Currency(code: .unitedStatesDollar)))
+        }
+        store = TestStore(initialState: initialState) {
+            InvestmentPortfolioReducer(
+                investmentUseCase: investmentUseCase,
+                liveMarketUseCase: liveMarketUseCase
+            )
+        }
+        store.exhaustivity = .off
+
+        // Act & Assert
+        await store.send(.forward(.onCashBalanceTapped)) {
+            $0.destination = .recordTransactionRoute(.init(portfolio: InvestmentPortfolioEntity.emptyPortfolio))
         }
     }
 }

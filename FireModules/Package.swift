@@ -11,6 +11,7 @@ let package = Package(
     ],
     products: [
         .singleTargetLibrary("App"),
+        .singleTargetLibrary("MiniApp"),
         .singleTargetLibrary("Intents"),
         .singleTargetLibrary("AppPlaybook"),
     ],
@@ -44,6 +45,14 @@ let package = Package(
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
             ],
             path: "Sources/App/App"
+        ),
+        .target(
+            name: "MiniApp",
+            dependencies: [
+                "DI",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/App/MiniApp"
         ),
         .testTarget(
             name: "AppTests",

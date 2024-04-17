@@ -53,23 +53,26 @@ public struct InvestmentPortfolioPage: View {
                 action: \.destination.investmentCashBalanceRoute
             )
         ) { InvestmentCashBalancePage(store: $0) }
+        .navigationDestination(
+            store: store.scope(
+                state: \.$destination.recordTransactionRoute,
+                action: \.destination.recordTransactionRoute
+            )
+        ) { RecordPortfolioTransactionPage(store: $0) }
         .enableInjection()
     }
 
     @ViewBuilder
     private var content: some View {
-        if viewStore.portfolio.balances.isEmpty {
+        List {
+            availableCash
             emptyState
-        } else {
-            List {
-                availableCash
-            }
-            .introspect(.list, on: .iOS(.v13, .v14, .v15)) {
-                $0.backgroundColor = .white
-            }
-            .introspect(.list, on: .iOS(.v16, .v17)) {
-                $0.backgroundColor = .white
-            }
+        }
+        .introspect(.list, on: .iOS(.v13, .v14, .v15)) {
+            $0.backgroundColor = .white
+        }
+        .introspect(.list, on: .iOS(.v16, .v17)) {
+            $0.backgroundColor = .white
         }
     }
 
