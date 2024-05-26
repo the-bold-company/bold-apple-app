@@ -2,9 +2,17 @@ import ComposableArchitecture
 import CoreUI
 import Networking
 import SwiftUI
+// import KZFileWatchers
 
 public struct LoginPage: View {
     @ObserveInjection private var iO
+
+//    private let fw = FileWatcher.Local(
+//        path: URL.local
+//            .appendingPathComponent("mock/login_successful_error_invalid_credentials.json")
+//            .path(percentEncoded: false),
+//        refreshInterval: 5/60
+//    )
 
     struct ViewState: Equatable {
         @BindingViewState var email: String
@@ -20,6 +28,7 @@ public struct LoginPage: View {
     public init(store: StoreOf<LoginReducer>) {
         self.store = store
         self.viewStore = ViewStore(self.store, observe: \.viewState)
+//        watchFileChanged()
     }
 
     public var body: some View {
@@ -75,6 +84,17 @@ public struct LoginPage: View {
             .typography(.bodyDefault)
             .foregroundColor(.coreui.sentimentNegative)
     }
+
+//    private func watchFileChanged() {
+//        try! fw.start(closure: { change in
+//            switch change {
+//            case .noChanges: break
+//            case .updated:
+//                viewStore.send(.delegate(.logInButtonTapped))
+//            }
+//
+//        })
+//    }
 }
 
 extension BindingViewStore<LoginReducer.State> {
@@ -90,3 +110,12 @@ extension BindingViewStore<LoginReducer.State> {
         // swiftformat:enable redundantSelf
     }
 }
+
+// private extension URL {
+//    static var local: URL {
+//        var path = #file.components(separatedBy: "/")
+//        path.removeLast(6)
+//        let json = path.joined(separator: "/")
+//        return URL(fileURLWithPath: json)
+//    }
+// }

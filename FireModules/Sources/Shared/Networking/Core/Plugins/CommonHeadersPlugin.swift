@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import KeychainService
+import KeychainService // TODO: Remove this to avoid cycle dependency. Shared layer should't depend on Data layer. Use directly from `SwiftKeychainWrapper` or `KeychainServiceInterface` instead
 import Moya
 
 struct CommonHeadersPlugin: PluginType {

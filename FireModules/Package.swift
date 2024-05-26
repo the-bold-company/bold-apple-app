@@ -32,6 +32,7 @@ let package = Package(
         .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-overture", exact: "0.5.0"),
+        .package(url: "https://github.com/krzysztofzablocki/KZFileWatchers.git", from: "1.2.0"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -96,13 +97,14 @@ let package = Package(
                 "SettingsFeature",
                 "InvestmentFeature",
 
-                "LogInUseCase",
+                "AuthenticationUseCase",
+                "LogInUseCase", // TODO: Replace this with `AuthenticationUseCase`
                 "FundDetailsUseCase",
                 "FundCreationUseCase",
                 "FundListUseCase",
                 "TransactionRecordUseCase",
                 "TransactionListUseCase",
-                "AccountRegisterUseCase",
+                "AccountRegisterUseCase", // TODO: Replace this with `AuthenticationUseCase`
                 "PortfolioUseCase",
                 "DevSettingsUseCase",
                 "InvestmentUseCase",
@@ -158,9 +160,10 @@ let package = Package(
                 "CoreUI",
                 "Utilities",
                 "DevSettingsUseCase",
-                "LogInUseCase",
+                "AuthenticationUseCase",
                 "DomainEntities",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                // .product(name: "KZFileWatchers", package: "KZFileWatchers"),
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/LogInFeature"
@@ -306,6 +309,17 @@ let package = Package(
             ],
             path: "Sources/Domains/UseCases/LogInUseCase"
         ),
+
+        .target(
+            name: "AuthenticationUseCase",
+            dependencies: [
+                "DomainEntities",
+                "AuthAPIServiceInterface",
+                "KeychainServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/AuthenticationUseCase"
+        ),
+
         .target(
             name: "AccountRegisterUseCase",
             dependencies: [

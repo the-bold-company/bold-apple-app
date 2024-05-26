@@ -5,7 +5,9 @@
 //  Created by Hien Tran on 26/11/2023.
 //
 
+import Codextended
 import Combine
+import DomainUtilities
 import Foundation
 import Moya
 
@@ -34,3 +36,53 @@ public extension AnyPublisher where Output == Response, Failure == MoyaError {
             .eraseToAnyPublisher()
     }
 }
+
+public extension AnyPublisher where Failure == NetworkError {
+    func mapErrorToDomainError() -> Publishers.MapError<Self, DomainError> {
+        return mapError { NetworkErrorToDomainErrorMapper().tranform($0) }
+    }
+}
+
+public extension Just where Output == Data {
+    func mapToResponse<D: Decodable>(_: D.Type) -> AnyPublisher<D, NetworkError> {
+        // swiftformat:disable:next redundantSelf
+        return self
+            .tryMap { try $0.decoded() as ApiResponse<D> }
+            .tryMap { res -> D in
+                switch res.asResult {
+                case let .success(data):
+                    return data
+                case let .failure(error):
+                    throw NetworkError.serverError(error)
+                }
+            }
+            .mapError { err in
+                if let networkError = err as? NetworkError {
+                    return networkError
+                } else {
+                    return NetworkError.unknown(err)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+}
+
+// public extension AnyPublisher {
+//
+//    func transformError<R, OutputError>(_ mapper: R) -> Publishers.MapError<Self, OutputError> where R: ErrorMapper, OutputError == R.Output, Failure == R.Input {
+//        return self
+//            .mapError { AnyErrorMapper(mapper).transform($0) }
+//    }
+// }
+//
+// struct AnyErrorMapper<Input: Swift.Error, Output: Swift.Error> {
+//    private let _transform: (Input) -> Output
+//
+//    init<M>(_ mapper: M) where M: ErrorMapper, Input == M.Input, Output == M.Output {
+//        self._transform = mapper.tranform
+//    }
+//
+//    func transform(_ input: Input) -> Output {
+//        _transform(input)
+//    }
+// }

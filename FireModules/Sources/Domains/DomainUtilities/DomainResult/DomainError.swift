@@ -9,13 +9,16 @@ import Foundation
 
 public struct DomainError: LocalizedError {
     public let error: Error
+    public let errorCode: Int?
 
-    public init(error: LocalizedError) {
+    public init(error: LocalizedError, errorCode: Int? = nil) {
         self.error = error
+        self.errorCode = errorCode
     }
 
-    public init(error: Error) {
+    public init(error: Error, errorCode: Int? = nil) {
         self.error = error
+        self.errorCode = errorCode
     }
 
     /// Localized message for debuggin purposes. Don't show this to user

@@ -25,8 +25,9 @@ import TemporaryPersistenceServiceInterface
 import TransactionsAPIService
 import TransactionsAPIServiceInterface
 
-// Domain layer imports
 import AccountRegisterUseCase
+// Domain layer imports
+import AuthenticationUseCase
 import DevSettingsUseCase
 import FundCreationUseCase
 import FundDetailsUseCase
@@ -54,8 +55,8 @@ public extension Container {
             .onTest { PersistenceServiceInterfaceMock() }
     }
 
-    var authAPIService: Factory<AuthAPIServiceProtocol> {
-        self { AuthAPIService() }
+    var authAPIService: Factory<AuthAPIService> {
+        self { AuthAPIService.live }
     }
 
     var fundAPIService: Factory<FundsAPIServiceProtocol> {
@@ -84,8 +85,8 @@ public extension Container {
         self { DevSettingsUseCase.live }.singleton
     }
 
-    var logInUseCase: Factory<LogInUseCaseProtocol> {
-        self { LogInUseCase(authService: self.authAPIService.callAsFunction(), keychainService: self.keychainService.callAsFunction()) }
+    var authenticationUseCase: Factory<AuthenticationUseCase> {
+        self { AuthenticationUseCase(authService: self.authAPIService.callAsFunction(), keychainService: self.keychainService.callAsFunction()) }
     }
 
     var fundDetailsUseCase: Factory<FundDetailsUseCaseProtocol> {

@@ -1,22 +1,15 @@
-//
-//  LoginReducer.swift
-//
-//
-//  Created by Hien Tran on 06/01/2024.
-//
-
+import AuthenticationUseCase
 import ComposableArchitecture
 import DevSettingsUseCase
 import Factory
 import Foundation
-import LogInUseCase
 import Utilities
 
 @Reducer
 public struct LoginReducer {
-    let logInUseCase: LogInUseCaseProtocol
+    let logInUseCase: LogInUseCase
 
-    public init(logInUseCase: LogInUseCaseProtocol) {
+    public init(logInUseCase: LogInUseCase) {
         self.logInUseCase = logInUseCase
     }
 
@@ -45,8 +38,8 @@ public struct LoginReducer {
         case binding(BindingAction<State>)
         case navigate(Route)
 
-        case logInSuccesfully(AuthenticatedUserEntity)
-        case logInFailure(DomainError)
+        case logInSuccesfully(AuthenticationLogic.LogIn.Response)
+        case logInFailure(AuthenticationLogic.LogIn.Failure)
 
         public enum Route {
             case goToHome
@@ -68,12 +61,11 @@ public struct LoginReducer {
                 state.logInInProgress = true
 
                 return .run { [email = state.email, password = state.password] send in
-
-                    let result = await logInUseCase.login(email: email, password: password)
+                    let result = await logInUseCase.logIn(.init(email: email, password: password))
 
                     switch result {
-                    case let .success(authenticatedUser):
-                        await send(.logInSuccesfully(authenticatedUser))
+                    case let .success(response):
+                        await send(.logInSuccesfully(response))
                     case let .failure(error):
                         await send(.logInFailure(error))
                     }
