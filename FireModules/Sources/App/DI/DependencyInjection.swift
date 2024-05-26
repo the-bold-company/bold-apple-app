@@ -10,8 +10,12 @@ import AuthAPIService
 import AuthAPIServiceInterface
 import FundsAPIService
 import FundsAPIServiceInterface
+import InvestmentAPIService
+import InvestmentAPIServiceInterface
 import KeychainService
 import KeychainServiceInterface
+import MarketAPIService
+import MarketAPIServiceInterface
 import PersistenceService
 import PersistenceServiceInterface
 import PortfolioAPIService
@@ -21,12 +25,15 @@ import TemporaryPersistenceServiceInterface
 import TransactionsAPIService
 import TransactionsAPIServiceInterface
 
-// Domain layer imports
 import AccountRegisterUseCase
+// Domain layer imports
+import AuthenticationUseCase
 import DevSettingsUseCase
 import FundCreationUseCase
 import FundDetailsUseCase
 import FundListUseCase
+import InvestmentUseCase
+import LiveMarketUseCase
 import LogInUseCase
 import PortfolioUseCase
 import TransactionListUseCase
@@ -39,8 +46,17 @@ public extension Container {
         self { KeychainService() }
     }
 
-    var authAPIService: Factory<AuthAPIServiceProtocol> {
-        self { AuthAPIService() }
+    var temporaryPersistenceService: Factory<TemporaryPersistenceService> {
+        self { TemporaryPersistenceService.live }.singleton
+    }
+
+    var persistenceService: Factory<PersistenceServiceInterface> {
+        self { PersistenceService() }
+            .onTest { PersistenceServiceInterfaceMock() }
+    }
+
+    var authAPIService: Factory<AuthAPIService> {
+        self { AuthAPIService.live }
     }
 
     var fundAPIService: Factory<FundsAPIServiceProtocol> {
@@ -55,19 +71,22 @@ public extension Container {
         self { PortfolioAPIService() }
     }
 
-    var temporaryPersistenceService: Factory<TemporaryPersistenceService> {
-        self { TemporaryPersistenceService.live }.singleton
+    var investmentAPIService: Factory<InvestmentAPIServiceInterface> {
+        self { InvestmentService() }
     }
 
-    var persistenceService: Factory<PersistenceServiceInterface> {
-        self { PersistenceService() }
-            .onTest { PersistenceServiceInterfaceMock() }
+    var marketAPIService: Factory<MarketAPIServiceInterface> {
+        self { MarketAPIService() }
     }
 
     // MARK: Register use cases
 
-    var logInUseCase: Factory<LogInUseCaseProtocol> {
-        self { LogInUseCase(authService: self.authAPIService.callAsFunction(), keychainService: self.keychainService.callAsFunction()) }
+    var devSettingsUseCase: Factory<DevSettingsUseCase> {
+        self { DevSettingsUseCase.live }.singleton
+    }
+
+    var authenticationUseCase: Factory<AuthenticationUseCase> {
+        self { AuthenticationUseCase(authService: self.authAPIService.callAsFunction(), keychainService: self.keychainService.callAsFunction()) }
     }
 
     var fundDetailsUseCase: Factory<FundDetailsUseCaseProtocol> {
@@ -106,7 +125,15 @@ public extension Container {
         }
     }
 
-    var devSettingsUseCase: Factory<DevSettingsUseCase> {
-        self { DevSettingsUseCase.live }.singleton
+    var investmentUseCase: Factory<InvestmentUseCaseInterface> {
+        self {
+            InvestmentUseCase(investmentAPIService: self.investmentAPIService.callAsFunction())
+        }
+    }
+
+    var liveMarketUseCase: Factory<LiveMarketUseCaseInterface> {
+        self {
+            LiveMarketUseCase(marketAPIService: self.marketAPIService.callAsFunction())
+        }
     }
 }

@@ -9,10 +9,10 @@ import AuthAPIServiceInterface
 import KeychainServiceInterface
 
 public struct LogInUseCase: LogInUseCaseProtocol {
-    let authService: AuthAPIServiceProtocol
+    let authService: AuthAPIService
     let keychainService: KeychainServiceProtocol
 
-    public init(authService: AuthAPIServiceProtocol, keychainService: KeychainServiceProtocol) {
+    public init(authService: AuthAPIService, keychainService: KeychainServiceProtocol) {
         self.authService = authService
         self.keychainService = keychainService
     }

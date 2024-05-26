@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension View {
+public extension View {
     /// Applies the given transform if the given condition evaluates to `true`.
     /// - Parameters:
     ///   - condition: The condition to evaluate.
@@ -22,5 +22,28 @@ extension View {
         } else {
             self
         }
+    }
+}
+
+struct IsHidden: ViewModifier {
+    let hidden: Bool
+    let reserveLayout: Bool
+
+    func body(content: Content) -> some View {
+        if hidden {
+            if reserveLayout {
+                content.hidden()
+            }
+        } else {
+            content
+        }
+    }
+}
+
+public extension View {
+    func isHidden(hidden: Bool, reserveLayout: Bool = false) -> some View {
+        modifier(
+            IsHidden(hidden: hidden, reserveLayout: reserveLayout)
+        )
     }
 }

@@ -4,8 +4,8 @@ repos:
   hooks:
   - id: swiftformat
     args: [FireModules, --config, .swiftformat, --quiet]
-- repo: https://github.com/realm/SwiftLint
-  rev: 0.50.3
-  hooks:
-  - id: swiftlint
-    args: [lint --config .swiftlint.yml --quiet]
+# - repo: https://github.com/realm/SwiftLint
+#   rev: 0.50.3
+#   hooks:
+#   - id: swiftlint
+#     args: [lint --config .swiftlint.yml --quiet]

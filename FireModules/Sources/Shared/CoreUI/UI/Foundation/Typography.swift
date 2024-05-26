@@ -13,6 +13,7 @@ public enum Typography {
     case titleSubsection
     case titleBody
     case titleGroup
+    case titleSmall
     case bodyLarge
     case bodyLargeBold
     case bodyDefault
@@ -20,7 +21,7 @@ public enum Typography {
     case linkLarge
     case linkDefault
 
-    var font: FontConvertible {
+    public var font: FontConvertible {
         switch self {
         case .titleScreen, .titleSection, .titleSubsection, .titleBody,
              .bodyLargeBold, .bodyDefaultBold,
@@ -28,12 +29,12 @@ public enum Typography {
             return FontFamily.Inter.semiBold
         case .titleGroup:
             return FontFamily.Inter.medium
-        case .bodyLarge, .bodyDefault:
+        case .bodyLarge, .bodyDefault, .titleSmall:
             return FontFamily.Inter.regular
         }
     }
 
-    var fontSize: CGFloat {
+    public var fontSize: CGFloat {
         switch self {
         case .titleScreen:
             return 30
@@ -47,10 +48,12 @@ public enum Typography {
             return 14
         case .bodyLarge, .bodyLargeBold, .linkLarge:
             return 16
+        case .titleSmall:
+            return 12
         }
     }
 
-    var lineHeight: CGFloat {
+    public var lineHeight: CGFloat {
         switch self {
         case .titleScreen:
             return 34
@@ -64,14 +67,16 @@ public enum Typography {
             return 20
         case .bodyDefault, .bodyDefaultBold, .linkDefault:
             return 22
+        case .titleSmall:
+            return 16
         }
     }
 
-    var lineSpacing: CGFloat {
+    public var lineSpacing: CGFloat {
         return lineHeight - fontSize
     }
 
-    var letterSpacing: CGFloat {
+    public var letterSpacing: CGFloat {
         switch self {
         case .titleScreen:
             return -0.025 // -2.5%
@@ -81,12 +86,12 @@ public enum Typography {
             return -0.01 // -1%
         case .bodyLarge, .bodyLargeBold:
             return -0.005 // -0.5%
-        case .bodyDefaultBold, .linkDefault:
+        case .bodyDefaultBold, .linkDefault, .titleSmall:
             return -0.00125 // -1.25%
         }
     }
 
-    var kerning: CGFloat {
+    public var kerning: CGFloat {
         return fontSize * letterSpacing
     }
 }

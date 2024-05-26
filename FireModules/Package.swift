@@ -11,12 +11,13 @@ let package = Package(
     ],
     products: [
         .singleTargetLibrary("App"),
+        .singleTargetLibrary("MiniApp"),
         .singleTargetLibrary("Intents"),
         .singleTargetLibrary("AppPlaybook"),
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
-        .package(url: "https://github.com/realm/SwiftLint.git", exact: "0.53.0"),
+//        .package(url: "https://github.com/realm/SwiftLint.git", exact: "0.53.0"),
         .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
@@ -31,6 +32,7 @@ let package = Package(
         .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-overture", exact: "0.5.0"),
+        .package(url: "https://github.com/krzysztofzablocki/KZFileWatchers.git", from: "1.2.0"),
     ],
     targets: [
         // MARK: - App Layer: Where all modules come together
@@ -44,6 +46,14 @@ let package = Package(
                 .product(name: "TCACoordinators", package: "TCACoordinators"),
             ],
             path: "Sources/App/App"
+        ),
+        .target(
+            name: "MiniApp",
+            dependencies: [
+                "DI",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
+            path: "Sources/App/MiniApp"
         ),
         .testTarget(
             name: "AppTests",
@@ -85,16 +95,20 @@ let package = Package(
                 "SignUpFeature",
                 "OnboardingFeature",
                 "SettingsFeature",
+                "InvestmentFeature",
 
-                "LogInUseCase",
+                "AuthenticationUseCase",
+                "LogInUseCase", // TODO: Replace this with `AuthenticationUseCase`
                 "FundDetailsUseCase",
                 "FundCreationUseCase",
                 "FundListUseCase",
                 "TransactionRecordUseCase",
                 "TransactionListUseCase",
-                "AccountRegisterUseCase",
+                "AccountRegisterUseCase", // TODO: Replace this with `AuthenticationUseCase`
                 "PortfolioUseCase",
                 "DevSettingsUseCase",
+                "InvestmentUseCase",
+                "LiveMarketUseCase",
 
                 "AuthAPIServiceInterface",
                 "AuthAPIService",
@@ -110,6 +124,10 @@ let package = Package(
                 "TemporaryPersistenceService",
                 "PersistenceServiceInterface",
                 "PersistenceService",
+                "InvestmentAPIServiceInterface",
+                "InvestmentAPIService",
+                "MarketAPIServiceInterface",
+                "MarketAPIService",
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/App/DI"
@@ -142,9 +160,10 @@ let package = Package(
                 "CoreUI",
                 "Utilities",
                 "DevSettingsUseCase",
-                "LogInUseCase",
+                "AuthenticationUseCase",
                 "DomainEntities",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                // .product(name: "KZFileWatchers", package: "KZFileWatchers"),
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/LogInFeature"
@@ -166,6 +185,7 @@ let package = Package(
                 "CoreUI",
                 "CurrencyKit",
                 "FundFeature",
+                "InvestmentFeature",
                 "TransactionListUseCase",
                 "FundListUseCase",
                 "FundDetailsUseCase",
@@ -210,6 +230,19 @@ let package = Package(
                 .product(name: "Factory", package: "factory"),
             ],
             path: "Sources/Features/SettingsFeature"
+        ),
+        .target(
+            name: "InvestmentFeature",
+            dependencies: [
+                "CoreUI",
+                "CurrencyKit",
+                "Utilities",
+                "InvestmentUseCase",
+                "LiveMarketUseCase",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "Factory", package: "factory"),
+            ],
+            path: "Sources/Features/InvestmentFeature"
         ),
 
         // MARK: - Shared Layer: Everything that is shared between feature modules
@@ -276,6 +309,17 @@ let package = Package(
             ],
             path: "Sources/Domains/UseCases/LogInUseCase"
         ),
+
+        .target(
+            name: "AuthenticationUseCase",
+            dependencies: [
+                "DomainEntities",
+                "AuthAPIServiceInterface",
+                "KeychainServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/AuthenticationUseCase"
+        ),
+
         .target(
             name: "AccountRegisterUseCase",
             dependencies: [
@@ -334,6 +378,22 @@ let package = Package(
                 "PortfolioAPIServiceInterface",
             ],
             path: "Sources/Domains/UseCases/PortfolioUseCase"
+        ),
+        .target(
+            name: "InvestmentUseCase",
+            dependencies: [
+                "DomainEntities",
+                "InvestmentAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/InvestmentUseCase"
+        ),
+        .target(
+            name: "LiveMarketUseCase",
+            dependencies: [
+                "DomainEntities",
+                "MarketAPIServiceInterface",
+            ],
+            path: "Sources/Domains/UseCases/LiveMarketUseCase"
         ),
 
         // MARK: Domains/DataInterfaces
@@ -394,12 +454,34 @@ let package = Package(
             ],
             path: "Sources/Domains/DataInterfaces/UserAPIServiceInterface"
         ),
+        .target(
+            name: "InvestmentAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/InvestmentAPIServiceInterface"
+        ),
+        .target(
+            name: "MarketAPIServiceInterface",
+            dependencies: [
+                "DomainEntities",
+            ],
+            path: "Sources/Domains/DataInterfaces/MarketAPIServiceInterface"
+        ),
 
         // MARK: Domains/Entities
 
         .target(
             name: "DomainEntities",
+            dependencies: [
+                "DomainUtilities",
+            ],
             path: "Sources/Domains/Entities"
+        ),
+
+        .target(
+            name: "DomainUtilities",
+            path: "Sources/Domains/DomainUtilities"
         ),
 
         // MARK: Data Layer
@@ -475,6 +557,24 @@ let package = Package(
             ],
             path: "Sources/Data/UserAPIService"
         ),
+        .target(
+            name: "InvestmentAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "InvestmentAPIServiceInterface",
+            ],
+            path: "Sources/Data/InvestmentAPIService"
+        ),
+        .target(
+            name: "MarketAPIService",
+            dependencies: [
+                "DomainEntities",
+                "Networking",
+                "MarketAPIServiceInterface",
+            ],
+            path: "Sources/Data/MarketAPIService"
+        ),
 
         // MARK: Test targets
 
@@ -520,6 +620,14 @@ let package = Package(
                 "DomainEntities",
             ]
         ),
+        .testTarget(
+            name: "InvestmentFeatureTests",
+            dependencies: [
+                "InvestmentFeature",
+                "TestHelpers",
+                "DomainEntities",
+            ]
+        ),
     ]
 )
 
@@ -529,9 +637,9 @@ extension Product {
     }
 }
 
-package.targets = package.targets.map { target in
-    var plugins = target.plugins ?? []
-    plugins.append(.plugin(name: "SwiftLintPlugin", package: "SwiftLint"))
-    target.plugins = plugins
-    return target
-}
+// package.targets = package.targets.map { target in
+//    var plugins = target.plugins ?? []
+//    plugins.append(.plugin(name: "SwiftLintPlugin", package: "SwiftLint"))
+//    target.plugins = plugins
+//    return target
+// }

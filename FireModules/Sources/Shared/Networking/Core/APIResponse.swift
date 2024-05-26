@@ -8,9 +8,9 @@ import Codextended
 import Foundation
 
 public struct ApiResponse<M: Decodable>: Decodable {
-    let code: Int
-    let response: M?
-    let error: ServerError?
+    public let code: Int
+    public let response: M?
+    public let error: ServerError?
 
     var asResult: Result<M, ServerError> {
         if let response, code == 1, error == nil {
@@ -25,6 +25,6 @@ public struct ApiResponse<M: Decodable>: Decodable {
     public init(from decoder: Decoder) throws {
         self.code = try decoder.decode("code")
         self.response = try decoder.decodeIfPresent("response")
-        self.error = try decoder.decodeIfPresent("error")
+        self.error = try? ServerError(from: decoder)
     }
 }

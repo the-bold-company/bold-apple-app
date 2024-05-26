@@ -12,6 +12,7 @@ import Foundation
 import FundDetailsUseCase
 import FundFeature
 import FundListUseCase
+import InvestmentFeature
 import PortfolioUseCase
 import TransactionListUseCase
 
@@ -47,6 +48,7 @@ public struct HomeReducer {
             case loadPortfolio
             case loadFundList
             case loadTransactionHistory
+            case goToInvestmentPortfolio
         }
 
         @CasePathable
@@ -95,6 +97,9 @@ public struct HomeReducer {
                 return .none
             case .forward(.createFundButtonTapped):
                 state.destination = .fundCreationRoute(.init())
+                return .none
+            case .forward(.goToInvestmentPortfolio):
+                state.destination = .investmentHomeRoute(.init())
                 return .none
             case .forward(.refresh):
                 return .none
@@ -227,11 +232,13 @@ public extension HomeReducer {
         public enum State: Equatable {
             case fundCreationRoute(FundCreationReducer.State)
             case fundDetailsRoute(FundDetailsReducer.State)
+            case investmentHomeRoute(InvestmentHomeReducer.State)
         }
 
         public enum Action {
             case fundCreationRoute(FundCreationReducer.Action)
             case fundDetailsRoute(FundDetailsReducer.Action)
+            case investmentHomeRoute(InvestmentHomeReducer.Action)
         }
 
         public var body: some ReducerOf<Self> {
@@ -241,6 +248,10 @@ public extension HomeReducer {
 
             Scope(state: \.fundDetailsRoute, action: \.fundDetailsRoute) {
                 resolve(\FundFeatureContainer.fundDetailsReducer)
+            }
+
+            Scope(state: \.investmentHomeRoute, action: \.investmentHomeRoute) {
+                resolve(\InvestmentFeatureContainer.investmentHomeReducer)
             }
         }
     }
