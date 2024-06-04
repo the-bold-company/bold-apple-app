@@ -7,7 +7,7 @@ import Utilities
 
 @Reducer
 public struct LoginReducer {
-    let logInUseCase: LogInUseCase
+    private let logInUseCase: LogInUseCase
 
     public init(logInUseCase: LogInUseCase) {
         self.logInUseCase = logInUseCase
@@ -60,16 +60,23 @@ public struct LoginReducer {
 
                 state.logInInProgress = true
 
-                return .run { [email = state.email, password = state.password] send in
-                    let result = await logInUseCase.logIn(.init(email: email, password: password))
+                return logInUseCase.logIn(.init(email: state.email, password: state.password))
+                    .mapResult(
+                        success: Action.logInSuccesfully,
+                        failure: Action.logInFailure
+                    )
 
-                    switch result {
-                    case let .success(response):
-                        await send(.logInSuccesfully(response))
-                    case let .failure(error):
-                        await send(.logInFailure(error))
-                    }
-                }
+//                return .run { [email = state.email, password = state.password] send in
+//                    let result = await logInUseCase.logIn(.init(email: email, password: password))
+//
+//                    switch result {
+//                    case let .success(response):
+//                        await send(.logInSuccesfully(response))
+//                    case let .failure(error):
+//                        await send(.logInFailure(error))
+//                    }
+//                }
+
             case .logInSuccesfully:
                 state.logInInProgress = false
                 return .send(.navigate(.goToHome))

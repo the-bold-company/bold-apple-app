@@ -22,10 +22,10 @@ public struct LogInUseCase: LogInUseCaseProtocol {
             let successfulLogIn = try await authService.login(email: email, password: password)
 
             try keychainService.setCredentials(
-                accessToken: successfulLogIn.credentials.accessToken,
-                refreshToken: successfulLogIn.credentials.refreshToken
+                accessToken: successfulLogIn.1.accessToken,
+                refreshToken: successfulLogIn.1.refreshToken
             )
-            return .success(successfulLogIn.user)
+            return .success(successfulLogIn.0)
         } catch {
             return .failure(error.eraseToDomainError())
         }

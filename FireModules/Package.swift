@@ -481,6 +481,9 @@ let package = Package(
 
         .target(
             name: "DomainUtilities",
+            dependencies: [
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+            ],
             path: "Sources/Domains/DomainUtilities"
         ),
 

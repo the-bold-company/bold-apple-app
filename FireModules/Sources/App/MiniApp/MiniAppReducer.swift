@@ -1,7 +1,9 @@
+// import LogInUseCase
+import AuthenticationUseCase
 import ComposableArchitecture
 import DI
+import Factory
 import InvestmentFeature
-import LogInUseCase
 
 @Reducer
 public struct MiniAppReducer {
@@ -11,7 +13,7 @@ public struct MiniAppReducer {
         fileprivate let email = "hien.tran@fire.com"
         fileprivate let password = "Qwerty@123"
 
-        var logInState: LoadingState<AuthenticatedUserEntity> = .idle
+        var logInState: Progress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure> = .idle
 
         public init() {}
     }
@@ -29,18 +31,18 @@ public struct MiniAppReducer {
 
         @CasePathable
         public enum Delegate {
-            case logInSuccessfully(AuthenticatedUserEntity)
-            case logInFailed(DomainError)
+            case logInSuccesfully(AuthenticationLogic.LogIn.Response)
+            case logInFailure(AuthenticationLogic.LogIn.Failure)
         }
     }
 
     @Dependency(\.mainQueue) var mainQueue
-    let logInUseCase: LogInUseCaseProtocol
+    private let logInUseCase: LogInUseCase
 
     enum CancelId { case logIn }
 
     public init() {
-        self.logInUseCase = resolve(\.logInUseCase)
+        self.logInUseCase = resolve(\.authenticationUseCase)
     }
 
     public var body: some ReducerOf<Self> {
@@ -56,22 +58,22 @@ public struct MiniAppReducer {
 
                 return .run { [email = state.email, password = state.password] send in
 
-                    let result = await logInUseCase.login(email: email, password: password)
+                    let result = await logInUseCase.logInAsync(.init(email: email, password: password))
 
                     switch result {
-                    case let .success(authenticatedUser):
-                        await send(.delegate(.logInSuccessfully(authenticatedUser)))
+                    case let .success(response):
+                        await send(.delegate(.logInSuccesfully(response)))
                     case let .failure(error):
-                        await send(.delegate(.logInFailed(error)))
+                        await send(.delegate(.logInFailure(error)))
                     }
                 }
                 .debounce(id: CancelId.logIn, for: .milliseconds(300), scheduler: mainQueue)
                 .cancellable(id: CancelId.logIn, cancelInFlight: true)
-            case let .delegate(.logInSuccessfully(user)):
-                state.logInState = .loaded(user)
+            case let .delegate(.logInSuccesfully(response)):
+                state.logInState = .loaded(response.user)
                 state.destination = .miniAppEntryRoute(.init())
                 return .none
-            case let .delegate(.logInFailed(error)):
+            case let .delegate(.logInFailure(error)):
                 state.logInState = .failure(error)
                 return .none
             case .binding, .destination:
@@ -88,13 +90,13 @@ public struct MiniAppReducer {
 
         return .run { [email = state.email, password = state.password] send in
 
-            let result = await logInUseCase.login(email: email, password: password)
+            let result = await logInUseCase.logInAsync(.init(email: email, password: password))
 
             switch result {
-            case let .success(authenticatedUser):
-                await send(.delegate(.logInSuccessfully(authenticatedUser)))
+            case let .success(response):
+                await send(.delegate(.logInSuccesfully(response)))
             case let .failure(error):
-                await send(.delegate(.logInFailed(error)))
+                await send(.delegate(.logInFailure(error)))
             }
         }
         .debounce(id: CancelId.logIn, for: .milliseconds(300), scheduler: mainQueue)

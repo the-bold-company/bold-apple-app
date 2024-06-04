@@ -7,6 +7,7 @@
 
 import AuthAPIServiceInterface
 import Combine
+import ComposableArchitecture
 import DomainEntities
 import Foundation
 @_exported import Networking
@@ -18,13 +19,14 @@ public extension AuthAPIService {
 
         return AuthAPIService(
             logIn: { email, password in
-                try await networkClient
-                    .requestPublisher(.login(email: email, password: password))
-                    .mapToResponse(LoginResponse.self)
-                    .mapErrorToDomainError()
-                    .map { ($0.user.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
-                    .eraseToAnyPublisher()
+                try await logIn(client: networkClient, email: email, password: password)
                     .async()
+            },
+            loginPublisher: { email, password in
+                Effect.publisher {
+                    logIn(client: networkClient, email: email, password: password)
+                        .mapToResult()
+                }
             },
             signUp: { email, password in
                 try await networkClient
@@ -37,25 +39,47 @@ public extension AuthAPIService {
             }
         )
     }
+
+    private static func logIn(
+        client: MoyaClient<AuthAPI>,
+        email: String,
+        password: String
+    ) -> AnyPublisher<(AuthenticatedUserEntity, CredentialsEntity), DomainError> {
+        client
+            .requestPublisher(.login(email: email, password: password))
+            .mapToResponse(LoginResponse.self)
+            .mapErrorToDomainError()
+            .map { ($0.user.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
+            .eraseToAnyPublisher()
+    }
 }
 
 public extension AuthAPIService {
     static var local: Self {
-        let mock = try! Data(contentsOf: URL.local.appendingPathComponent("mock/login_successful_error_invalid_credentials.json"))
+        let mock = try! Data(contentsOf: URL.local.appendingPathComponent("mock/login_successful_response.json"))
 
         return AuthAPIService(
             logIn: { _, _ in
-                try await Just(mock)
-                    .mapToResponse(LoginResponse.self)
-                    .mapErrorToDomainError()
-                    .map { (user: $0.user.asAuthenticatedUserEntity(), credentials: $0.asCredentialsEntity()) }
-                    .eraseToAnyPublisher()
+                try await logInMock(mock)
                     .async()
+            },
+            loginPublisher: { _, _ in
+                Effect.publisher {
+                    logInMock(mock).mapToResult()
+                }
             },
             signUp: { _, _ in
                 fatalError()
             }
         )
+    }
+
+    private static func logInMock(_ mock: Data) -> AnyPublisher<(AuthenticatedUserEntity, CredentialsEntity), DomainError> {
+        Just(mock)
+            .mapToResponse(LoginResponse.self)
+            .mapErrorToDomainError()
+            .map { (user: $0.user.asAuthenticatedUserEntity(), credentials: $0.asCredentialsEntity()) }
+            .eraseToAnyPublisher()
     }
 }
 

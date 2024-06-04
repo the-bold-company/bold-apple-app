@@ -1,12 +1,12 @@
 import Foundation
 
-public enum LoadingState<Success>: Equatable where Success: Equatable {
+public enum Progress<Success, Failure>: Equatable where Success: Equatable, Failure: LocalizedError {
     case idle
     case loading
     case loaded(Success)
-    case failure(DomainError)
+    case failure(Failure)
 
-    public static func == (lhs: LoadingState<Success>, rhs: LoadingState<Success>) -> Bool {
+    public static func == (lhs: Progress<Success, Failure>, rhs: Progress<Success, Failure>) -> Bool {
         switch (lhs, rhs) {
         case (.idle, .idle), (.loading, .loading):
             return true
@@ -31,7 +31,7 @@ public enum LoadingState<Success>: Equatable where Success: Equatable {
         }
     }
 
-    public var error: DomainError? {
+    public var error: LocalizedError? {
         if case let .failure(error) = self {
             return error
         } else {
