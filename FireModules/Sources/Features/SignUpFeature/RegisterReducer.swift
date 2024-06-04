@@ -1,21 +1,15 @@
-//
-//  RegisterReducer.swift
-//
-//
-//  Created by Hien Tran on 29/11/2023.
-//
-
-import AccountRegisterUseCase
+import AuthenticationUseCase
 import ComposableArchitecture
+import DomainEntities
 import Foundation
 import Utilities
 
 @Reducer
 public struct RegisterReducer {
-    let accountRegisterUseCase: AccountRegisterUseCaseProtocol
+    let signUpUseCase: SignUpUseCase
 
-    public init(accountRegisterUseCase: AccountRegisterUseCaseProtocol) {
-        self.accountRegisterUseCase = accountRegisterUseCase
+    public init(signUpUseCase: SignUpUseCase) {
+        self.signUpUseCase = signUpUseCase
     }
 
     public struct State: Equatable {
@@ -24,7 +18,7 @@ public struct RegisterReducer {
 
         var emailValidationError: String?
         var passwordValidationError: String?
-        var accountCreationState: LoadingState<AuthenticatedUserEntity> = .idle
+        var accountCreationState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.SignUp.Failure> = .idle
 
         public init() {}
     }
@@ -33,8 +27,8 @@ public struct RegisterReducer {
         case createUserButtonTapped
         case binding(BindingAction<State>)
 
-        case createUserSuccesfully(AuthenticatedUserEntity)
-        case createUserFailure(DomainError)
+        case signUpSuccessfully(AuthenticationLogic.SignUp.Response)
+        case signUpFailure(AuthenticationLogic.SignUp.Failure)
 
         case navigate(Route)
         case goToPasswordCreationButtonTapped
@@ -50,7 +44,7 @@ public struct RegisterReducer {
     public var body: some Reducer<State, Action> {
         BindingReducer()
         EmailRegistrationReducer()
-        PasswordCreationReducer(accountRegisterUseCase: accountRegisterUseCase)
+        PasswordCreationReducer(signUpUseCase: signUpUseCase)
     }
 }
 
@@ -69,8 +63,8 @@ private struct EmailRegistrationReducer {
                 return .none
             case .goToPasswordCreationButtonTapped:
                 return .send(.navigate(.goToPasswordCreation(state)))
-            case .binding, .createUserButtonTapped, .createUserSuccesfully,
-                 .createUserFailure, .navigate:
+            case .binding, .createUserButtonTapped, .signUpSuccessfully,
+                 .signUpFailure, .navigate:
                 return .none
             }
         }
@@ -79,10 +73,10 @@ private struct EmailRegistrationReducer {
 
 @Reducer
 private struct PasswordCreationReducer {
-    let accountRegisterUseCase: AccountRegisterUseCaseProtocol
+    let signUpUseCase: SignUpUseCase
 
-    init(accountRegisterUseCase: AccountRegisterUseCaseProtocol) {
-        self.accountRegisterUseCase = accountRegisterUseCase
+    public init(signUpUseCase: SignUpUseCase) {
+        self.signUpUseCase = signUpUseCase
     }
 
     public var body: some ReducerOf<RegisterReducer> {
@@ -108,19 +102,19 @@ private struct PasswordCreationReducer {
                 let password = state.password
 
                 return .run { send in
-                    let result = await accountRegisterUseCase.registerAccount(email: email, password: password)
+                    let result = await signUpUseCase.signUp(.init(email: email, password: password))
 
                     switch result {
-                    case let .success(authenticatedUser):
-                        await send(.createUserSuccesfully(authenticatedUser))
+                    case let .success(response):
+                        await send(.signUpSuccessfully(response))
                     case let .failure(error):
-                        await send(.createUserFailure(error))
+                        await send(.signUpFailure(error))
                     }
                 }
-            case let .createUserSuccesfully(response):
-                state.accountCreationState = .loaded(response)
+            case let .signUpSuccessfully(response):
+                state.accountCreationState = .loaded(response.user)
                 return .send(.navigate(.goToHome))
-            case let .createUserFailure(error):
+            case let .signUpFailure(error):
                 state.accountCreationState = .failure(error)
                 return .none
             case .binding, .navigate, .goToPasswordCreationButtonTapped:

@@ -5,6 +5,7 @@
 //  Created by Hien Tran on 02/12/2023.
 //
 
+import AuthenticationUseCase
 import ComposableArchitecture
 import CoreUI
 import DomainEntities
@@ -16,7 +17,7 @@ public struct PasswordCreationPage: View {
     struct ViewState: Equatable {
         @BindingViewState var password: String
         var passwordValidationError: String?
-        var accountCreationState: LoadingState<AuthenticatedUserEntity>
+        var accountCreationState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.SignUp.Failure>
     }
 
     let store: StoreOf<RegisterReducer>
