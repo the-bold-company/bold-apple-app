@@ -1,4 +1,6 @@
 import ComposableArchitecture
+import DomainEntities
+import Foundation
 import TCAExtensions
 
 @Reducer
@@ -9,7 +11,16 @@ public struct EmailSignUpReducer {
         @BindingState var email: String = ""
         var password: String = ""
 
-        var emailValidationError: String?
+        var emailValidationError: String {
+            switch emailValidated {
+            case .idle, .valid:
+                return ""
+            case let .invalid(_, error):
+                return error.errorDescription ?? ""
+            }
+        }
+
+        var emailValidated: Validated<String, EmailValidationError> = .idle("")
 
         @PresentationState public var destination: Destination.State?
 
@@ -25,7 +36,9 @@ public struct EmailSignUpReducer {
 
         @CasePathable
         public enum ViewAction {
+            case onAppear
             case nextButtonTapped
+            case signInButtonTapped
         }
 
         @CasePathable
@@ -35,35 +48,33 @@ public struct EmailSignUpReducer {
         public enum LocalAction {}
     }
 
+    private let emailValidator = EmailValidator()
+
     public var body: some ReducerOf<Self> {
         BindingReducer()
         Reduce { state, action in
             switch action {
             case let .view(viewAction):
                 switch viewAction {
+                case .onAppear:
+                    state.emailValidated = .idle(state.email)
+                    return .none
                 case .nextButtonTapped:
-                    state.destination = .password(.init(email: state.email))
+                    let emailValidated = emailValidator.validate(state.email)
+                    state.emailValidated = emailValidated
+
+                    if emailValidated.isValid {
+                        // Call API to check if email is in the system
+                        state.destination = .password(.init(email: state.email))
+                    }
+                    return .none
+                case .signInButtonTapped:
                     return .none
                 }
             case let .destination(destinationAction):
-//                switch destinationAction {
-//
-//                case .dismiss:
-//                    return .none
-//                case let .presented(act):
-//                    switch act {
-//
-//                    case .password(_):
-//                        return .none
-//                    }
-//                }
                 return .none
             case .binding(\.$email):
-                if state.email.count <= 5 {
-                    state.emailValidationError = "Email invalid"
-                } else {
-                    state.emailValidationError = nil
-                }
+//                state.emailValidated = emailValidator.validate(state.email)
                 return .none
             case .binding:
                 return .none

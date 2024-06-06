@@ -13,10 +13,12 @@ public struct FireTextField: View {
 
     @Binding private var text: String
     let title: String
+    let placeholder: LocalizedStringKey?
 
-    public init(title: String, text: Binding<String>) {
+    public init(_ placeholder: LocalizedStringKey? = nil, title: String, text: Binding<String>) {
         self.title = title
-        _text = text
+        self._text = text
+        self.placeholder = placeholder
     }
 
     public var body: some View {
@@ -26,7 +28,7 @@ public struct FireTextField: View {
             Spacing(height: .size8)
 
             TextField(
-                "",
+                placeholder ?? "",
                 text: $text,
                 onEditingChanged: { _ in
                 },

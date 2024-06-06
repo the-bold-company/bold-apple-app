@@ -1,10 +1,3 @@
-//
-//  EmailRegistrationPage.swift
-//
-//
-//  Created by Hien Tran on 29/11/2023.
-//
-
 import ComposableArchitecture
 import CoreUI
 import SwiftUI
@@ -23,63 +16,26 @@ public struct EmailRegistrationPage: View {
 
     struct ViewState: Equatable {
         @BindingViewState var email: String
-        var emailValidationError: String?
+        var emailValidationError: String
     }
 
     public var body: some View {
         NavigationStack {
-            VStack(alignment: .leading) {
-                DismissButton()
-                Spacing(height: .size40)
-                Text("Enter your email address").typography(.titleScreen)
-                Spacing(height: .size32)
-
-                continueWithGoogle
-
-                Divider()
-
-                FireTextField(
-                    title: "Your email",
-                    text: viewStore.$email
-                )
-                .autocapitalization(.none)
-                .keyboardType(.emailAddress)
-                .textContentType(.emailAddress)
-                .autocorrectionDisabled()
-
-                Text(viewStore.emailValidationError ?? "")
-
+            VStack(alignment: .center) {
+                brandLogo
                 Spacing(height: .size24)
-
+                Text("Đăng ký Mouka").typography(.titleScreen)
+                Spacing(height: .size24)
+                continueWithGoogle
+                divider
+                emailInputField
+                Spacing(height: .size24)
+                nextButton
+                Spacing(height: .size24)
+                logInPrompt
                 Spacer()
-                Text("By registering, you accept our ")
-                    .foregroundColor(Color.coreui.forestGreen)
-                    .font(.system(size: 16))
-                    +
-                    Text("Terms of Use")
-                    .foregroundColor(Color.coreui.forestGreen)
-                    .font(.system(size: 16))
-                    .bold()
-                    .underline()
-                    +
-                    Text(" and ")
-                    .foregroundColor(Color.coreui.forestGreen)
-                    .font(.system(size: 16))
-                    +
-                    Text("Privacy Policy")
-                    .foregroundColor(Color.coreui.forestGreen)
-                    .font(.system(size: 16))
-                    .bold()
-                    .underline()
-
-                Button {
-                    viewStore.send(.view(.nextButtonTapped))
-                } label: {
-                    Text("Continue")
-                }
-                .fireButtonStyle()
             }
-            .padding()
+            .padding(16)
             .navigationBarHidden(true)
             .navigationDestination(
                 store: store.scope(
@@ -88,11 +44,46 @@ public struct EmailRegistrationPage: View {
                 )
             ) { PasswordCreationPage(store: $0) }
         }
+        .task { store.send(.view(.onAppear)) }
         .enableInjection()
     }
 
-    @ViewBuilder
-    private var continueWithGoogle: some View {
+    @ViewBuilder private var brandLogo: some View {
+        Image(systemName: "b.square")
+            .resizable()
+            .frame(width: 72, height: 72)
+    }
+
+    @ViewBuilder private var divider: some View {
+        Spacing(height: .size16)
+        ZStack {
+            Divider()
+                .background(Color.gray)
+            Text("Hoặc")
+                .padding(.horizontal, 16)
+                .background(Color.white)
+        }
+        Spacing(height: .size16)
+    }
+
+    @ViewBuilder private var emailInputField: some View {
+        FireTextField(
+            "Nhập Email",
+            title: "Email",
+            text: viewStore.$email
+        )
+        .autocapitalization(.none)
+        .keyboardType(.emailAddress)
+        .textContentType(.emailAddress)
+        .autocorrectionDisabled()
+
+        Text(viewStore.emailValidationError)
+            .typography(.bodyDefault)
+            .foregroundColor(.red)
+            .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    @ViewBuilder private var continueWithGoogle: some View {
         Button {
 //            viewStore.send(.view(.nextButtonTapped))
         } label: {
@@ -103,6 +94,31 @@ public struct EmailRegistrationPage: View {
             .frame(maxWidth: .infinity)
         }
         .fireButtonStyle(type: .secondary(shape: .roundedCorner))
+    }
+
+    @ViewBuilder private var nextButton: some View {
+        Button {
+            viewStore.send(.view(.nextButtonTapped))
+        } label: {
+            Text("Đăng ký")
+                .frame(maxWidth: .infinity)
+        }
+        .fireButtonStyle()
+    }
+
+    @ViewBuilder private var logInPrompt: some View {
+        Text("Đã có tài khoản? ")
+            .foregroundColor(Color.coreui.forestGreen)
+            .font(.system(size: 16))
+            +
+            Text("Đăng nhập ngay")
+            .foregroundColor(Color.coreui.forestGreen)
+            .font(.system(size: 16))
+            .bold()
+//                    .onTapGesture(perform: {
+//                        //
+//                    })
+//                    .underline()
     }
 }
 
