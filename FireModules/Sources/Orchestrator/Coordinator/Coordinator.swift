@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 import DI
+import DomainEntities
 import KeychainServiceInterface
 import OnboardingFeature
 import SettingsFeature
@@ -16,8 +17,7 @@ import TCACoordinators
 public struct Destination {
     public enum State: Equatable {
         case landingRoute(LandingFeature.State)
-        case emailRegistrationRoute(RegisterReducer.State)
-        case passwordCreationRoute(RegisterReducer.State)
+        case signUpRoute(RegisterReducer.State)
         case loginRoute(LoginReducer.State)
         case homeRoute(HomeReducer.State)
         case secretDevSettingsRoute
@@ -26,8 +26,7 @@ public struct Destination {
 
     public enum Action {
         case landingRoute(LandingFeature.Action)
-        case emailRegistrationRoute(RegisterReducer.Action)
-        case passwordCreationRoute(RegisterReducer.Action)
+        case signUpRoute(RegisterReducer.Action)
         case loginRoute(LoginReducer.Action)
         case homeRoute(HomeReducer.Action)
         case secretDevSettingsRoute
@@ -39,16 +38,12 @@ public struct Destination {
             LandingFeature()
         }
 
-        Scope(state: \.emailRegistrationRoute, action: \.emailRegistrationRoute) {
-            resolve(\SignUpFeatureContainer.registerReducer)
-        }
-
-        Scope(state: \.passwordCreationRoute, action: \.passwordCreationRoute) {
+        Scope(state: \.signUpRoute, action: \.signUpRoute) {
             resolve(\SignUpFeatureContainer.registerReducer)
         }
 
         Scope(state: \.loginRoute, action: \.loginRoute) {
-            resolve(\LogInFeatureContainer.logInReducer)
+            resolve(\LogInFeatureContainer.logInReducer)?._printChanges()
         }
 
         Scope(state: \.homeRoute, action: \.homeRoute) {
@@ -67,13 +62,17 @@ public struct Coordinator {
 
     public init() {}
 
+//    @ObservableState
     public struct State: Equatable, IndexedRouterState {
         public static let authenticatedInitialState = State(
-            routes: [.root(.homeRoute(.init()), embedInNavigationView: true)]
+            //            routes: [.root(.homeRoute(.init()), embedInNavigationView: true)]
+//            routes: [.root(.loginRoute(.init()), embedInNavigationView: true)]
+            routes: [.root(.signUpRoute(.init()), embedInNavigationView: true)]
         )
 
         public static let unAuthenticatedInitialState = State(
-            routes: [.root(.loginRoute(.init()), embedInNavigationView: true)]
+            //            routes: [.root(.loginRoute(.init()), embedInNavigationView: true)]
+            routes: [.root(.signUpRoute(.init()), embedInNavigationView: true)]
         )
 
         public var routes: [Route<Destination.State>]
@@ -100,47 +99,23 @@ public struct Coordinator {
                     } catch {}
                 }
 
-            // MARK: - Landing routes
-
-            case .routeAction(_, action: .landingRoute(.loginButtonTapped)):
-                state.routes.push(.loginRoute(.init()))
-            case .routeAction(_, action: .landingRoute(.signUpButtonTapped)):
-                state.routes.push(.emailRegistrationRoute(.init()))
-
-            // MARK: - Registration routes
-
-            case let .routeAction(_, action: .emailRegistrationRoute(.navigate(.goToPasswordCreation(carriedOverState)))):
-                state.routes.push(.passwordCreationRoute(carriedOverState))
-            case .routeAction(_, action: .passwordCreationRoute(.navigate(.backToEmailRegistration))):
-                break
-            case .routeAction(_, action: .passwordCreationRoute(.navigate(.goToHome))):
-                return .routeWithDelaysIfUnsupported(state.routes) {
-                    $0.popToRoot()
-                    $0.push(.homeRoute(.init()))
+            case let .routeAction(index, screenAction):
+                switch screenAction {
+                case let .landingRoute(onboardingFeatureAction):
+                    return handleOnboardingFeatureAction(onboardingFeatureAction, state: &state)
+                case let .signUpRoute(signUpAction):
+//                    return handleSignUpFeatureAction(signUpAction, state: &state)
+                    return .none
+                case let .loginRoute(logInAction):
+                    return handleLoginFeatureAction(logInAction, state: &state)
+                case let .homeRoute(homeAction):
+                    break
+                case .secretDevSettingsRoute:
+                    state.routes.presentSheet(.devSettingsRoute(.init()))
+                case let .devSettingsRoute(devSettingsAction):
+                    break
                 }
-
-            // MARK: - Log in routes
-
-            case .routeAction(_, action: .loginRoute(.navigate(.goToHome))):
-                return .routeWithDelaysIfUnsupported(state.routes) {
-                    $0.popToRoot()
-//                    _ = $0.popLast()
-                    $0.push(.homeRoute(.init()))
-                    $0.remove(at: 0)
-                }
-
-            // MARK: - This section is for non-existent routes, or routes that have been handled by default. They're here just to satisfy the compiler
-
-            case .binding,
-                 .routeAction(_, action: .loginRoute),
-                 .routeAction(_, action: .passwordCreationRoute),
-                 .routeAction(_, action: .emailRegistrationRoute),
-                 .routeAction(_, action: .homeRoute),
-                 .routeAction(_, action: .devSettingsRoute):
-                break
-            case .routeAction(_, action: .secretDevSettingsRoute):
-                state.routes.presentSheet(.devSettingsRoute(.init()))
-            case .updateRoutes:
+            case .updateRoutes, .binding:
                 break
             }
             return .none
@@ -148,5 +123,68 @@ public struct Coordinator {
         .forEachRoute {
             Destination()
         }
+    }
+
+    // MARK: - Onboarding routes
+
+    private func handleOnboardingFeatureAction(_ action: LandingFeature.Action, index _: Int? = nil, state: inout State) -> Effect<Action> {
+        switch action {
+        case .loginButtonTapped:
+            state.routes.push(.loginRoute(.init()))
+        case .signUpButtonTapped:
+            state.routes.push(.signUpRoute(.init()))
+        }
+        return .none
+    }
+
+    // MARK: - Registration routes
+
+    private func handleSignUpFeatureAction(_: RegisterReducer.Action, index _: Int? = nil, state _: inout State) -> Effect<Action> {
+//        switch action {
+//        case let .navigate(routeAction):
+//            switch routeAction {
+//            case let .goToPasswordCreation(carriedOverState):
+//                state.routes.push(.passwordCreationRoute(carriedOverState))
+//            case .goToHome:
+//                return .routeWithDelaysIfUnsupported(state.routes) {
+//                    $0.popToRoot()
+//                    $0.push(.homeRoute(.init()))
+//                }
+//                break
+//            case .backToEmailRegistration,
+//                 .exitRegistrationFlow:
+//                break
+//            }
+//        case .binding,
+//             .createUserButtonTapped,
+//             .signUpSuccessfully,
+//             .signUpFailure,
+//             .goToPasswordCreationButtonTapped:
+//            break
+//        }
+        return .none
+    }
+
+    // MARK: - Log in routes
+
+    private func handleLoginFeatureAction(_ action: LoginReducer.Action, index _: Int? = nil, state: inout State) -> Effect<Action> {
+        switch action {
+        case let .delegate(delegateAction):
+            switch delegateAction {
+            case let .userLoggedIn(user):
+//                state.authenticatedUser = user
+                return .routeWithDelaysIfUnsupported(state.routes) {
+                    $0.popToRoot()
+//                    _ = $0.popLast()
+                    $0.push(.homeRoute(.init()))
+                    $0.remove(at: 0)
+                }
+            case .logInFailed:
+                break
+            }
+        case .binding, .view, ._local:
+            break
+        }
+        return .none
     }
 }

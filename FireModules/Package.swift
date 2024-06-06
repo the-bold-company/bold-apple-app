@@ -24,7 +24,7 @@ var package = Package(
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
         .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.10.4"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
@@ -470,6 +470,7 @@ extension Target {
         dependencies.append(contentsOf: [
             Module.Infra.coreUI.asDependency,
             Module.Infra.utilities.asDependency,
+            Module.Infra.tcaExtensions.asDependency,
             Module.Domain.Core.domainEntities.asDependency,
             Dependency.ThirdParty.composableArchitecture.asDependency,
             Dependency.ThirdParty.factory.asDependency,

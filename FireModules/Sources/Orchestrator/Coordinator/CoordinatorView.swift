@@ -38,16 +38,18 @@ public struct CoordinatorView: View {
                         /Destination.State.landingRoute,
                         action: Destination.Action.landingRoute
                     ) { LandingPage(store: $0) }
-                case .emailRegistrationRoute:
+                case .signUpRoute:
                     CaseLet(
-                        /Destination.State.emailRegistrationRoute,
-                        action: Destination.Action.emailRegistrationRoute
-                    ) { EmailRegistrationPage(store: $0) }
-                case .passwordCreationRoute:
-                    CaseLet(
-                        /Destination.State.passwordCreationRoute,
-                        action: Destination.Action.passwordCreationRoute
-                    ) { PasswordCreationPage(store: $0) }
+                        /Destination.State.signUpRoute,
+                        action: Destination.Action.signUpRoute
+                    ) {
+                        EmailRegistrationPage(
+                            store: $0.scope(
+                                state: \.emailSignUp,
+                                action: /RegisterReducer.Action.LocalAction.emailSignUp
+                            )
+                        )
+                    }
                 case .loginRoute:
                     CaseLet(
                         /Destination.State.loginRoute,

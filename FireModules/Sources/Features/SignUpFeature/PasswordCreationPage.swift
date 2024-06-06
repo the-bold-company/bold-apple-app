@@ -20,10 +20,10 @@ public struct PasswordCreationPage: View {
         var accountCreationState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.SignUp.Failure>
     }
 
-    let store: StoreOf<RegisterReducer>
-    @ObservedObject var viewStore: ViewStore<ViewState, RegisterReducer.Action>
+    let store: StoreOf<PasswordSignUpReducer>
+    @ObservedObject var viewStore: ViewStore<ViewState, PasswordSignUpReducer.Action>
 
-    public init(store: StoreOf<RegisterReducer>) {
+    public init(store: StoreOf<PasswordSignUpReducer>) {
         self.store = store
         self.viewStore = ViewStore(self.store, observe: \.passwordCreationViewState)
     }
@@ -55,7 +55,7 @@ public struct PasswordCreationPage: View {
                     .foregroundColor(.coreui.sentimentNegative)
 
                 Button {
-                    viewStore.send(.createUserButtonTapped)
+                    viewStore.send(.view(.nextButtonTapped))
                 } label: {
                     Text("Continue")
                         .frame(maxWidth: .infinity)
@@ -70,7 +70,7 @@ public struct PasswordCreationPage: View {
     }
 }
 
-extension BindingViewStore<RegisterReducer.State> {
+extension BindingViewStore<PasswordSignUpReducer.State> {
     var passwordCreationViewState: PasswordCreationPage.ViewState {
         // swiftformat:disable redundantSelf
         PasswordCreationPage.ViewState(
