@@ -1,13 +1,6 @@
-//
-//  LogInFeatureContainer.swift
-//
-//
-//  Created by Hien Tran on 28/02/2024.
-//
-
+import AuthenticationUseCase
 import DevSettingsUseCase
 import Factory
-import LogInUseCase
 
 public final class LogInFeatureContainer: SharedContainer {
     public static let shared = LogInFeatureContainer()
@@ -15,7 +8,6 @@ public final class LogInFeatureContainer: SharedContainer {
 }
 
 public extension LogInFeatureContainer {
-    var logInUseCase: Factory<LogInUseCaseProtocol?> { self { nil } }
     var devSettingsUseCase: Factory<DevSettingsUseCase?> { self { nil } }
     var logInReducer: Factory<LoginReducer?> { self { nil } }
 }

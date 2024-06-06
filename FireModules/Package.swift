@@ -3,7 +3,7 @@
 
 import PackageDescription
 
-let package = Package(
+var package = Package(
     name: "FireModules",
     platforms: [
         .iOS(.v16),
@@ -24,7 +24,7 @@ let package = Package(
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
         .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.5.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.10.4"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
         .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
@@ -35,601 +35,367 @@ let package = Package(
         .package(url: "https://github.com/krzysztofzablocki/KZFileWatchers.git", from: "1.2.0"),
     ],
     targets: [
-        // MARK: - App Layer: Where all modules come together
-
-        .target(
-            name: "App",
+        .app(
+            .app,
             dependencies: [
-                "Coordinator",
-                "DI",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "TCACoordinators", package: "TCACoordinators"),
-            ],
-            path: "Sources/App/App"
-        ),
-        .target(
-            name: "MiniApp",
-            dependencies: [
-                "DI",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ],
-            path: "Sources/App/MiniApp"
-        ),
-        .testTarget(
-            name: "AppTests",
-            dependencies: ["App"]
-        ),
-        .target(
-            name: "AppPlaybook",
-            dependencies: [
-                "CoreUI",
-                "HomeFeature",
-                "LogInFeature",
-                "SignUpFeature",
-                "OnboardingFeature",
-                .product(name: "Playbook", package: "playbook-ios"),
-                .product(name: "PlaybookUI", package: "playbook-ios"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ],
-            path: "Sources/App/AppPlaybook"
-        ),
-        .target(
-            name: "Intents",
-            dependencies: [
-                "PersistenceService",
-                "TransactionsAPIService",
-                "DomainEntities",
-            ],
-            path: "Sources/App/Intents"
-        ),
-
-        // MARK: - Coordinator Layer: This layer orchestrates navigation and rounting between features
-
-        .target(
-            name: "DI",
-            dependencies: [
-                "LogInFeature",
-                "FundFeature",
-                "HomeFeature",
-                "RecordTransactionFeature",
-                "SignUpFeature",
-                "OnboardingFeature",
-                "SettingsFeature",
-                "InvestmentFeature",
-
-                "AuthenticationUseCase",
-                "LogInUseCase", // TODO: Replace this with `AuthenticationUseCase`
-                "FundDetailsUseCase",
-                "FundCreationUseCase",
-                "FundListUseCase",
-                "TransactionRecordUseCase",
-                "TransactionListUseCase",
-                "AccountRegisterUseCase", // TODO: Replace this with `AuthenticationUseCase`
-                "PortfolioUseCase",
-                "DevSettingsUseCase",
-                "InvestmentUseCase",
-                "LiveMarketUseCase",
-
-                "AuthAPIServiceInterface",
-                "AuthAPIService",
-                "KeychainServiceInterface",
-                "KeychainService",
-                "FundsAPIServiceInterface",
-                "FundsAPIService",
-                "TransactionsAPIServiceInterface",
-                "TransactionsAPIService",
-                "PortfolioAPIServiceInterface",
-                "PortfolioAPIService",
-                "TemporaryPersistenceServiceInterface",
-                "TemporaryPersistenceService",
-                "PersistenceServiceInterface",
-                "PersistenceService",
-                "InvestmentAPIServiceInterface",
-                "InvestmentAPIService",
-                "MarketAPIServiceInterface",
-                "MarketAPIService",
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/App/DI"
-        ),
-
-        .target(
-            name: "Coordinator",
-            dependencies: [
-                "DI",
-                "KeychainServiceInterface",
-                .product(name: "TCACoordinators", package: "TCACoordinators"),
-                .product(name: "Codextended", package: "codextended"),
+                Module.Orchestrator.coordinator.asDependency,
+                Module.Orchestrator.di.asDependency,
+                .ThirdParty.tcaCoordinator.asDependency,
+                .ThirdParty.composableArchitecture.asDependency,
             ]
         ),
-
-        // MARK: - Features Layer: Each feature is independent from each other
-
-        .target(
-            name: "OnboardingFeature",
+        .app(
+            .miniApp,
             dependencies: [
-                "CoreUI",
-                "Utilities",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-            ],
-            path: "Sources/Features/OnboardingFeature"
-        ),
-        .target(
-            name: "LogInFeature",
-            dependencies: [
-                "CoreUI",
-                "Utilities",
-                "DevSettingsUseCase",
-                "AuthenticationUseCase",
-                "DomainEntities",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                // .product(name: "KZFileWatchers", package: "KZFileWatchers"),
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/Features/LogInFeature"
-        ),
-        .target(
-            name: "SignUpFeature",
-            dependencies: [
-                "CoreUI",
-                "AccountRegisterUseCase",
-                "Utilities",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/Features/SignUpFeature"
-        ),
-        .target(
-            name: "HomeFeature",
-            dependencies: [
-                "CoreUI",
-                "CurrencyKit",
-                "FundFeature",
-                "InvestmentFeature",
-                "TransactionListUseCase",
-                "FundListUseCase",
-                "FundDetailsUseCase",
-                "PortfolioUseCase",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/Features/HomeFeature"
-        ),
-        .target(
-            name: "FundFeature",
-            dependencies: [
-                "CoreUI",
-                "CurrencyKit",
-                "RecordTransactionFeature",
-                "FundDetailsUseCase",
-                "FundCreationUseCase",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/Features/FundFeature"
-        ),
-        .target(
-            name: "RecordTransactionFeature",
-            dependencies: [
-                "CoreUI",
-                "CurrencyKit",
-                "FundListUseCase",
-                "TransactionRecordUseCase",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/Features/RecordTransactionFeature"
-        ),
-        .target(
-            name: "SettingsFeature",
-            dependencies: [
-                "CoreUI",
-                "DevSettingsUseCase",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "AutomaticSettings", package: "automaticsettings"),
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/Features/SettingsFeature"
-        ),
-        .target(
-            name: "InvestmentFeature",
-            dependencies: [
-                "CoreUI",
-                "CurrencyKit",
-                "Utilities",
-                "InvestmentUseCase",
-                "LiveMarketUseCase",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "Factory", package: "factory"),
-            ],
-            path: "Sources/Features/InvestmentFeature"
-        ),
-
-        // MARK: - Shared Layer: Everything that is shared between feature modules
-
-        .target(
-            name: "Utilities",
-            path: "Sources/Shared/Utilities"
-        ),
-        .target(
-            name: "CoreUI",
-            dependencies: [
-                .product(name: "Inject", package: "inject"),
-                .product(name: "SwiftUIIntrospect", package: "swiftui-introspect"),
-            ],
-            path: "Sources/Shared/CoreUI",
-            resources: [
-                .process("Assets"),
-                .process("CodeGen/Templates"),
+                Module.Orchestrator.di.asDependency,
+                .ThirdParty.composableArchitecture.asDependency,
             ]
         ),
-        .target(
-            name: "Networking",
+        .app(
+            .appPlaybook,
             dependencies: [
-                "Utilities",
-                "KeychainService",
-                .product(name: "CombineMoya", package: "moya"),
-                .product(name: "Codextended", package: "codextended"),
-                .product(name: "CombineExt", package: "combineext"),
-            ],
-            path: "Sources/Shared/Networking"
-        ),
-        .target(
-            name: "CurrencyKit",
-            path: "Sources/Shared/Kits/CurrencyKit"
-        ),
-        .target(
-            name: "TestHelpers",
-            dependencies: [
-                "DI",
-                .product(name: "Difference", package: "difference"),
-                .product(name: "Factory", package: "factory"),
-                .product(name: "Overture", package: "swift-overture"),
-            ],
-            path: "Sources/Shared/Kits/TestHelpers"
-        ),
-
-        // MARK: Domains/UseCases
-
-        .target(
-            name: "DevSettingsUseCase",
-            dependencies: [
-                "DomainEntities",
-                .product(name: "Codextended", package: "codextended"),
-                .product(name: "AutomaticSettings", package: "automaticsettings"),
-            ],
-            path: "Sources/Domains/UseCases/DevSettingsUseCase"
-        ),
-        .target(
-            name: "LogInUseCase",
-            dependencies: [
-                "DomainEntities",
-                "AuthAPIServiceInterface",
-                "KeychainServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/LogInUseCase"
-        ),
-
-        .target(
-            name: "AuthenticationUseCase",
-            dependencies: [
-                "DomainEntities",
-                "AuthAPIServiceInterface",
-                "KeychainServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/AuthenticationUseCase"
-        ),
-
-        .target(
-            name: "AccountRegisterUseCase",
-            dependencies: [
-                "DomainEntities",
-                "AuthAPIServiceInterface",
-                "KeychainServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/AccountRegisterUseCase"
-        ),
-        .target(
-            name: "FundDetailsUseCase",
-            dependencies: [
-                "DomainEntities",
-                "FundsAPIServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/FundDetailsUseCase"
-        ),
-        .target(
-            name: "FundCreationUseCase",
-            dependencies: [
-                "DomainEntities",
-                "FundsAPIServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/FundCreationUseCase"
-        ),
-        .target(
-            name: "FundListUseCase",
-            dependencies: [
-                "DomainEntities",
-                "FundsAPIServiceInterface",
-                "TemporaryPersistenceServiceInterface",
-                "PersistenceServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/FundListUseCase"
-        ),
-        .target(
-            name: "TransactionListUseCase",
-            dependencies: [
-                "DomainEntities",
-                "TransactionsAPIServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/TransactionListUseCase"
-        ),
-        .target(
-            name: "TransactionRecordUseCase",
-            dependencies: [
-                "DomainEntities",
-                "TransactionsAPIServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/TransactionRecordUseCase"
-        ),
-        .target(
-            name: "PortfolioUseCase",
-            dependencies: [
-                "DomainEntities",
-                "PortfolioAPIServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/PortfolioUseCase"
-        ),
-        .target(
-            name: "InvestmentUseCase",
-            dependencies: [
-                "DomainEntities",
-                "InvestmentAPIServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/InvestmentUseCase"
-        ),
-        .target(
-            name: "LiveMarketUseCase",
-            dependencies: [
-                "DomainEntities",
-                "MarketAPIServiceInterface",
-            ],
-            path: "Sources/Domains/UseCases/LiveMarketUseCase"
-        ),
-
-        // MARK: Domains/DataInterfaces
-
-        .target(
-            name: "AuthAPIServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/AuthAPIServiceInterface"
-        ),
-        .target(
-            name: "FundsAPIServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/FundsAPIServiceInterface"
-        ),
-        .target(
-            name: "TransactionsAPIServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/TransactionsAPIServiceInterface"
-        ),
-        .target(
-            name: "KeychainServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/KeychainServiceInterface"
-        ),
-        .target(
-            name: "PortfolioAPIServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/PortfolioAPIServiceInterface"
-        ),
-        .target(
-            name: "TemporaryPersistenceServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/TemporaryPersistenceServiceInterface"
-        ),
-        .target(
-            name: "PersistenceServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/PersistenceServiceInterface"
-        ),
-        .target(
-            name: "UserAPIServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/UserAPIServiceInterface"
-        ),
-        .target(
-            name: "InvestmentAPIServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/InvestmentAPIServiceInterface"
-        ),
-        .target(
-            name: "MarketAPIServiceInterface",
-            dependencies: [
-                "DomainEntities",
-            ],
-            path: "Sources/Domains/DataInterfaces/MarketAPIServiceInterface"
-        ),
-
-        // MARK: Domains/Entities
-
-        .target(
-            name: "DomainEntities",
-            dependencies: [
-                "DomainUtilities",
-            ],
-            path: "Sources/Domains/Entities"
-        ),
-
-        .target(
-            name: "DomainUtilities",
-            path: "Sources/Domains/DomainUtilities"
-        ),
-
-        // MARK: Data Layer
-
-        .target(
-            name: "AuthAPIService",
-            dependencies: [
-                "DomainEntities",
-                "Networking",
-                "AuthAPIServiceInterface",
-            ],
-            path: "Sources/Data/AuthAPIService"
-        ),
-        .target(
-            name: "KeychainService",
-            dependencies: [
-                "DomainEntities",
-                "KeychainServiceInterface",
-                .product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper"),
-            ],
-            path: "Sources/Data/KeychainService"
-        ),
-        .target(
-            name: "FundsAPIService",
-            dependencies: [
-                "DomainEntities",
-                "Networking",
-                "FundsAPIServiceInterface",
-            ],
-            path: "Sources/Data/FundsAPIService"
-        ),
-        .target(
-            name: "TransactionsAPIService",
-            dependencies: [
-                "DomainEntities",
-                "Networking",
-                "TransactionsAPIServiceInterface",
-            ],
-            path: "Sources/Data/TransactionsAPIService"
-        ),
-        .target(
-            name: "PortfolioAPIService",
-            dependencies: [
-                "DomainEntities",
-                "Networking",
-                "PortfolioAPIServiceInterface",
-            ],
-            path: "Sources/Data/PortfolioAPIService"
-        ),
-        .target(
-            name: "TemporaryPersistenceService",
-            dependencies: [
-                "DomainEntities",
-                "TemporaryPersistenceServiceInterface",
-            ],
-            path: "Sources/Data/TemporaryPersistenceService"
-        ),
-        .target(
-            name: "PersistenceService",
-            dependencies: [
-                "DomainEntities",
-                "PersistenceServiceInterface",
-                .product(name: "RealmSwift", package: "realm-swift"),
-            ],
-            path: "Sources/Data/PersistenceService"
-        ),
-        .target(
-            name: "UserAPIService",
-            dependencies: [
-                "DomainEntities",
-                "Networking",
-                "UserAPIServiceInterface",
-            ],
-            path: "Sources/Data/UserAPIService"
-        ),
-        .target(
-            name: "InvestmentAPIService",
-            dependencies: [
-                "DomainEntities",
-                "Networking",
-                "InvestmentAPIServiceInterface",
-            ],
-            path: "Sources/Data/InvestmentAPIService"
-        ),
-        .target(
-            name: "MarketAPIService",
-            dependencies: [
-                "DomainEntities",
-                "Networking",
-                "MarketAPIServiceInterface",
-            ],
-            path: "Sources/Data/MarketAPIService"
-        ),
-
-        // MARK: Test targets
-
-        .testTarget(
-            name: "LogInFeatureTests",
-            dependencies: [
-                "LogInFeature",
-                "TestHelpers",
-                "DomainEntities",
-            ]
-            // exclude: ["__Snapshots__"]
-        ),
-        .testTarget(
-            name: "HomeFeatureTests",
-            dependencies: [
-                "HomeFeature",
-                "TestHelpers",
-                "DomainEntities",
-            ]
-            // exclude: ["__Snapshots__"]
-        ),
-        .testTarget(
-            name: "FundFeatureTests",
-            dependencies: [
-                "FundFeature",
-                "TestHelpers",
-                "DomainEntities",
+                Module.Infra.coreUI.asDependency,
+                Module.Feature.homeFeature.asDependency,
+                Module.Feature.logInFeature.asDependency,
+                Module.Feature.signUpFeature.asDependency,
+                Module.Feature.onboardingFeature.asDependency,
+                .ThirdParty.playbook.asDependency,
+                .ThirdParty.playbookUI.asDependency,
+                .ThirdParty.composableArchitecture.asDependency,
             ]
         ),
-        .testTarget(
-            name: "RecordTransactionFeatureTests",
+        .app(
+            .intents,
             dependencies: [
-                "RecordTransactionFeature",
-                "TestHelpers",
-                "DomainEntities",
-            ]
-        ),
-        .testTarget(
-            name: "SignUpFeatureTests",
-            dependencies: [
-                "SignUpFeature",
-                "TestHelpers",
-                "DomainEntities",
-            ]
-        ),
-        .testTarget(
-            name: "InvestmentFeatureTests",
-            dependencies: [
-                "InvestmentFeature",
-                "TestHelpers",
-                "DomainEntities",
+                Module.DataSource.persistenceService.implementation,
+                Module.DataSource.transactionsAPIService.implementation,
+                Module.Domain.Core.domainEntities.asDependency,
             ]
         ),
     ]
 )
+
+// MARK: - Orchestrator - knows everything about everyone
+
+package.targets.append(contentsOf: [
+    .orchestrator(
+        .di,
+        features: [
+            .logInFeature,
+            .fundFeature,
+            .homeFeature,
+            .recordTransactionFeature,
+            .signUpFeature,
+            .onboardingFeature,
+            .settingsFeature,
+            .investmentFeature,
+        ],
+        useCases: [
+            .authenticationUseCase,
+            .fundDetailsUseCase,
+            .fundCreationUseCase,
+            // "LogInUseCase", // TODO: Replace this with `AuthenticationUseCase`
+            .fundListUseCase,
+            .transactionRecordUseCase,
+            .transactionListUseCase,
+            // .accountRegisterUseCase, // TODO: Replace this with `AuthenticationUseCase`
+            .portfolioUseCase,
+            .devSettingsUseCase,
+            .investmentUseCase,
+            .liveMarketUseCase,
+        ],
+        dataSources: [
+            .authAPIService,
+            .keychainService,
+            .fundsAPIService,
+            .transactionsAPIService,
+            .portfolioAPIService,
+            .temporaryPersistenceService,
+            .persistenceService,
+            .investmentAPIService,
+            .marketAPIService,
+        ],
+        thirdParties: [
+            .factory,
+        ]
+    ),
+    .orchestrator(
+        .coordinator,
+        dataSources: [
+            .keychainService,
+        ],
+        otherOrchestrators: [.di],
+        thirdParties: [
+            .tcaCoordinator,
+//            .codextended
+        ]
+    ),
+])
+
+// MARK: - Features
+
+package.targets.append(contentsOf: [
+    .feature(
+        .logInFeature,
+        useCases: [
+            .authenticationUseCase,
+        ],
+        enableDevDependenies: true
+    ),
+    .feature(.onboardingFeature),
+    .feature(
+        .signUpFeature,
+        useCases: [
+            .authenticationUseCase,
+        ]
+    ),
+    .feature(
+        .homeFeature,
+        useCases: [
+            .transactionListUseCase,
+            .fundListUseCase,
+            .fundDetailsUseCase,
+            .portfolioUseCase,
+        ],
+        infras: [
+            .currencyKit,
+        ],
+        features: [
+            .fundFeature,
+            .investmentFeature,
+        ]
+    ),
+    .feature(
+        .fundFeature,
+        useCases: [
+            .fundDetailsUseCase,
+            .fundCreationUseCase,
+        ],
+        infras: [
+            .currencyKit,
+        ],
+        features: [
+            .recordTransactionFeature,
+        ]
+    ),
+    .feature(
+        .recordTransactionFeature,
+        useCases: [
+            .fundListUseCase,
+            .transactionRecordUseCase,
+        ],
+        infras: [
+            .currencyKit,
+        ]
+    ),
+    .feature(
+        .settingsFeature,
+        useCases: [
+            .devSettingsUseCase,
+        ],
+        thirdParties: [
+            .automaticSettings,
+        ],
+        enableDevDependenies: true
+    ),
+    .feature(
+        .investmentFeature,
+        useCases: [
+            .investmentUseCase,
+            .liveMarketUseCase,
+        ],
+        infras: [
+            .currencyKit,
+        ]
+    ),
+])
+
+// MARK: Domains/UseCases
+
+package.targets.append(contentsOf: [
+    .useCase(
+        .authenticationUseCase,
+        dataSourceInterfaces: [
+            .authAPIService,
+            .keychainService,
+        ]
+    ),
+    .useCase(
+        .fundDetailsUseCase,
+        dataSourceInterfaces: [
+            .fundsAPIService,
+        ]
+    ),
+    .useCase(
+        .fundCreationUseCase,
+        dataSourceInterfaces: [
+            .fundsAPIService,
+        ]
+    ),
+    .useCase(
+        .fundListUseCase,
+        dataSourceInterfaces: [
+            .fundsAPIService,
+            .temporaryPersistenceService,
+            .persistenceService,
+        ]
+    ),
+    .useCase(
+        .transactionListUseCase,
+        dataSourceInterfaces: [
+            .transactionsAPIService,
+        ]
+    ),
+    .useCase(
+        .transactionRecordUseCase,
+        dataSourceInterfaces: [
+            .transactionsAPIService,
+        ]
+    ),
+    .useCase(
+        .portfolioUseCase,
+        dataSourceInterfaces: [
+            .portfolioAPIService,
+        ]
+    ),
+    .useCase(
+        .investmentUseCase,
+        dataSourceInterfaces: [
+            .investmentAPIService,
+        ]
+    ),
+    .useCase(
+        .liveMarketUseCase,
+        dataSourceInterfaces: [
+            .marketAPIService,
+        ]
+    ),
+])
+
+package.targets.append(contentsOf: [
+    .target(
+        name: "DevSettingsUseCase",
+        dependencies: [
+            "DomainEntities",
+            .product(name: "Codextended", package: "codextended"),
+            .product(name: "AutomaticSettings", package: "automaticsettings"),
+        ],
+        path: "Sources/Domains/UseCases/DevSettingsUseCase"
+    ),
+])
+
+// MARK: Domains/Entities
+
+package.targets.append(contentsOf: [
+    .domainEntity(
+        .domainEntities,
+        domainEntities: [
+            .domainUtilities,
+        ]
+    ),
+    .domainEntity(
+        .domainUtilities,
+        thirdParties: [
+            .composableArchitecture,
+        ]
+    ),
+])
+
+// MARK: Domains/Data Source Interfaces
+
+package.targets.append(contentsOf: [
+    .dataSourceInterface(.authAPIService),
+    .dataSourceInterface(.fundsAPIService),
+    .dataSourceInterface(.transactionsAPIService),
+    .dataSourceInterface(.keychainService),
+    .dataSourceInterface(.portfolioAPIService),
+    .dataSourceInterface(.temporaryPersistenceService),
+    .dataSourceInterface(.persistenceService),
+    .dataSourceInterface(.userAPIService),
+    .dataSourceInterface(.investmentAPIService),
+    .dataSourceInterface(.marketAPIService),
+])
+
+// MARK: Data Source Implementations
+
+package.targets.append(contentsOf: [
+    .dataSource(.authAPIService, infras: [.networking]),
+    .dataSource(.fundsAPIService, infras: [.networking]),
+    .dataSource(.transactionsAPIService, infras: [.networking]),
+    .dataSource(.portfolioAPIService, infras: [.networking]),
+    .dataSource(.temporaryPersistenceService),
+    .dataSource(.persistenceService, thirdParties: [.realm]),
+    .dataSource(.userAPIService, infras: [.networking]),
+    .dataSource(.investmentAPIService, infras: [.networking]),
+    .dataSource(.marketAPIService, infras: [.networking]),
+])
+
+// MARK: - Infrastructure
+
+package.targets.append(contentsOf: [
+    .infra(.utilities),
+    .infra(
+        .networking,
+        infras: [
+            .utilities,
+            .keychainService,
+        ],
+        thirdParties: [
+            .combineMoya,
+            .codextended,
+            .combineExt,
+        ]
+    ),
+    .infra(.currencyKit),
+    .infra(.tcaExtensions, thirdParties: [.composableArchitecture]),
+    .infra(
+        .testHelpers,
+        thirdParties: [
+            .overture,
+            .factory,
+            .difference,
+        ],
+        otherDependencies: ["DI"]
+    ),
+    .infra(
+        .keychainService,
+        thirdParties: [.keychainWrapper],
+        domainEntities: [.domainEntities],
+        domainDataSources: [.keychainService]
+    ),
+])
+
+// MARK: - CoreUI
+
+package.targets.append(
+    .designSystem(
+        .coreUI,
+        thirdParties: [
+            .inject,
+            .swiftUIIntrospect,
+        ],
+        resources: [
+            .process("Assets"),
+            .process("CodeGen/Templates"),
+        ]
+    )
+)
+
+// MARK: Test targets
+
+package.targets.append(contentsOf: [
+    .testFeature(.logInFeature),
+    .testFeature(.homeFeature),
+    .testFeature(.fundFeature),
+    .testFeature(.recordTransactionFeature),
+    .testFeature(.signUpFeature),
+    .testFeature(.investmentFeature),
+])
+package.targets.append(contentsOf: [
+    .testApp(.app),
+])
+
+// MARK: Helpers
 
 extension Product {
     static func singleTargetLibrary(_ name: String) -> Product {
@@ -637,9 +403,408 @@ extension Product {
     }
 }
 
-// package.targets = package.targets.map { target in
-//    var plugins = target.plugins ?? []
-//    plugins.append(.plugin(name: "SwiftLintPlugin", package: "SwiftLint"))
-//    target.plugins = plugins
-//    return target
-// }
+extension Target {
+    static func app(
+        _ module: Module.App,
+        dependencies: [Dependency]
+    ) -> Target {
+        .target(
+            name: module.id,
+            dependencies: dependencies,
+            path: "Sources/App/\(module.id)"
+        )
+    }
+
+    static func orchestrator(
+        _ module: Module.Orchestrator,
+        features: [Module.Feature]? = nil,
+        useCases: [Module.Domain.UseCase]? = nil,
+        dataSources: [Module.DataSource]? = nil,
+        infras: [Module.Infra]? = nil,
+        otherOrchestrators: [Module.Orchestrator]? = nil,
+        thirdParties: [Dependency.ThirdParty]? = nil
+    ) -> Target {
+        var dependencies = [Dependency]()
+
+        if let features {
+            dependencies.append(contentsOf: features.map(\.asDependency))
+        }
+
+        if let useCases {
+            dependencies.append(contentsOf: useCases.map(\.asDependency))
+        }
+
+        if let dataSources {
+            dependencies.append(contentsOf: dataSources.map(\.interface))
+            dependencies.append(contentsOf: dataSources.map(\.implementation))
+        }
+
+        if let infras {
+            dependencies.append(contentsOf: infras.map(\.asDependency))
+        }
+
+        if let otherOrchestrators {
+            dependencies.append(contentsOf: otherOrchestrators.map(\.asDependency))
+        }
+
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        return Target.target(
+            name: module.id,
+            dependencies: dependencies,
+            path: "Sources/Orchestrator/\(module.id)"
+        )
+    }
+
+    static func feature(
+        _ module: Module.Feature,
+        useCases: [Module.Domain.UseCase]? = nil,
+        infras: [Module.Infra]? = nil,
+        thirdParties: [Dependency.ThirdParty]? = nil,
+        features: [Module.Feature]? = nil,
+        enableDevDependenies: Bool = false
+    ) -> Target {
+        var dependencies = [Dependency]()
+        dependencies.append(contentsOf: [
+            Module.Infra.coreUI.asDependency,
+            Module.Infra.utilities.asDependency,
+            Module.Infra.tcaExtensions.asDependency,
+            Module.Domain.Core.domainEntities.asDependency,
+            Dependency.ThirdParty.composableArchitecture.asDependency,
+            Dependency.ThirdParty.factory.asDependency,
+        ])
+
+        if let useCases {
+            dependencies.append(contentsOf: useCases.map(\.asDependency))
+        }
+
+        if let infras {
+            dependencies.append(contentsOf: infras.map(\.asDependency))
+        }
+
+        if let features {
+            dependencies.append(contentsOf: features.map(\.asDependency))
+        }
+
+        if enableDevDependenies {
+            dependencies.append(Module.Domain.UseCase.Dev.devSettingsUseCase.asDependency)
+        }
+
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        return Target.target(
+            name: module.id,
+            dependencies: dependencies,
+            path: "Sources/Features/\(module.id)"
+        )
+    }
+
+    static func useCase(
+        _ module: Module.Domain.UseCase,
+        dataSourceInterfaces: [Module.DataSource] = []
+    ) -> Target {
+        var dependencies = [Dependency]()
+        dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
+        dependencies.append(contentsOf: dataSourceInterfaces.map(\.interface))
+
+        return Target.target(
+            name: module.id,
+            dependencies: dependencies,
+            path: "Sources/Domains/UseCases/\(module.id)"
+        )
+    }
+
+    static func domainEntity(
+        _ module: Module.Domain.Core,
+        thirdParties: [Dependency.ThirdParty]? = nil,
+        domainEntities: [Module.Domain.Core]? = nil
+    ) -> Target {
+        var dependencies = [Dependency]()
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        if let domainEntities {
+            dependencies.append(contentsOf: domainEntities.map(\.asDependency))
+        }
+
+        return Target.target(
+            name: module.id,
+            dependencies: dependencies,
+            path: "Sources/Domains/Core/\(module.id)"
+        )
+    }
+
+    static func dataSourceInterface(_ module: Module.DataSource) -> Target {
+        var dependencies = [Dependency]()
+        dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
+
+        return Target.target(
+            name: module.interfaceId,
+            dependencies: dependencies,
+            path: "Sources/Domains/DataSourceInterfaces/\(module.interfaceId)"
+        )
+    }
+
+    static func dataSource(
+        _ module: Module.DataSource,
+        infras: [Module.Infra]? = nil,
+        thirdParties: [Dependency.ThirdParty]? = nil
+    ) -> Target {
+        var dependencies = [Dependency]()
+        dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
+        dependencies.append(module.interface)
+
+        if let infras {
+            dependencies.append(contentsOf: infras.map(\.asDependency))
+        }
+
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        return Target.target(
+            name: module.implementationId,
+            dependencies: dependencies,
+            path: "Sources/DataSources/\(module.implementationId)"
+        )
+    }
+
+    static func infra(
+        _ module: Module.Infra,
+        infras: [Module.Infra]? = nil,
+        thirdParties: [Dependency.ThirdParty]? = nil,
+        domainEntities: [Module.Domain.Core]? = nil,
+        domainDataSources: [Module.DataSource]? = nil,
+        otherDependencies: [Dependency]? = nil
+    ) -> Target {
+        var dependencies = [Dependency]()
+        if let infras {
+            dependencies.append(contentsOf: infras.map(\.asDependency))
+        }
+
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        if let domainEntities {
+            dependencies.append(contentsOf: domainEntities.map(\.asDependency))
+        }
+
+        if let domainDataSources {
+            dependencies.append(contentsOf: domainDataSources.map(\.interface))
+        }
+
+        if let otherDependencies {
+            dependencies.append(contentsOf: otherDependencies)
+        }
+
+        return Target.target(
+            name: module.id,
+            dependencies: dependencies,
+            path: "Sources/Shared/\(module.id)"
+        )
+    }
+
+    static func designSystem(
+        _ module: Module.Infra,
+        thirdParties: [Dependency.ThirdParty]? = nil,
+        resources: [Resource]?
+    ) -> Target {
+        var dependencies = [Dependency]()
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        return Target.target(
+            name: module.id,
+            dependencies: dependencies,
+            path: "Sources/Shared/\(module.id)",
+            resources: resources
+        )
+    }
+
+    static func testFeature(_ feature: Module.Feature) -> Target {
+        var dependencies = [Dependency]()
+        dependencies.append(Module.Infra.testHelpers.asDependency)
+        dependencies.append(feature.asDependency)
+        return Target.testTarget(
+            name: "\(feature.id)Tests",
+            dependencies: dependencies
+            // exclude: ["__Snapshots__"]
+        )
+    }
+
+    static func testApp(_ module: Module.App) -> Target {
+        var dependencies = [Dependency]()
+        dependencies.append(module.asDependency)
+        return .testTarget(
+            name: "\(module.id)Tests",
+            dependencies: dependencies
+            // exclude: ["__Snapshots__"]
+        )
+    }
+}
+
+extension Target.Dependency {
+    enum ThirdParty {
+        case tcaCoordinator
+        case composableArchitecture
+        case factory
+        case inject
+        case swiftUIIntrospect
+        case combineMoya
+        case codextended
+        case combineExt
+        case overture
+        case difference
+        case keychainWrapper
+        case realm
+        case automaticSettings
+        case playbook
+        case playbookUI
+
+        var asDependency: Target.Dependency {
+            switch self {
+            case .tcaCoordinator:
+                return Target.Dependency.product(name: "TCACoordinators", package: "TCACoordinators")
+            case .composableArchitecture:
+                return Target.Dependency.product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            case .factory:
+                return Target.Dependency.product(name: "Factory", package: "factory")
+            case .inject:
+                return Target.Dependency.product(name: "Inject", package: "inject")
+            case .swiftUIIntrospect:
+                return Target.Dependency.product(name: "SwiftUIIntrospect", package: "swiftui-introspect")
+            case .combineMoya:
+                return Target.Dependency.product(name: "CombineMoya", package: "moya")
+            case .codextended:
+                return Target.Dependency.product(name: "Codextended", package: "codextended")
+            case .combineExt:
+                return Target.Dependency.product(name: "CombineExt", package: "combineext")
+            case .overture:
+                return Target.Dependency.product(name: "Overture", package: "swift-overture")
+            case .difference:
+                return Target.Dependency.product(name: "Difference", package: "difference")
+            case .keychainWrapper:
+                return Target.Dependency.product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper")
+            case .realm:
+                return Target.Dependency.product(name: "RealmSwift", package: "realm-swift")
+            case .automaticSettings:
+                return Target.Dependency.product(name: "AutomaticSettings", package: "automaticsettings")
+            case .playbook:
+                return Target.Dependency.product(name: "Playbook", package: "playbook-ios")
+            case .playbookUI:
+                return Target.Dependency.product(name: "PlaybookUI", package: "playbook-ios")
+            }
+        }
+    }
+}
+
+protocol DependencyRepresentable: RawRepresentable<String> {
+    var id: String { get }
+    var asDependency: Target.Dependency { get }
+}
+
+extension DependencyRepresentable {
+    var id: String { rawValue }
+    var asDependency: Target.Dependency {
+        return Target.Dependency(stringLiteral: id)
+    }
+}
+
+protocol DependencyInterfacePair: RawRepresentable<String> {
+    var implementationId: String { get }
+    var interfaceId: String { get }
+    var implementation: Target.Dependency { get }
+    var interface: Target.Dependency { get }
+}
+
+extension DependencyInterfacePair {
+    var implementationId: String { rawValue }
+    var interfaceId: String { "\(rawValue)Interface" }
+
+    var implementation: Target.Dependency {
+        return Target.Dependency(stringLiteral: implementationId)
+    }
+
+    var interface: Target.Dependency {
+        return Target.Dependency(stringLiteral: interfaceId)
+    }
+}
+
+enum Module {
+    enum App: String, DependencyRepresentable {
+        case app = "App"
+        case miniApp = "MiniApp"
+        case appPlaybook = "AppPlaybook"
+        case intents = "Intents"
+    }
+
+    enum Orchestrator: String, DependencyRepresentable {
+        case di = "DI"
+        case coordinator = "Coordinator"
+    }
+
+    enum Feature: String, DependencyRepresentable {
+        case onboardingFeature = "OnboardingFeature"
+        case logInFeature = "LogInFeature"
+        case signUpFeature = "SignUpFeature"
+        case homeFeature = "HomeFeature"
+        case fundFeature = "FundFeature"
+        case investmentFeature = "InvestmentFeature"
+        case recordTransactionFeature = "RecordTransactionFeature"
+        case settingsFeature = "SettingsFeature"
+    }
+
+    enum DataSource: String, DependencyInterfacePair {
+        case marketAPIService = "MarketAPIService"
+        case authAPIService = "AuthAPIService"
+        case keychainService = "KeychainService"
+        case fundsAPIService = "FundsAPIService"
+        case temporaryPersistenceService = "TemporaryPersistenceService"
+        case persistenceService = "PersistenceService"
+        case transactionsAPIService = "TransactionsAPIService"
+        case portfolioAPIService = "PortfolioAPIService"
+        case investmentAPIService = "InvestmentAPIService"
+        case userAPIService = "UserAPIService"
+    }
+
+    enum Infra: String, DependencyRepresentable {
+        case coreUI = "CoreUI"
+        case currencyKit = "CurrencyKit"
+        case utilities = "Utilities"
+        case networking = "Networking"
+        case tcaExtensions = "TCAExtensions"
+        case keychainService = "KeychainService"
+        case testHelpers = "TestHelpers"
+    }
+
+    enum Domain {
+        enum Core: String, DependencyRepresentable, CaseIterable {
+            case domainEntities = "DomainEntities"
+            case domainUtilities = "DomainUtilities"
+        }
+
+        enum UseCase: String, DependencyRepresentable {
+            case authenticationUseCase = "AuthenticationUseCase"
+            case fundDetailsUseCase = "FundDetailsUseCase"
+            case fundCreationUseCase = "FundCreationUseCase"
+            case fundListUseCase = "FundListUseCase"
+            case transactionListUseCase = "TransactionListUseCase"
+            case transactionRecordUseCase = "TransactionRecordUseCase"
+            case portfolioUseCase = "PortfolioUseCase"
+            case investmentUseCase = "InvestmentUseCase"
+            case liveMarketUseCase = "LiveMarketUseCase"
+            case devSettingsUseCase = "DevSettingsUseCase"
+
+            enum Dev: String, DependencyRepresentable {
+                case devSettingsUseCase = "DevSettingsUseCase"
+            }
+        }
+    }
+}

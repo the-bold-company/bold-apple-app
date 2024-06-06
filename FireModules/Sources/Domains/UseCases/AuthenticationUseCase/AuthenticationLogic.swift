@@ -50,15 +50,20 @@ public enum AuthenticationLogic {
 
     public enum SignUp {
         public struct Request {
-            var email: String
-            var password: String
+            let email: String
+            let password: String
+
+            public init(email: String, password: String) {
+                self.email = email
+                self.password = password
+            }
         }
 
         public struct Response {
-            var user: AuthenticatedUserEntity
+            public let user: AuthenticatedUserEntity
         }
 
-        public enum Failure: Error {
+        public enum Failure: LocalizedError {
             case genericError(DomainError)
         }
     }

@@ -1,10 +1,3 @@
-//
-//  DependencyInjection.swift
-//
-//
-//  Created by Hien Tran on 24/02/2024.
-//
-
 // Data layer imports
 import AuthAPIService
 import AuthAPIServiceInterface
@@ -25,7 +18,6 @@ import TemporaryPersistenceServiceInterface
 import TransactionsAPIService
 import TransactionsAPIServiceInterface
 
-import AccountRegisterUseCase
 // Domain layer imports
 import AuthenticationUseCase
 import DevSettingsUseCase
@@ -34,7 +26,6 @@ import FundDetailsUseCase
 import FundListUseCase
 import InvestmentUseCase
 import LiveMarketUseCase
-import LogInUseCase
 import PortfolioUseCase
 import TransactionListUseCase
 import TransactionRecordUseCase
@@ -113,10 +104,6 @@ public extension Container {
 
     var transactionRecordUseCase: Factory<TransactionRecordUseCaseProtocol> {
         self { TransactionRecordUseCase(transactionsAPIService: self.transactionsAPIService.callAsFunction()) }
-    }
-
-    var accountRegisterUseCase: Factory<AccountRegisterUseCaseProtocol> {
-        self { AccountRegisterUseCase(authService: self.authAPIService.callAsFunction(), keychainService: self.keychainService.callAsFunction()) }
     }
 
     var portfolioUseCase: Factory<PortfolioUseCaseInterface> {

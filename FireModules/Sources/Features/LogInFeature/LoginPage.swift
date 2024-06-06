@@ -1,6 +1,5 @@
 import ComposableArchitecture
 import CoreUI
-import Networking
 import SwiftUI
 // import KZFileWatchers
 
@@ -68,7 +67,7 @@ public struct LoginPage: View {
     @ViewBuilder
     private var loginButton: some View {
         Button {
-            viewStore.send(.delegate(.logInButtonTapped))
+            viewStore.send(.view(.logInButtonTapped))
         } label: {
             Text("Log in")
                 .frame(maxWidth: .infinity)
