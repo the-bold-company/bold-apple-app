@@ -13,7 +13,7 @@ public struct MiniAppReducer {
         fileprivate let email = "hien.tran@fire.com"
         fileprivate let password = "Qwerty@123"
 
-        var logInState: Progress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure> = .idle
+        var logInState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure> = .idle
 
         public init() {}
     }

@@ -13,12 +13,14 @@ public struct FireSecureTextField: View {
 
     @Binding private var text: String
     @State private var isSecureTextEntry = true
+    private let placeholder: LocalizedStringKey?
 
     let title: String
 
-    public init(title: String, text: Binding<String>) {
+    public init(_ placeholder: LocalizedStringKey? = nil, title: String, text: Binding<String>) {
         self.title = title
-        _text = text
+        self._text = text
+        self.placeholder = placeholder
     }
 
     public var body: some View {
@@ -31,11 +33,9 @@ public struct FireSecureTextField: View {
                 // TODO: FInd another way to do this because every time `isSecureTextEntry` changes, the TextField will be redrawn
                 if isSecureTextEntry {
                     SecureField(
-                        "",
+                        placeholder ?? "",
                         text: $text,
-                        onCommit: {
-                            print(text)
-                        }
+                        onCommit: {}
                     )
                     .padding([.leading, .bottom, .top], 16)
                 } else {

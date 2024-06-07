@@ -3,6 +3,8 @@ import ComposableArchitecture
 import DomainEntities
 import TCAExtensions
 
+typealias PasswordValidated = [Validated<String, PasswordValidationError>]
+
 @Reducer
 public struct PasswordSignUpReducer {
     public init() {}
@@ -11,9 +13,9 @@ public struct PasswordSignUpReducer {
         var email: String
         @BindingState var password: String = ""
 
-//        var emailValidationError: String?
-        var passwordValidationError: String?
         var accountCreationState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.SignUp.Failure> = .idle
+
+        var passwordValidated = PasswordValidated()
 
         public init(email: String) {
             self.email = email
@@ -27,7 +29,9 @@ public struct PasswordSignUpReducer {
         case binding(BindingAction<State>)
 
         public enum ViewAction {
+            case onAppear
             case nextButtonTapped
+            case backButtonTapped
         }
 
         public enum DelegateAction {
@@ -38,36 +42,40 @@ public struct PasswordSignUpReducer {
         public enum LocalAction {}
     }
 
+    @Dependency(\.dismiss) var dismiss
+
+    private let passwordValidator = ValidatorCollection(
+        LengthValidator(min: 8, max: 60).eraseToAnyValidator(),
+        LowercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
+        UppercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
+        NumericLetterValidator(atleast: 1).eraseToAnyValidator(),
+        SpecilaCharacterValidator(atleast: 1).eraseToAnyValidator()
+    )
+
     public var body: some ReducerOf<Self> {
         BindingReducer()
-        Reduce { _, _ in
-            return .none
+        Reduce { state, action in
+            switch action {
+            case let .view(viewAction):
+                switch viewAction {
+                case .nextButtonTapped:
+                    return .none
+                case .onAppear:
+                    return .none
+                case .backButtonTapped:
+                    return .run { _ in await dismiss() }
+                }
+            case let .delegate(delegateAction):
+                return .none
+            case .binding(\.$password):
+                state.passwordValidated = passwordValidator.validateAll(state.password)
+                return .none
+            case .binding:
+                return .none
+            }
         }
     }
 }
-
-// @Reducer
-// private struct EmailRegistrationReducer {
-//    public var body: some ReducerOf<RegisterReducer> {
-//        Reduce { state, action in
-//            switch action {
-//            case .binding(\.$email):
-//                // TODO: Add email validation rules
-//                if state.email.count <= 5 {
-//                    state.emailValidationError = "Email invalid"
-//                } else {
-//                    state.emailValidationError = nil
-//                }
-//                return .none
-//            case .goToPasswordCreationButtonTapped:
-//                return .send(.navigate(.goToPasswordCreation(state)))
-//            case .binding, .createUserButtonTapped, .signUpSuccessfully,
-//                 .signUpFailure, .navigate:
-//                return .none
-//            }
-//        }
-//    }
-// }
 
 // @Reducer
 // private struct PasswordCreationReducer {

@@ -67,3 +67,9 @@ public extension Validator where Body: Validator, Body.Input == Input, Body.Erro
         body.validate(input)
     }
 }
+
+public extension Validator {
+    func eraseToAnyValidator() -> AnyValidator<Input, Error> {
+        AnyValidator(self)
+    }
+}

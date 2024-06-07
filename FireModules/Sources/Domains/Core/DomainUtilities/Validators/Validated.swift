@@ -13,6 +13,13 @@ public enum Validated<Value, Error> {
         }
     }
 
+    public var isIdle: Bool {
+        switch self {
+        case .valid, .invalid: return false
+        case .idle: return true
+        }
+    }
+
     public var isValid: Bool {
         switch self {
         case .idle, .invalid: return false

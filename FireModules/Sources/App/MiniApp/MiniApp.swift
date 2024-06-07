@@ -1,3 +1,4 @@
+import AuthenticationUseCase
 import ComposableArchitecture
 import CoreUI
 import DomainEntities
@@ -8,7 +9,7 @@ public struct MiniApp: View {
     @ObserveInjection private var iO
 
     struct ViewState: Equatable {
-        var logInState: LoadingState<AuthenticatedUserEntity>
+        var logInState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure>
     }
 
     let store: StoreOf<MiniAppReducer>
