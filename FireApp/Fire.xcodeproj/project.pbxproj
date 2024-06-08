@@ -21,6 +21,7 @@
 		3981A9C92BC2F00F00335C00 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3981A9C82BC2F00F00335C00 /* Assets.xcassets */; };
 		3981A9CC2BC2F00F00335C00 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3981A9CB2BC2F00F00335C00 /* Preview Assets.xcassets */; };
 		3981A9D12BC2F08F00335C00 /* MiniApp in Frameworks */ = {isa = PBXBuildFile; productRef = 3981A9D02BC2F08F00335C00 /* MiniApp */; };
+		399C6C842C12F17700FE604E /* FireModules in Resources */ = {isa = PBXBuildFile; fileRef = 399C6C832C12F17700FE604E /* FireModules */; };
 		39B35D182B7D04A200CC00AB /* FireShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D172B7D04A200CC00AB /* FireShortcuts.swift */; };
 		39B35D1A2B7DC20600CC00AB /* Intents in Frameworks */ = {isa = PBXBuildFile; productRef = 39B35D192B7DC20600CC00AB /* Intents */; };
 		39B35D1F2B83161900CC00AB /* SourceFundIntentEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */; };
@@ -45,6 +46,7 @@
 		3981A9C42BC2F00D00335C00 /* MiniFireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniFireApp.swift; sourceTree = "<group>"; };
 		3981A9C82BC2F00F00335C00 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3981A9CB2BC2F00F00335C00 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		399C6C832C12F17700FE604E /* FireModules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FireModules; path = ../FireModules; sourceTree = "<group>"; };
 		39B35D172B7D04A200CC00AB /* FireShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireShortcuts.swift; sourceTree = "<group>"; };
 		39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFundIntentEntity.swift; sourceTree = "<group>"; };
 		39B35D202B83167C00CC00AB /* DestinationFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationFundIntentEntity.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 		0E1FF25C2B01F66E00A77369 = {
 			isa = PBXGroup;
 			children = (
+				399C6C832C12F17700FE604E /* FireModules */,
 				0E1FF2672B01F66E00A77369 /* Fire */,
 				0E1FF2792B01F67000A77369 /* FireTests */,
 				0E0447282B02FD17005CE582 /* FirePlaybook */,
@@ -338,6 +341,7 @@
 			files = (
 				0E1FF2712B01F67000A77369 /* Preview Assets.xcassets in Resources */,
 				0E1FF26D2B01F67000A77369 /* Assets.xcassets in Resources */,
+				399C6C842C12F17700FE604E /* FireModules in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

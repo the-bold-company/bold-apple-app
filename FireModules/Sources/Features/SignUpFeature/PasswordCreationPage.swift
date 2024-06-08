@@ -124,3 +124,12 @@ extension BindingViewStore<PasswordSignUpReducer.State> {
         // swiftformat:enable redundantSelf
     }
 }
+
+#Preview {
+    PasswordCreationPage(
+        store: .init(
+            initialState: .init(email: "hien@mouka.com"),
+            reducer: { PasswordSignUpReducer() }
+        )
+    )
+}
