@@ -10,7 +10,7 @@ public struct PortfolioAPIService: PortfolioAPIServiceInterface {
     public func getNetworth() async throws -> NetworthEntity {
         return try await client
             .requestPublisher(.networth)
-            .mapToResponse(NetworthResponse.self)
+            .mapToResponse(NetworthResponse.self, apiVersion: .v0)
             .map { $0.asNetworthEntity() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()

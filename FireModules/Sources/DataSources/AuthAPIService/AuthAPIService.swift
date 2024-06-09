@@ -31,7 +31,7 @@ public extension AuthAPIService {
             signUp: { email, password in
                 try await networkClient
                     .requestPublisher(.register(email: email, password: password))
-                    .mapToResponse(LoginResponse.self)
+                    .mapToResponse(LoginResponse.self, apiVersion: .v1)
                     .mapErrorToDomainError()
                     .map { ($0.user.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
                     .eraseToAnyPublisher()
@@ -47,7 +47,7 @@ public extension AuthAPIService {
     ) -> AnyPublisher<(AuthenticatedUserEntity, CredentialsEntity), DomainError> {
         client
             .requestPublisher(.login(email: email, password: password))
-            .mapToResponse(LoginResponse.self)
+            .mapToResponse(LoginResponse.self, apiVersion: .v1)
             .mapErrorToDomainError()
             .map { ($0.user.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
             .eraseToAnyPublisher()
@@ -76,7 +76,7 @@ public extension AuthAPIService {
 
     private static func logInMock(_ mock: Data) -> AnyPublisher<(AuthenticatedUserEntity, CredentialsEntity), DomainError> {
         Just(mock)
-            .mapToResponse(LoginResponse.self)
+            .mapToResponse(LoginResponse.self, apiVersion: .v1)
             .mapErrorToDomainError()
             .map { (user: $0.user.asAuthenticatedUserEntity(), credentials: $0.asCredentialsEntity()) }
             .eraseToAnyPublisher()

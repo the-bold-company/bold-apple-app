@@ -7,7 +7,7 @@ import SwiftUI
 struct MiniFireApp: App {
     @ObserveInjection private var iO
 
-    private static let store = Store(initialState: MiniAppReducer.State()) {
+    private static let store = Store(initialState: .init()) {
         MiniAppReducer()
     }
 

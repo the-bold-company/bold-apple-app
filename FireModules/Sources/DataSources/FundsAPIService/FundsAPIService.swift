@@ -23,7 +23,7 @@ public struct FundsAPIService: FundsAPIServiceProtocol {
                 currency: currency,
                 description: description
             ))
-            .mapToResponse(CreateFundResponse.self)
+            .mapToResponse(CreateFundResponse.self, apiVersion: .v0)
             .map { $0.asFundEntity() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
@@ -33,7 +33,7 @@ public struct FundsAPIService: FundsAPIServiceProtocol {
     public func listFunds() async throws -> [FundEntity] {
         return try await client
             .requestPublisher(.listFunds)
-            .mapToResponse(FundListResponse.self)
+            .mapToResponse(FundListResponse.self, apiVersion: .v0)
             .map { $0.asFundEntities() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
@@ -43,7 +43,7 @@ public struct FundsAPIService: FundsAPIServiceProtocol {
     public func getFundDetails(fundId: String) async throws -> FundEntity {
         return try await client
             .requestPublisher(.fundDetail(id: fundId))
-            .mapToResponse(CreateFundResponse.self)
+            .mapToResponse(CreateFundResponse.self, apiVersion: .v0)
             .map { $0.asFundEntity() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
@@ -53,7 +53,7 @@ public struct FundsAPIService: FundsAPIServiceProtocol {
     public func deleteFund(fundId: String) async throws -> UUID {
         return try await client
             .requestPublisher(.deleteFund(id: fundId))
-            .mapToResponse(DeleteFundResponse.self)
+            .mapToResponse(DeleteFundResponse.self, apiVersion: .v0)
             .map { UUID(uuidString: $0.id)! } // TODO: Handle force cast by creating an entity for ID
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
@@ -63,7 +63,7 @@ public struct FundsAPIService: FundsAPIServiceProtocol {
     public func getTransactions(fundId: String, ascendingOrder: Bool = false) async throws -> PaginationEntity<TransactionEntity> {
         return try await client
             .requestPublisher(.transactions(fundId: fundId, ascendingOrder: ascendingOrder))
-            .mapToResponse(TransactionListResponse.self)
+            .mapToResponse(TransactionListResponse.self, apiVersion: .v0)
             .map { $0.asPaginationEntity() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()

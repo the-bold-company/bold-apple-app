@@ -11,7 +11,7 @@ public struct InvestmentService: InvestmentAPIServiceInterface {
     public func createPortfolio(name: String) async throws -> InvestmentPortfolioEntity {
         return try await client
             .requestPublisher(.createPortfolio(name: name))
-            .mapToResponse(GetPortfolioResponse.self)
+            .mapToResponse(GetPortfolioResponse.self, apiVersion: .v0)
             .map { $0.asPortfolioEntity() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
@@ -21,7 +21,7 @@ public struct InvestmentService: InvestmentAPIServiceInterface {
     public func getPortfolioList() async throws -> [InvestmentPortfolioEntity] {
         return try await client
             .requestPublisher(.getPortfolioList)
-            .mapToResponse(PortfolioListResponse.self)
+            .mapToResponse(PortfolioListResponse.self, apiVersion: .v0)
             .map { $0.asPortfolioEntities() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
@@ -43,7 +43,7 @@ public struct InvestmentService: InvestmentAPIServiceInterface {
                 currency: currency,
                 notes: notes
             ))
-            .mapToResponse(RecordTransactionRespose.self)
+            .mapToResponse(RecordTransactionRespose.self, apiVersion: .v0)
             .map { $0.asInvestmentTransactionEntity() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
@@ -62,7 +62,7 @@ public struct InvestmentService: InvestmentAPIServiceInterface {
     public func getTransactionHistory(portfolioId: String) async throws -> [InvestmentTransactionEntity] {
         return try await client
             .requestPublisher(.getTransactionHistory(portfolioId: portfolioId))
-            .mapToResponse(GetInvestmentTransactionListResponse.self)
+            .mapToResponse(GetInvestmentTransactionListResponse.self, apiVersion: .v0)
             .map { $0.asInvestmentTransactionEntities() }
             .mapError { DomainError(error: $0) }
             .eraseToAnyPublisher()
