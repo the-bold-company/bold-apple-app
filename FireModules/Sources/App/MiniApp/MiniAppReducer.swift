@@ -42,7 +42,7 @@ public struct MiniAppReducer {
     enum CancelId { case logIn }
 
     public init() {
-        self.logInUseCase = resolve(\.authenticationUseCase)
+        self.logInUseCase = resolve(\.logInUseCase)
     }
 
     public var body: some ReducerOf<Self> {

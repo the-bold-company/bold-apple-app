@@ -4,16 +4,16 @@ import DomainEntities
 import TCAExtensions
 
 typealias PasswordValidated = [Validated<String, PasswordValidationError>]
+typealias SignUpProgress = LoadingProgress<AuthenticationLogic.SignUp.Response, AuthenticationLogic.SignUp.Failure>
 
 @Reducer
 public struct PasswordSignUpReducer {
-    public init() {}
-
     public struct State: Equatable {
         var email: String
         @BindingState var password: String = ""
+        @PresentationState var destination: Destination.State?
 
-        var accountCreationState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.SignUp.Failure> = .idle
+        var signUpProgress: SignUpProgress = .idle
 
         var passwordValidated = PasswordValidated()
 
@@ -27,22 +27,29 @@ public struct PasswordSignUpReducer {
         case delegate(DelegateAction)
         case _local(LocalAction)
         case binding(BindingAction<State>)
+        case destination(PresentationAction<Destination.Action>)
 
+        @CasePathable
         public enum ViewAction {
             case onAppear
             case nextButtonTapped
             case backButtonTapped
         }
 
+        @CasePathable
         public enum DelegateAction {
-            case signUpSuccessfully(AuthenticatedUserEntity)
+            case signUpSuccessfully(AuthenticationLogic.SignUp.Response)
             case signUpFailed(AuthenticationLogic.SignUp.Failure)
         }
 
+        @CasePathable
         public enum LocalAction {}
     }
 
     @Dependency(\.dismiss) var dismiss
+    @Dependency(\.signUpUseCase) var signUpUseCase
+
+    public init() {}
 
     private let passwordValidator = ValidatorCollection(
         LengthValidator(min: 8, max: 60).eraseToAnyValidator(),
@@ -57,75 +64,56 @@ public struct PasswordSignUpReducer {
         Reduce { state, action in
             switch action {
             case let .view(viewAction):
-                switch viewAction {
-                case .nextButtonTapped:
-                    return .none
-                case .onAppear:
-                    return .none
-                case .backButtonTapped:
-                    return .run { _ in await dismiss() }
-                }
+                return handleViewAction(viewAction, state: &state)
             case let .delegate(delegateAction):
-                return .none
+                return handleDelegateAction(delegateAction, state: &state)
             case .binding(\.$password):
                 state.passwordValidated = passwordValidator.validateAll(state.password)
                 return .none
             case .binding:
                 return .none
+            case .destination:
+                return .none
             }
+        }
+        .ifLet(\.$destination, action: \.destination)
+    }
+
+    private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case .onAppear:
+            return .none
+        case .nextButtonTapped:
+            // make sure email and password are valid
+
+            state.signUpProgress = .loading
+
+            return signUpUseCase.signUp(.init(email: state.email, password: state.password))
+                .map(
+                    success: { Action.delegate(.signUpSuccessfully($0)) },
+                    failure: { Action.delegate(.signUpFailed($0)) }
+                )
+        case .backButtonTapped:
+            return .run { _ in await dismiss() }
+        }
+    }
+
+    private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case let .signUpSuccessfully(response):
+            state.signUpProgress = .loaded(response)
+            state.destination = .otp(.init())
+            return .none
+        case let .signUpFailed(error):
+            state.signUpProgress = .failure(error)
+            return .none
         }
     }
 }
 
-// @Reducer
-// private struct PasswordCreationReducer {
-//    let signUpUseCase: SignUpUseCase
-//
-//    public init(signUpUseCase: SignUpUseCase) {
-//        self.signUpUseCase = signUpUseCase
-//    }
-//
-//    public var body: some ReducerOf<RegisterReducer> {
-//        Reduce { state, action in
-//            switch action {
-//            case .binding(\.$password):
-//                // TODO: Password Validator
-//                if state.password.count <= 6 {
-//                    state.passwordValidationError = "Password length must be greater than 6"
-//                } else {
-//                    state.passwordValidationError = nil
-//                }
-//
-//                return .none
-//            case .createUserButtonTapped:
-//                guard state.email.isNotEmpty, // TODO: replace this with validation rules
-//                      state.password.isNotEmpty // TODO: replace this with validation rules
-//                else { return .none }
-//
-//                state.accountCreationState = .loading
-//
-//                let email = state.email
-//                let password = state.password
-//
-//                return .run { send in
-//                    let result = await signUpUseCase.signUp(.init(email: email, password: password))
-//
-//                    switch result {
-//                    case let .success(response):
-//                        await send(.signUpSuccessfully(response))
-//                    case let .failure(error):
-//                        await send(.signUpFailure(error))
-//                    }
-//                }
-//            case let .signUpSuccessfully(response):
-//                state.accountCreationState = .loaded(response.user)
-//                return .send(.navigate(.goToHome))
-//            case let .signUpFailure(error):
-//                state.accountCreationState = .failure(error)
-//                return .none
-//            case .binding, .navigate, .goToPasswordCreationButtonTapped:
-//                return .none
-//            }
-//        }
-//    }
-// }
+public extension PasswordSignUpReducer {
+    @Reducer(state: .equatable)
+    enum Destination {
+        case otp(ConfirmationCodeReducer)
+    }
+}

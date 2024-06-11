@@ -1,41 +1,18 @@
-//
-//  File.swift
-//
-//
-//  Created by Hien Tran on 23/11/2023.
-//
 import Codextended
 import DomainUtilities
 import Foundation
-
-public struct ApiResponse {
-    private init() {}
-}
-
-public protocol ServerError: Decodable, LocalizedError {
-    var message: String { get }
-    var code: Int { get }
-}
-
-public extension ServerError {
-    /// Localized message for debuggin purposes. Don't show this to user
-    var errorDescription: String? {
-        return "Error code: \(code): \(message)"
-    }
-
-    /// A localized message describing the reason for the failure. Use this to customize error message that is shown to user
-    var failureReason: String? {
-        return message
-    }
-}
 
 public enum APIVersion {
     case v0
     case v1
 }
 
-public enum API {
-    public enum v0 {
+public enum API {}
+
+// MARK: API version 0
+
+public extension API {
+    enum v0 {
         public struct Response<M: Decodable>: Decodable {
             public let code: Int
             public let response: M?
@@ -90,10 +67,14 @@ public enum API {
             }
         }
     }
+}
 
-    public enum v1 {
+// MARK: API version 1
+
+public extension API {
+    enum v1 {
         public struct Response<M: Decodable>: Decodable {
-            public let statusCode: Int
+            public let code: Int?
             public let data: M?
             public let message: String
             public let error: Failure?
@@ -109,10 +90,14 @@ public enum API {
             }
 
             public init(from decoder: any Decoder) throws {
-                self.statusCode = try decoder.decode("statusCode")
-                self.data = try decoder.decodeIfPresent("data")
+                self.code = try decoder.decodeIfPresent("code")
+                self.data = M.self == EmptyDataResponse.self
+                    ? EmptyDataResponse() as? M
+                    : try decoder.decodeIfPresent("data")
                 self.message = try decoder.decode("message")
-                self.error = try? Failure(from: decoder)
+                self.error = code != nil
+                    ? try? Failure(from: decoder)
+                    : nil
             }
         }
 
@@ -121,7 +106,7 @@ public enum API {
             public let message: String
 
             public init(from decoder: Decoder) throws {
-                self.code = try decoder.decode("code")
+                self.code = try decoder.decode("statusCode")
                 self.message = try decoder.decode("message")
             }
         }

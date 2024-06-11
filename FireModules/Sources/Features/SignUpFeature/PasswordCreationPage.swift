@@ -6,9 +6,11 @@
 //
 
 import AuthenticationUseCase
+import Combine
 import ComposableArchitecture
 import CoreUI
 import DomainEntities
+import Networking
 import SwiftUI
 
 public struct PasswordCreationPage: View {
@@ -16,8 +18,8 @@ public struct PasswordCreationPage: View {
 
     struct ViewState: Equatable {
         @BindingViewState var password: String
-        var passwordValidated: [Validated<String, PasswordValidationError>]
-        var accountCreationState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.SignUp.Failure>
+        var passwordValidated: PasswordValidated
+        var signUpProgress: SignUpProgress
 
         var isFormValid: Bool {
             !passwordValidated.isEmpty && passwordValidated.reduce(true) { $0 && $1.isValid }
@@ -33,7 +35,7 @@ public struct PasswordCreationPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.accountCreationState.isLoading) {
+        LoadingOverlay(loading: viewStore.signUpProgress.isLoading) {
             VStack(alignment: .center) {
                 Spacing(height: .size24)
                 Text("Tạo mật khẩu").typography(.titleScreen)
@@ -45,6 +47,12 @@ public struct PasswordCreationPage: View {
             .padding(16)
             .navigationBarHidden(true)
         }
+        .navigationDestination(
+            store: store.scope(
+                state: \.$destination.otp,
+                action: \.destination.otp
+            )
+        ) { ConfirmationCodePage(store: $0) }
         .enableInjection()
     }
 
@@ -104,7 +112,7 @@ public struct PasswordCreationPage: View {
             .fireButtonStyle(type: .secondary(shape: .roundedCorner))
 
             Button {
-                //
+                store.send(.view(.nextButtonTapped))
             } label: {
                 Text("Cập nhật").frame(maxWidth: .infinity)
             }
@@ -113,23 +121,49 @@ public struct PasswordCreationPage: View {
     }
 }
 
-extension BindingViewStore<PasswordSignUpReducer.State> {
+private extension BindingViewStore<PasswordSignUpReducer.State> {
     var passwordCreationViewState: PasswordCreationPage.ViewState {
         // swiftformat:disable redundantSelf
         PasswordCreationPage.ViewState(
             password: self.$password,
             passwordValidated: self.passwordValidated,
-            accountCreationState: self.accountCreationState
+            signUpProgress: self.signUpProgress
         )
         // swiftformat:enable redundantSelf
     }
 }
 
 #Preview {
-    PasswordCreationPage(
-        store: .init(
-            initialState: .init(email: "hien@mouka.com"),
-            reducer: { PasswordSignUpReducer() }
+    NavigationStack {
+        PasswordCreationPage(
+            store: Store(
+                initialState: .init(email: "hien@mouka.com"),
+                reducer: { PasswordSignUpReducer()._printChanges() },
+                withDependencies: {
+                    $0.signUpUseCase.signUp = { _ in
+                        let mockURL = URL.local.appendingPathComponent("mock/sign-up/sign_up_successful.json")
+                        let mock = try! Data(contentsOf: mockURL)
+
+                        return Effect.publisher {
+                            Just(mock)
+                                .delay(for: .seconds(1), scheduler: DispatchQueue.main) // simulate latency
+                                .map { try! $0.decoded() as API.v1.Response<EmptyDataResponse> }
+                                .map { _ in
+                                    Result<AuthenticationLogic.SignUp.Response, AuthenticationLogic.SignUp.Failure>.success(.init())
+                                }
+                        }
+                    }
+                }
+            )
         )
-    )
+    }
+}
+
+private extension URL {
+    static var local: URL {
+        var path = #file.components(separatedBy: "/")
+        path.removeLast(6)
+        let json = path.joined(separator: "/")
+        return URL(fileURLWithPath: json)
+    }
 }

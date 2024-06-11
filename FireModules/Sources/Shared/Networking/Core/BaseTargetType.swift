@@ -17,6 +17,12 @@ public extension BaseTargetType {
         // "http://ec2-13-250-60-209.ap-southeast-1.compute.amazonaws.com/api"
         // "http://ec2-13-229-86-105.ap-southeast-1.compute.amazonaws.com/api"
         // "https://ens3ci4on3.execute-api.ap-southeast-1.amazonaws.com/dev/iam-bold-api"
+
+//        #if DEBUG
+//          let baseUrl = UserDefaults.standard.url(forKey: baseUrlKey) ?? defaultBaseUrl
+//        #else
+//          let baseUrl = URL(string: "https://www.isowords.xyz")!
+//        #endif
         guard let url = URL(string: "https://ens3ci4on3.execute-api.ap-southeast-1.amazonaws.com/dev/iam-bold-api") else {
             preconditionFailure("Missing base URL in \(String(describing: self))")
         }

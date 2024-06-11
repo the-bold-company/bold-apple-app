@@ -59,8 +59,8 @@ public enum AuthenticationLogic {
             }
         }
 
-        public struct Response {
-            public let user: AuthenticatedUserEntity
+        public struct Response: Equatable {
+            public init() {}
         }
 
         public enum Failure: LocalizedError {

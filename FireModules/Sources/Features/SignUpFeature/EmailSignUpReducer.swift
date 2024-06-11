@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import DomainEntities
+import Factory
 import Foundation
 import TCAExtensions
 
@@ -86,29 +87,6 @@ public struct EmailSignUpReducer {
     }
 }
 
-// @Reducer
-// private struct EmailRegistrationReducer {
-//    public var body: some ReducerOf<RegisterReducer> {
-//        Reduce { state, action in
-//            switch action {
-//            case .binding(\.$email):
-//                // TODO: Add email validation rules
-//                if state.email.count <= 5 {
-//                    state.emailValidationError = "Email invalid"
-//                } else {
-//                    state.emailValidationError = nil
-//                }
-//                return .none
-//            case .goToPasswordCreationButtonTapped:
-//                return .send(.navigate(.goToPasswordCreation(state)))
-//            case .binding, .createUserButtonTapped, .signUpSuccessfully,
-//                 .signUpFailure, .navigate:
-//                return .none
-//            }
-//        }
-//    }
-// }
-
 public extension EmailSignUpReducer {
     @Reducer
     struct Destination {
@@ -122,7 +100,7 @@ public extension EmailSignUpReducer {
 
         public var body: some ReducerOf<Self> {
             Scope(state: \.password, action: \.password) {
-                PasswordSignUpReducer()
+                resolve(\SignUpFeatureContainer.passwordSignUpReducer)?._printChanges()
             }
         }
     }

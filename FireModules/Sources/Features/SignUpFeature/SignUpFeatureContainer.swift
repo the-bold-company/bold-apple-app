@@ -7,4 +7,6 @@ public final class SignUpFeatureContainer: SharedContainer {
 
 public extension SignUpFeatureContainer {
     var registerReducer: Factory<RegisterReducer?> { self { nil } }
+    var emailSignUpReducer: Factory<EmailSignUpReducer?> { self { nil } }
+    var passwordSignUpReducer: Factory<PasswordSignUpReducer?> { self { nil } }
 }

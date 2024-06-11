@@ -88,7 +88,7 @@ public struct LoginReducer {
             state.logInInProgress = true
 
             return logInUseCase.logIn(.init(email: state.email, password: state.password))
-                .mapResult(
+                .map(
                     success: { Action.delegate(.userLoggedIn($0.user)) },
                     failure: { Action.delegate(.logInFailed($0)) }
                 )

@@ -8,11 +8,19 @@
 import Moya
 
 enum AuthAPI {
-    case login(email: String, password: String)
-    case register(email: String, password: String)
+    enum v0 {
+        case login(email: String, password: String)
+        case register(email: String, password: String)
+    }
+
+    enum v1 {
+        case logIn(email: String, password: String)
+        case signUp(email: String, password: String)
+        case otp(email: String, code: String)
+    }
 }
 
-extension AuthAPI: BaseTargetType {
+extension AuthAPI.v0: BaseTargetType {
     var path: String {
         switch self {
         case .login:
@@ -37,6 +45,48 @@ extension AuthAPI: BaseTargetType {
                 parameters: [
                     "email": email,
                     "password": password,
+                ],
+                encoding: JSONEncoding.default
+            )
+        }
+    }
+}
+
+extension AuthAPI.v1: BaseTargetType {
+    var path: String {
+        switch self {
+        case .logIn:
+            return "/auth/login"
+        case .signUp:
+            return "/auth/sign-up"
+        case .otp:
+            return "/auth/confirm-sign-up"
+        }
+    }
+
+    var method: Method {
+        switch self {
+        case .logIn, .signUp, .otp:
+            return .post
+        }
+    }
+
+    var task: Task {
+        switch self {
+        case let .logIn(email, password),
+             let .signUp(email, password):
+            return .requestParameters(
+                parameters: [
+                    "email": email,
+                    "password": password,
+                ],
+                encoding: JSONEncoding.default
+            )
+        case let .otp(email, code):
+            return .requestParameters(
+                parameters: [
+                    "email": email,
+                    "confirmationCode": code,
                 ],
                 encoding: JSONEncoding.default
             )

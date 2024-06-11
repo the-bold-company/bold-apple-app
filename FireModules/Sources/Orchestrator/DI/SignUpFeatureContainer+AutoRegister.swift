@@ -1,7 +1,15 @@
 extension SignUpFeatureContainer: AutoRegistering {
     public func autoRegister() {
         registerReducer.register {
-            RegisterReducer(signUpUseCase: resolve(\.authenticationUseCase))
+            RegisterReducer()
+        }
+
+        emailSignUpReducer.register {
+            EmailSignUpReducer()
+        }
+
+        passwordSignUpReducer.register {
+            PasswordSignUpReducer()
         }
     }
 }

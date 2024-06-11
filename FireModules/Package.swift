@@ -14,6 +14,7 @@ var package = Package(
         .singleTargetLibrary("MiniApp"),
         .singleTargetLibrary("Intents"),
         .singleTargetLibrary("AppPlaybook"),
+        .singleTargetLibrary("SignUpFeature"),
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
@@ -33,6 +34,7 @@ var package = Package(
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-overture", exact: "0.5.0"),
         .package(url: "https://github.com/krzysztofzablocki/KZFileWatchers.git", from: "1.2.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.3.0"),
     ],
     targets: [
         .app(
@@ -147,6 +149,12 @@ package.targets.append(contentsOf: [
         .signUpFeature,
         useCases: [
             .authenticationUseCase,
+        ],
+        infras: [
+            .networking,
+        ],
+        thirdParties: [
+            .codextended,
         ]
     ),
     .feature(
@@ -195,8 +203,7 @@ package.targets.append(contentsOf: [
         ],
         thirdParties: [
             .automaticSettings,
-        ],
-        enableDevDependenies: true
+        ]
     ),
     .feature(
         .investmentFeature,
@@ -474,6 +481,7 @@ extension Target {
             Module.Domain.Core.domainEntities.asDependency,
             Dependency.ThirdParty.composableArchitecture.asDependency,
             Dependency.ThirdParty.factory.asDependency,
+            Dependency.ThirdParty.swiftDependencies.asDependency,
         ])
 
         if let useCases {
@@ -508,6 +516,9 @@ extension Target {
         dataSourceInterfaces: [Module.DataSource] = []
     ) -> Target {
         var dependencies = [Dependency]()
+        dependencies.append(contentsOf: [
+            .ThirdParty.swiftDependencies.asDependency,
+        ])
         dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
         dependencies.append(contentsOf: dataSourceInterfaces.map(\.interface))
 
@@ -524,6 +535,7 @@ extension Target {
         domainEntities: [Module.Domain.Core]? = nil
     ) -> Target {
         var dependencies = [Dependency]()
+
         if let thirdParties {
             dependencies.append(contentsOf: thirdParties.map(\.asDependency))
         }
@@ -558,6 +570,9 @@ extension Target {
         var dependencies = [Dependency]()
         dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
         dependencies.append(module.interface)
+        dependencies.append(contentsOf: [
+            .ThirdParty.swiftDependencies.asDependency,
+        ])
 
         if let infras {
             dependencies.append(contentsOf: infras.map(\.asDependency))
@@ -667,6 +682,7 @@ extension Target.Dependency {
         case automaticSettings
         case playbook
         case playbookUI
+        case swiftDependencies
 
         var asDependency: Target.Dependency {
             switch self {
@@ -700,6 +716,8 @@ extension Target.Dependency {
                 return Target.Dependency.product(name: "Playbook", package: "playbook-ios")
             case .playbookUI:
                 return Target.Dependency.product(name: "PlaybookUI", package: "playbook-ios")
+            case .swiftDependencies:
+                return Target.Dependency.product(name: "Dependencies", package: "swift-dependencies")
             }
         }
     }

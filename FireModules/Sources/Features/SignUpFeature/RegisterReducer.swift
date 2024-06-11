@@ -1,17 +1,14 @@
 import AuthenticationUseCase
 import ComposableArchitecture
 import DomainEntities
+import Factory
 import Foundation
 import TCAExtensions
 import Utilities
 
 @Reducer
 public struct RegisterReducer {
-    let signUpUseCase: SignUpUseCase
-
-    public init(signUpUseCase: SignUpUseCase) {
-        self.signUpUseCase = signUpUseCase
-    }
+    public init() {}
 
     public struct State: Equatable {
         public var emailSignUp: EmailSignUpReducer.State = .init()
@@ -35,7 +32,7 @@ public struct RegisterReducer {
 
     public var body: some ReducerOf<Self> {
         Scope(state: \.emailSignUp, action: /Action._local .. /Action.LocalAction.emailSignUp) {
-            EmailSignUpReducer()
+            resolve(\SignUpFeatureContainer.emailSignUpReducer)
         }
     }
 }
