@@ -8,32 +8,29 @@ import Foundation
 public typealias SuccessfulLogIn = (AuthenticatedUserEntity, CredentialsEntity)
 public typealias LogInAPIResult = Result<SuccessfulLogIn, DomainError>
 public typealias SignUpAPIResult = Result<EmptyDataResponse, DomainError>
+public typealias ConfirmOTPResult = Result<EmptyDataResponse, DomainError>
 
 public struct AuthAPIService {
-    public typealias LogInFunctionAsync = (_ email: String, _ password: String) async throws -> SuccessfulLogIn
-    public typealias SignUpFunction = (_ email: String, _ password: String) -> Effect<SignUpAPIResult>
-    public typealias LogInFunction = (_ email: String, _ password: String) -> Effect<LogInAPIResult>
+    public typealias LogInFunctionAsync = @Sendable (_ email: String, _ password: String) async throws -> SuccessfulLogIn
+    public typealias LogInFunction = @Sendable (_ email: String, _ password: String) -> Effect<LogInAPIResult>
+    public typealias SignUpFunction = @Sendable (_ email: String, _ password: String) -> Effect<SignUpAPIResult>
+    public typealias ConfirmOTPFunction = @Sendable (_ email: String, _ code: String) -> Effect<ConfirmOTPResult>
 
-    private let _logIn: LogInFunction
-    private let _signUp: SignUpFunction
-    private let _logInAsync: LogInFunctionAsync
+    public var logIn: LogInFunction
+    public var signUp: SignUpFunction
+    public var logInAsync: LogInFunctionAsync
+    public var confirmOTP: ConfirmOTPFunction
 
-    public init(logIn: @escaping LogInFunction, logInAsync: @escaping LogInFunctionAsync, signUp: @escaping SignUpFunction) {
-        self._logIn = logIn
-        self._logInAsync = logInAsync
-        self._signUp = signUp
-    }
-
-    public func logInAsync(email: String, password: String) async throws -> SuccessfulLogIn {
-        try await _logInAsync(email, password)
-    }
-
-    public func signUp(email: String, password: String) -> Effect<SignUpAPIResult> {
-        _signUp(email, password)
-    }
-
-    public func logIn(email: String, password: String) -> Effect<LogInAPIResult> {
-        _logIn(email, password)
+    public init(
+        logIn: @escaping LogInFunction,
+        logInAsync: @escaping LogInFunctionAsync,
+        signUp: @escaping SignUpFunction,
+        confirmOTP: @escaping ConfirmOTPFunction
+    ) {
+        self.logIn = logIn
+        self.logInAsync = logInAsync
+        self.signUp = signUp
+        self.confirmOTP = confirmOTP
     }
 }
 
@@ -42,7 +39,8 @@ public extension AuthAPIService {
         .init(
             logIn: { _, _ in fatalError() },
             logInAsync: { _, _ in fatalError() },
-            signUp: { _, _ in fatalError() }
+            signUp: { _, _ in fatalError() },
+            confirmOTP: { _, _ in fatalError() }
         )
     }
 }

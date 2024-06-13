@@ -1,7 +1,7 @@
 import DomainUtilities
 import Foundation
 
-enum PasswordValidationError: Int, Equatable, LocalizedError, CaseIterable {
+public enum PasswordValidationError: Int, Equatable, LocalizedError, CaseIterable {
     case incorrectLength = 0
     case notContainLowercaseCharacter = 1
     case notContainUppercaseCharacter = 2
@@ -133,4 +133,36 @@ struct PasswordValidator: Validator {
         NumericLetterValidator(atleast: 1)
         SpecilaCharacterValidator(atleast: 1)
     }
+}
+
+public struct Password: Value, Equatable {
+    public var value: Result<String, PasswordValidationError> {
+        return validators.validate(passwordString).asResult
+    }
+
+    private let validators = ValidatorCollection(
+        LengthValidator(min: 8, max: 60).eraseToAnyValidator(),
+        LowercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
+        UppercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
+        NumericLetterValidator(atleast: 1).eraseToAnyValidator(),
+        SpecilaCharacterValidator(atleast: 1).eraseToAnyValidator()
+    )
+
+    public private(set) var passwordString: String
+
+    public init(_ passwordString: String) {
+        self.passwordString = passwordString
+    }
+
+    public func validateAll() -> [Validated<String, PasswordValidationError>] {
+        validators.validateAll(passwordString)
+    }
+
+    public mutating func update(_ newPassword: String) {
+        passwordString = newPassword
+    }
+}
+
+public extension Password {
+    static let empty = Password("")
 }

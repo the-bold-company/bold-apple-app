@@ -2,13 +2,20 @@ import AuthenticationUseCase
 import ComposableArchitecture
 import TCAExtensions
 
+typealias OTPVerifyingProgress = LoadingProgress<Confirmed, OTPFailure>
+
 @Reducer
 public struct ConfirmationCodeReducer {
     public struct State: Equatable {
-        @BindingState var otp: String = ""
-        var isOtpValid: Bool = false
+        @BindingState var otpText: String = ""
+        let email: Email
 
-        public init() {}
+        var otp = OTP.empty
+        var otpVerifying: OTPVerifyingProgress = .idle
+
+        public init(email: Email) {
+            self.email = email
+        }
     }
 
     @CasePathable
@@ -18,15 +25,22 @@ public struct ConfirmationCodeReducer {
         case _local(LocalAction)
         case binding(BindingAction<State>)
 
-        public enum ViewAction {
-            case sendOTPButtonTapped
+        @CasePathable
+        public enum ViewAction {}
+
+        @CasePathable
+        public enum DelegateAction {
+            case otpVerified(Email)
+            case otpFailed(OTPFailure)
         }
 
-        public enum DelegateAction {}
-        public enum LocalAction {}
+        @CasePathable
+        public enum LocalAction {
+            case verifyOTP(email: String, code: String)
+        }
     }
 
-    let otpValidator = OTPValidator(length: 6)
+    @Dependency(\.mfaUseCase.verifyOTP) var verifyOTP
 
     public init() {}
 
@@ -34,17 +48,48 @@ public struct ConfirmationCodeReducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .binding(\.$otp):
-                state.isOtpValid = otpValidator.validate(state.otp).isValid
+            case .binding(\.$otpText):
+                state.otp.update(state.otpText)
+
+                if let otp = state.otp.getOrNil(), let email = state.email.getOrNil() {
+                    return .send(._local(.verifyOTP(email: email, code: otp)))
+                }
                 return .none
             case let .view(viewAction):
-                switch viewAction {
-                case .sendOTPButtonTapped:
-                    return .none
-                }
+                return handleViewAction(viewAction, state: &state)
+            case let ._local(localAction):
+                return handleLocalAction(localAction, state: &state)
+            case let .delegate(delegateAction):
+                return handleDelegateAction(delegateAction, state: &state)
             case .binding:
                 return .none
             }
+        }
+    }
+
+    private func handleViewAction(_: Action.ViewAction, state _: inout State) -> Effect<Action> {
+        return .none
+    }
+
+    private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case let .verifyOTP(email, code):
+            state.otpVerifying = .loading
+            return verifyOTP(.init(email: email, code: code))
+                .map(
+                    success: { _ in Action.delegate(.otpVerified(Email(email))) },
+                    failure: { Action.delegate(.otpFailed($0)) }
+                )
+        }
+    }
+
+    private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case .otpVerified:
+            state.otpVerifying = .loaded(Confirmed())
+            return .none
+        case .otpFailed:
+            return .none
         }
     }
 }

@@ -30,6 +30,9 @@ public extension AuthAPIService {
                         .mapErrorToDomainError()
                         .mapToResult()
                 }
+            },
+            confirmOTP: { _, _ in
+                fatalError()
             }
         )
     }

@@ -1,13 +1,25 @@
 import Dependencies
 
+public extension DependencyValues {
+    var signUpUseCase: SignUpUseCase {
+        get { self[SignUpUseCaseKey.self] }
+        set { self[SignUpUseCaseKey.self] = newValue }
+    }
+
+    var mfaUseCase: MFAUseCase {
+        get { self[MFAUseCaseKey.self] }
+        set { self[MFAUseCaseKey.self] = newValue }
+    }
+}
+
 // MARK: SignUpUseCase dependency registration
 
-public enum SignUpUseCaseKey: DependencyKey {
+enum SignUpUseCaseKey: DependencyKey {
     public static let liveValue = SignUpUseCase.live
 }
 
 #if DEBUG
-    public extension SignUpUseCaseKey {
+    extension SignUpUseCaseKey {
         static let testValue = SignUpUseCase(
             signUp: unimplemented("\(Self.self).signUp")
         )
@@ -16,11 +28,19 @@ public enum SignUpUseCaseKey: DependencyKey {
     }
 #endif
 
-public extension DependencyValues {
-    var signUpUseCase: SignUpUseCase {
-        get { self[SignUpUseCaseKey.self] }
-        set { self[SignUpUseCaseKey.self] = newValue }
-    }
+// MARK: LogInUseCase dependency registration
+
+// MARK: MFAUseCase dependency registration
+
+enum MFAUseCaseKey: DependencyKey {
+    public static let liveValue = MFAUseCase.live
 }
 
-// MARK: LogInUseCase dependency registration
+#if DEBUG
+    extension MFAUseCaseKey {
+        static let testValue = MFAUseCase(
+            verifyOTP: unimplemented("\(Self.self).verifyOTP")
+        )
+        static let previewValue = MFAUseCase.noop
+    }
+#endif

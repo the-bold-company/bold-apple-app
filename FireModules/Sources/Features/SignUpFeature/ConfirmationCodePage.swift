@@ -1,6 +1,9 @@
+import AuthenticationUseCase
+import Combine
 import ComposableArchitecture
 import CoreUI
 import DomainEntities
+import Foundation
 import SwiftUI
 
 public struct ConfirmationCodePage: View {
@@ -8,7 +11,8 @@ public struct ConfirmationCodePage: View {
 
     struct ViewState: Equatable {
         @BindingViewState var otp: String
-        let isOTPValid: Bool
+        var otpVerifyingProgress: LoadingProgress<Confirmed, OTPFailure>
+        var isOTPValid: Bool
     }
 
     private let store: StoreOf<ConfirmationCodeReducer>
@@ -20,7 +24,7 @@ public struct ConfirmationCodePage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: false) {
+        LoadingOverlay(loading: viewStore.otpVerifyingProgress.isLoading) {
             VStack(alignment: .center) {
                 Spacing(height: .size24)
                 Text("Xác nhận email").typography(.titleScreen)
@@ -96,8 +100,9 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
     var viewState: ConfirmationCodePage.ViewState {
         // swiftformat:disable redundantSelf
         ConfirmationCodePage.ViewState(
-            otp: self.$otp,
-            isOTPValid: self.isOtpValid
+            otp: self.$otpText,
+            otpVerifyingProgress: self.otpVerifying,
+            isOTPValid: self.otp.isValid
         )
         // swiftformat:enable redundantSelf
     }
@@ -106,8 +111,22 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
 #Preview {
     ConfirmationCodePage(
         store: .init(
-            initialState: .init(),
-            reducer: { ConfirmationCodeReducer() }
+            initialState: .init(email: Email("dev@mouka.ai")),
+            reducer: { ConfirmationCodeReducer()._printChanges() },
+            withDependencies: {
+                $0.mfaUseCase.verifyOTP = { _ in
+//                    let mockURL = URL.local.appendingPathComponent("mock/sign-up/sign_up_successful.json")
+//                    let mock = try! Data(contentsOf: mockURL)
+
+                    return Effect.publisher {
+                        Just("")
+                            .delay(for: .seconds(1), scheduler: DispatchQueue.main)
+                            .map { _ in
+                                Result<OTPResponse, OTPFailure>.success(.init())
+                            }
+                    }
+                }
+            }
         )
     )
 }

@@ -28,7 +28,15 @@ public extension AuthAPIService {
                         .requestPublisher(.signUp(email: email, password: password))
                         .mapToResponse(EmptyDataResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
-                        .eraseToAnyPublisher()
+                        .mapToResult()
+                }
+            },
+            confirmOTP: { email, otp in
+                Effect.publisher {
+                    networkClient
+                        .requestPublisher(.otp(email: email, code: otp))
+                        .mapToResponse(EmptyDataResponse.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
                         .mapToResult()
                 }
             }

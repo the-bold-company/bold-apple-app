@@ -3,22 +3,35 @@ import ComposableArchitecture
 import DomainEntities
 import TCAExtensions
 
+#if DEBUG
+    import DevSettingsUseCase
+#endif
+
 typealias PasswordValidated = [Validated<String, PasswordValidationError>]
-typealias SignUpProgress = LoadingProgress<AuthenticationLogic.SignUp.Response, AuthenticationLogic.SignUp.Failure>
+typealias SignUpProgress = LoadingProgress<Confirmed, AuthenticationLogic.SignUp.Failure>
+struct Confirmed: Equatable {}
 
 @Reducer
 public struct PasswordSignUpReducer {
     public struct State: Equatable {
-        var email: String
-        @BindingState var password: String = ""
-        @PresentationState var destination: Destination.State?
+        @BindingState var passwordText: String = ""
+        let email: Email
+        var password = Password.empty
+
+        var passwordValidated: PasswordValidated {
+            password.validateAll()
+        }
 
         var signUpProgress: SignUpProgress = .idle
 
-        var passwordValidated = PasswordValidated()
-
-        public init(email: String) {
+        public init(email: Email) {
             self.email = email
+
+            #if DEBUG
+                @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
+                self.passwordText = devSettings.credentials.password
+                self.password = Password(passwordText)
+            #endif
         }
     }
 
@@ -27,7 +40,6 @@ public struct PasswordSignUpReducer {
         case delegate(DelegateAction)
         case _local(LocalAction)
         case binding(BindingAction<State>)
-        case destination(PresentationAction<Destination.Action>)
 
         @CasePathable
         public enum ViewAction {
@@ -38,7 +50,7 @@ public struct PasswordSignUpReducer {
 
         @CasePathable
         public enum DelegateAction {
-            case signUpSuccessfully(AuthenticationLogic.SignUp.Response)
+            case signUpConfirmed(Email, Password)
             case signUpFailed(AuthenticationLogic.SignUp.Failure)
         }
 
@@ -67,16 +79,13 @@ public struct PasswordSignUpReducer {
                 return handleViewAction(viewAction, state: &state)
             case let .delegate(delegateAction):
                 return handleDelegateAction(delegateAction, state: &state)
-            case .binding(\.$password):
-                state.passwordValidated = passwordValidator.validateAll(state.password)
+            case .binding(\.$passwordText):
+                state.password.update(state.passwordText)
                 return .none
             case .binding:
                 return .none
-            case .destination:
-                return .none
             }
         }
-        .ifLet(\.$destination, action: \.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
@@ -84,13 +93,15 @@ public struct PasswordSignUpReducer {
         case .onAppear:
             return .none
         case .nextButtonTapped:
-            // make sure email and password are valid
+            let email = state.email
+            let password = state.password
+            guard let emailString = email.getOrNil(), let passwordString = password.getOrNil() else { return .none }
 
             state.signUpProgress = .loading
 
-            return signUpUseCase.signUp(.init(email: state.email, password: state.password))
+            return signUpUseCase.signUp(.init(email: emailString, password: passwordString))
                 .map(
-                    success: { Action.delegate(.signUpSuccessfully($0)) },
+                    success: { _ in Action.delegate(.signUpConfirmed(email, password)) },
                     failure: { Action.delegate(.signUpFailed($0)) }
                 )
         case .backButtonTapped:
@@ -100,20 +111,12 @@ public struct PasswordSignUpReducer {
 
     private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
         switch action {
-        case let .signUpSuccessfully(response):
-            state.signUpProgress = .loaded(response)
-            state.destination = .otp(.init())
+        case .signUpConfirmed:
+            state.signUpProgress = .loaded(Confirmed())
             return .none
         case let .signUpFailed(error):
             state.signUpProgress = .failure(error)
             return .none
         }
-    }
-}
-
-public extension PasswordSignUpReducer {
-    @Reducer(state: .equatable)
-    enum Destination {
-        case otp(ConfirmationCodeReducer)
     }
 }

@@ -1,10 +1,9 @@
 import ComposableArchitecture
 
-public typealias SignUpUseCaseInput = AuthenticationLogic.SignUp.Request
-public typealias SignUpUseCaseOutput = Result<AuthenticationLogic.SignUp.Response, AuthenticationLogic.SignUp.Failure>
+public typealias SignUpUseCaseOutput = Result<SignUpResponse, SignUpFailure>
 
 public struct SignUpUseCase: Sendable {
-    public var signUp: @Sendable (_ request: SignUpUseCaseInput) -> Effect<SignUpUseCaseOutput>
+    public var signUp: @Sendable (_ request: SignUpRequest) -> Effect<SignUpUseCaseOutput>
 }
 
 public extension SignUpUseCase {

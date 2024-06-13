@@ -1,18 +1,18 @@
 import AuthAPIServiceInterface
 import ComposableArchitecture
 
-public extension SignUpUseCase {
+public extension MFAUseCase {
     static var live: Self {
         @Dependency(\.authAPIService) var authAPIService
-        return SignUpUseCase(
-            signUp: { request in
-                authAPIService.signUp(request.email, request.password)
+        return MFAUseCase(
+            verifyOTP: { request in
+                authAPIService.confirmOTP(request.email, request.code)
                     .mapResult(
                         success: { _ in
-                            SignUpResponse()
+                            OTPResponse()
                         },
                         failure: {
-                            SignUpFailure.genericError($0.eraseToDomainError())
+                            OTPFailure.genericError($0.eraseToDomainError())
                         }
                     )
             }

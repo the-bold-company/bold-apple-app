@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import TCACoordinators
 
 public protocol FeatureAction {
     associatedtype ViewAction
@@ -29,6 +30,26 @@ public extension Store where Action: FeatureAction {
         scope(
             state: toChildState,
             action: { ._local(fromChildAction.embed($0)) }
+        )
+    }
+}
+
+public extension Reducer where State: IndexedRouterState, Action: FeatureAction, Action.LocalAction: IndexedRouterAction, State.Screen == Action.LocalAction.Screen {
+    func forEachLocalRoute<ScreenReducer: Reducer, ScreenState, ScreenAction>(
+        cancellationIdType: Any.Type = Self.self,
+        @ReducerBuilder<ScreenReducer.State, ScreenAction> screenReducer: () -> ScreenReducer
+    ) -> some ReducerOf<Self>
+        where State.Screen == ScreenReducer.State,
+        ScreenReducer.Action == Action.LocalAction.ScreenAction,
+        ScreenState == ScreenReducer.State,
+        ScreenAction == ScreenReducer.Action
+    {
+        forEachRoute(
+            coordinatorIdForCancellation: ObjectIdentifier(Self.self),
+            toLocalState: \.routes,
+            toLocalAction: /Action._local .. /Action.LocalAction.routeAction,
+            updateRoutes: /Action._local .. /Action.LocalAction.updateRoutes,
+            screenReducer: screenReducer
         )
     }
 }

@@ -1,8 +1,11 @@
 import AuthenticationUseCase
 import ComposableArchitecture
 import CoreUI
+import DI
 import DomainEntities
-import InvestmentFeature
+import Factory
+import KeychainService
+import SignUpFeature
 import SwiftUI
 
 public struct MiniApp: View {
@@ -42,8 +45,7 @@ public struct MiniApp: View {
                         state: \.$destination.miniAppEntryRoute,
                         action: \.destination.miniAppEntryRoute
                     )
-                ) { InvestmentHomePage(store: $0) }
-//                ) { StockSearchHomePage(store: $0) }
+                ) { SignUpFeatureRoot(store: $0) }
             }
         }
         .task {

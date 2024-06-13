@@ -1,11 +1,11 @@
 import DomainUtilities
 import Foundation
 
-enum EmailValidationError: LocalizedError, Equatable {
+public enum EmailValidationError: LocalizedError, Equatable {
     case patternInvalid
     case fieldEmpty
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .patternInvalid:
             return "Email không hợp lệ. Bạn hãy thử lại nhé."
@@ -15,12 +15,12 @@ enum EmailValidationError: LocalizedError, Equatable {
     }
 }
 
-struct EmailPatternValidator: RegexValidator {
-    var regex: String {
+public struct EmailPatternValidator: RegexValidator {
+    public var regex: String {
         return Regex.emailRegex
     }
 
-    func validate(_ input: String) -> Validated<String, EmailValidationError> {
+    public func validate(_ input: String) -> Validated<String, EmailValidationError> {
         let regexText = NSPredicate(format: "SELF MATCHES %@", regex)
         return regexText.evaluate(with: input)
             ? .valid(input)
@@ -28,20 +28,49 @@ struct EmailPatternValidator: RegexValidator {
     }
 }
 
-struct NotEmpty: Validator {
-    func validate(_ input: String) -> Validated<String, EmailValidationError> {
+public struct NotEmpty: Validator {
+    public func validate(_ input: String) -> Validated<String, EmailValidationError> {
         !input.isEmpty
             ? .valid(input)
             : .invalid(input, .fieldEmpty)
     }
 }
 
-struct EmailValidator: Validator {
-    typealias Input = String
-    typealias Error = EmailValidationError
+public struct EmailValidator: Validator {
+    public typealias Input = String
+    public typealias Error = EmailValidationError
 
-    var body: some Validator<String, EmailValidationError> {
+    public var body: some Validator<String, EmailValidationError> {
         NotEmpty()
         EmailPatternValidator()
     }
+}
+
+public struct Email: Value, Equatable {
+    public var value: Result<String, EmailValidationError> {
+        validators.validate(emailString).asResult
+    }
+
+    public let validators = ValidatorCollection(
+        NotEmpty().eraseToAnyValidator(),
+        EmailPatternValidator().eraseToAnyValidator()
+    )
+
+    public private(set) var emailString: String
+
+    public init(_ emailString: String) {
+        self.emailString = emailString
+    }
+
+    public func validateAll() -> [Validated<String, EmailValidationError>] {
+        validators.validateAll(emailString)
+    }
+
+    mutating func update(_ newEmail: String) {
+        emailString = newEmail
+    }
+}
+
+public extension Email {
+    static let empty = Email("")
 }

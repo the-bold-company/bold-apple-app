@@ -20,10 +20,7 @@ public struct PasswordCreationPage: View {
         @BindingViewState var password: String
         var passwordValidated: PasswordValidated
         var signUpProgress: SignUpProgress
-
-        var isFormValid: Bool {
-            !passwordValidated.isEmpty && passwordValidated.reduce(true) { $0 && $1.isValid }
-        }
+        var isFormValid: Bool
     }
 
     let store: StoreOf<PasswordSignUpReducer>
@@ -47,12 +44,6 @@ public struct PasswordCreationPage: View {
             .padding(16)
             .navigationBarHidden(true)
         }
-        .navigationDestination(
-            store: store.scope(
-                state: \.$destination.otp,
-                action: \.destination.otp
-            )
-        ) { ConfirmationCodePage(store: $0) }
         .enableInjection()
     }
 
@@ -74,9 +65,7 @@ public struct PasswordCreationPage: View {
         VStack(spacing: 4) {
             ForEach(PasswordValidationError.allCases, id: \.rawValue) { rule in
                 HStack {
-                    !viewStore.passwordValidated.isEmpty
-                        && viewStore.passwordValidated[rule.rawValue].isValid
-
+                    viewStore.passwordValidated[rule.rawValue].isValid
                         ? AnyView(
                             Image(systemName: "checkmark.circle.fill")
                                 .resizable()
@@ -91,8 +80,7 @@ public struct PasswordCreationPage: View {
                     Text(rule.ruleDescription)
                         .typography(.bodyLarge)
                         .foregroundColor(
-                            !viewStore.passwordValidated.isEmpty
-                                && viewStore.passwordValidated[rule.rawValue].isValid
+                            viewStore.passwordValidated[rule.rawValue].isValid
                                 ? .black
                                 : .gray
                         )
@@ -125,9 +113,10 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
     var passwordCreationViewState: PasswordCreationPage.ViewState {
         // swiftformat:disable redundantSelf
         PasswordCreationPage.ViewState(
-            password: self.$password,
+            password: self.$passwordText,
             passwordValidated: self.passwordValidated,
-            signUpProgress: self.signUpProgress
+            signUpProgress: self.signUpProgress,
+            isFormValid: self.password.isValid
         )
         // swiftformat:enable redundantSelf
     }
@@ -137,7 +126,7 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
     NavigationStack {
         PasswordCreationPage(
             store: Store(
-                initialState: .init(email: "hien@mouka.com"),
+                initialState: .init(email: Email("dev@mouka.com")),
                 reducer: { PasswordSignUpReducer()._printChanges() },
                 withDependencies: {
                     $0.signUpUseCase.signUp = { _ in

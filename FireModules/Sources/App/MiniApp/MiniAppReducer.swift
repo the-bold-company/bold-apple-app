@@ -15,7 +15,11 @@ public struct MiniAppReducer {
 
         var logInState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure> = .idle
 
-        public init() {}
+        let logInRequired: Bool
+
+        public init(logInRequired: Bool) {
+            self.logInRequired = logInRequired
+        }
     }
 
     public enum Action: BindableAction {
@@ -51,6 +55,11 @@ public struct MiniAppReducer {
         Reduce { state, action in
             switch action {
             case .forward(.logIn):
+                guard state.logInRequired else {
+                    state.destination = .miniAppEntryRoute(.init())
+                    return .none
+                }
+
                 guard state.logInState != .loading else {
                     return .none
                 }
@@ -108,21 +117,21 @@ public extension MiniAppReducer {
     @Reducer
     struct Destination: Equatable {
         public enum State: Equatable {
-            // case miniAppEntryRoute(StockSearchHomeReducer.State)
-            case miniAppEntryRoute(InvestmentHomeReducer.State)
+            case miniAppEntryRoute(SignUpFeatureCoordinator.State)
         }
 
         public enum Action {
             // case miniAppEntryRoute(StockSearchHomeReducer.Action)
-            case miniAppEntryRoute(InvestmentHomeReducer.Action)
+            case miniAppEntryRoute(SignUpFeatureCoordinator.Action)
         }
 
         public var body: some ReducerOf<Self> {
             Scope(
                 state: \.miniAppEntryRoute,
                 action: \.miniAppEntryRoute
-            ) { resolve(\InvestmentFeatureContainer.investmentHomeReducer) }
-            // { resolve(\InvestmentFeatureContainer.stockSearchHomeReducer) }
+            ) {
+                SignUpFeatureCoordinator()
+            }
         }
     }
 }

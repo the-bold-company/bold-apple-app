@@ -16,11 +16,12 @@ public struct LoginReducer {
 
     public struct State: Equatable {
         public init() {
-            // TODO: Add if DEBUG handler for dev setting
-            @Injected(\LogInFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
+            #if DEBUG
+                @Injected(\LogInFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
 
-            self.email = devSettings.credentials.username
-            self.password = devSettings.credentials.password
+                self.email = devSettings.credentials.username
+                self.password = devSettings.credentials.password
+            #endif
         }
 
         @BindingState var email: String = ""

@@ -10,7 +10,7 @@ public extension LogInUseCase {
         .init(
             logInAsync: { request in
                 do {
-                    let successfulLogIn = try await authService.logInAsync(email: request.email, password: request.password)
+                    let successfulLogIn = try await authService.logInAsync(request.email, request.password)
 
                     try keychainService.setCredentials(
                         accessToken: successfulLogIn.1.accessToken,
@@ -24,7 +24,7 @@ public extension LogInUseCase {
                 }
             },
             logIn: { request in
-                authService.logIn(email: request.email, password: request.password)
+                authService.logIn(request.email, request.password)
                     .mapResult(
                         success: { AuthenticationLogic.LogIn.Response(user: $0.0) },
                         failure: { AuthenticationLogic.LogIn.Failure(domainError: $0) },

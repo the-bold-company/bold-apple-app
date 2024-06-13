@@ -16,7 +16,7 @@ public struct EmailRegistrationPage: View {
 
     struct ViewState: Equatable {
         @BindingViewState var email: String
-        var emailValidationError: String
+        var emailValidationError: String?
     }
 
     public var body: some View {
@@ -44,7 +44,6 @@ public struct EmailRegistrationPage: View {
                 )
             ) { PasswordCreationPage(store: $0) }
         }
-        .task { store.send(.view(.onAppear)) }
         .enableInjection()
     }
 
@@ -77,7 +76,7 @@ public struct EmailRegistrationPage: View {
         .textContentType(.emailAddress)
         .autocorrectionDisabled()
 
-        Text(viewStore.emailValidationError)
+        Text(viewStore.emailValidationError ?? " ")
             .typography(.bodyDefault)
             .foregroundColor(.red)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -126,7 +125,7 @@ extension BindingViewStore<EmailSignUpReducer.State> {
     var emailRegistrationViewState: EmailRegistrationPage.ViewState {
         // swiftformat:disable redundantSelf
         EmailRegistrationPage.ViewState(
-            email: self.$email,
+            email: self.$emailText,
             emailValidationError: self.emailValidationError
         )
         // swiftformat:enable redundantSelf

@@ -155,7 +155,9 @@ package.targets.append(contentsOf: [
         ],
         thirdParties: [
             .codextended,
-        ]
+            .tcaCoordinator,
+        ],
+        enableDevDependenies: true
     ),
     .feature(
         .homeFeature,
@@ -283,9 +285,10 @@ package.targets.append(contentsOf: [
     .target(
         name: "DevSettingsUseCase",
         dependencies: [
-            "DomainEntities",
-            .product(name: "Codextended", package: "codextended"),
-            .product(name: "AutomaticSettings", package: "automaticsettings"),
+            Module.Domain.Core.domainEntities.asDependency,
+            .ThirdParty.swiftDependencies.asDependency,
+            .ThirdParty.automaticSettings.asDependency,
+            .ThirdParty.codextended.asDependency,
         ],
         path: "Sources/Domains/UseCases/DevSettingsUseCase"
     ),
@@ -354,7 +357,13 @@ package.targets.append(contentsOf: [
         ]
     ),
     .infra(.currencyKit),
-    .infra(.tcaExtensions, thirdParties: [.composableArchitecture]),
+    .infra(
+        .tcaExtensions,
+        thirdParties: [
+            .composableArchitecture,
+            .tcaCoordinator,
+        ]
+    ),
     .infra(
         .testHelpers,
         thirdParties: [

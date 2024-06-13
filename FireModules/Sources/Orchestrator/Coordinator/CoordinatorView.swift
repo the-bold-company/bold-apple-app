@@ -35,37 +35,31 @@ public struct CoordinatorView: View {
                 switch screen {
                 case .landingRoute:
                     CaseLet(
-                        /Destination.State.landingRoute,
-                        action: Destination.Action.landingRoute
+                        /Coordinator.Destination.State.landingRoute,
+                        action: Coordinator.Destination.Action.landingRoute
                     ) { LandingPage(store: $0) }
-                case .signUpRoute:
+                case .authentication:
                     CaseLet(
-                        /Destination.State.signUpRoute,
-                        action: Destination.Action.signUpRoute
-                    ) {
-                        EmailRegistrationPage(
-                            store: $0.scope(
-                                state: \.emailSignUp,
-                                action: /RegisterReducer.Action.LocalAction.emailSignUp
-                            )
-                        )
-                    }
+                        /Coordinator.Destination.State.authentication,
+                        action: Coordinator.Destination.Action.authentication,
+                        then: SignUpFeatureRoot.init(store:)
+                    )
                 case .loginRoute:
                     CaseLet(
-                        /Destination.State.loginRoute,
-                        action: Destination.Action.loginRoute
+                        /Coordinator.Destination.State.loginRoute,
+                        action: Coordinator.Destination.Action.loginRoute
                     ) { LoginPage(store: $0) }
                 case .homeRoute:
                     CaseLet(
-                        /Destination.State.homeRoute,
-                        action: Destination.Action.homeRoute
+                        /Coordinator.Destination.State.homeRoute,
+                        action: Coordinator.Destination.Action.homeRoute
                     ) { HomePage(store: $0) }
                 case .secretDevSettingsRoute:
                     fatalError("This is use to invoke the dev settings using a secret gesture. It isn't a valid route, and it shouldn't go here")
                 case .devSettingsRoute:
                     CaseLet(
-                        /Destination.State.devSettingsRoute,
-                        action: Destination.Action.devSettingsRoute
+                        /Coordinator.Destination.State.devSettingsRoute,
+                        action: Coordinator.Destination.Action.devSettingsRoute
                     ) { DevSettingsPage(store: $0) }
                 }
             }
