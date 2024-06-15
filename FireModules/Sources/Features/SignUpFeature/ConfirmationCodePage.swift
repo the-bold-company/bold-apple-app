@@ -13,6 +13,7 @@ public struct ConfirmationCodePage: View {
         @BindingViewState var otp: String
         var otpVerifyingProgress: LoadingProgress<Confirmed, OTPFailure>
         var isOTPValid: Bool
+        var errorText: String?
     }
 
     private let store: StoreOf<ConfirmationCodeReducer>
@@ -42,9 +43,10 @@ public struct ConfirmationCodePage: View {
                     .foregroundColor(Color.coreui.brightGreen)
                     .bold()
                 otpInput
+                errorMessage
+                Spacing(size: .size40)
                 resendCountdown()
                 Spacer()
-                actionButtons
             }
             .padding(16)
             .navigationBarHidden(true)
@@ -57,6 +59,16 @@ public struct ConfirmationCodePage: View {
             text: viewStore.$otp,
             slotsCount: 6
         )
+    }
+
+    @ViewBuilder private var errorMessage: some View {
+        Group {
+            Spacing(size: .size12)
+            Text(viewStore.errorText ?? "")
+                .typography(.bodyDefault)
+                .foregroundColor(.red)
+        }
+        .isHidden(hidden: viewStore.errorText == nil)
     }
 
     @ViewBuilder private func resendCountdown() -> some View {
@@ -76,24 +88,6 @@ public struct ConfirmationCodePage: View {
             .foregroundColor(Color.coreui.brightGreen)
             .bold()
     }
-
-    @ViewBuilder private var actionButtons: some View {
-        HStack(spacing: 16) {
-            Button {
-//                store.send(.view(.backButtonTapped))
-            } label: {
-                Text("Trở về").frame(maxWidth: .infinity)
-            }
-            .fireButtonStyle(type: .secondary(shape: .roundedCorner))
-
-            Button {
-                //
-            } label: {
-                Text("Cập nhật").frame(maxWidth: .infinity)
-            }
-            .fireButtonStyle(isActive: viewStore.isOTPValid)
-        }
-    }
 }
 
 extension BindingViewStore<ConfirmationCodeReducer.State> {
@@ -102,22 +96,21 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
         ConfirmationCodePage.ViewState(
             otp: self.$otpText,
             otpVerifyingProgress: self.otpVerifying,
-            isOTPValid: self.otp.isValid
+            isOTPValid: self.otp.isValid,
+            errorText: self.errorText
         )
         // swiftformat:enable redundantSelf
     }
 }
 
-#Preview {
+#Preview("OTP Confirmed") {
     ConfirmationCodePage(
         store: .init(
             initialState: .init(email: Email("dev@mouka.ai")),
-            reducer: { ConfirmationCodeReducer()._printChanges() },
+            reducer: { ConfirmationCodeReducer() },
             withDependencies: {
+                $0.devSettingsUseCase = mockDevSettingsUseCase()
                 $0.mfaUseCase.verifyOTP = { _ in
-//                    let mockURL = URL.local.appendingPathComponent("mock/sign-up/sign_up_successful.json")
-//                    let mock = try! Data(contentsOf: mockURL)
-
                     return Effect.publisher {
                         Just("")
                             .delay(for: .seconds(1), scheduler: DispatchQueue.main)
@@ -126,6 +119,40 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
                             }
                     }
                 }
+            }
+        )
+    )
+}
+
+#Preview("OTP invalid") {
+    ConfirmationCodePage(
+        store: .init(
+            initialState: .init(email: Email("dev@mouka.ai")),
+            reducer: { ConfirmationCodeReducer() },
+            withDependencies: {
+                $0.devSettingsUseCase = mockDevSettingsUseCase()
+                $0.mfaUseCase.verifyOTP = { _ in
+                    return Effect.publisher {
+                        Just("")
+                            .delay(for: .seconds(1), scheduler: DispatchQueue.main)
+                            .map { _ in
+                                Result<OTPResponse, OTPFailure>.failure(.codeMismatch(DomainError.custom(description: "OTP mismatch")))
+                            }
+                    }
+                }
+            }
+        )
+    )
+}
+
+#Preview("Custom mock") {
+    ConfirmationCodePage(
+        store: .init(
+            initialState: .init(email: Email("dev@mouka.ai")),
+            reducer: { ConfirmationCodeReducer() },
+            withDependencies: {
+                $0.context = .live
+                $0.devSettingsUseCase = mockDevSettingsUseCase()
             }
         )
     )

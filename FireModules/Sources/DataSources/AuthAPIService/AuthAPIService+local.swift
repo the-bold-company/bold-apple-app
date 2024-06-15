@@ -8,7 +8,9 @@ import Foundation
 public extension AuthAPIService {
     static func local(
         logInResponseMockURL: URL,
-        signUpResponseMockURL: URL
+        signUpResponseMockURL: URL,
+        confirmOTPMockURL: URL,
+        verifyEmailExistenceMockURL: URL
     ) -> Self {
         .init(
             logIn: { _, _ in
@@ -32,7 +34,22 @@ public extension AuthAPIService {
                 }
             },
             confirmOTP: { _, _ in
-                fatalError()
+                let mock = try! Data(contentsOf: confirmOTPMockURL)
+                return Effect.publisher {
+                    Just(mock)
+                        .mapToResponse(EmptyDataResponse.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
+            },
+            verifyEmailExistence: { _ in
+                let mock = try! Data(contentsOf: verifyEmailExistenceMockURL)
+                return Effect.publisher {
+                    Just(mock)
+                        .mapToResponse(String.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
             }
         )
     }
@@ -41,7 +58,7 @@ public extension AuthAPIService {
         return Just(mock)
             .mapToResponse(LoginResponse.self, apiVersion: .v1)
             .mapErrorToDomainError()
-            .map { (user: $0.user.asAuthenticatedUserEntity(), credentials: $0.asCredentialsEntity()) }
+            .map { (user: $0.profile.asAuthenticatedUserEntity(), credentials: $0.asCredentialsEntity()) }
             .eraseToAnyPublisher()
     }
 }

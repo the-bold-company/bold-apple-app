@@ -7,12 +7,12 @@ public extension MFAUseCase {
         return MFAUseCase(
             verifyOTP: { request in
                 authAPIService.confirmOTP(request.email, request.code)
-                    .mapResult(
+                    .mapToUseCaseLogic(
                         success: { _ in
                             OTPResponse()
                         },
                         failure: {
-                            OTPFailure.genericError($0.eraseToDomainError())
+                            OTPFailure(domainError: $0)
                         }
                     )
             }

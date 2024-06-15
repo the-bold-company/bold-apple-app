@@ -13,6 +13,16 @@ public struct ConfirmationCodeReducer {
         var otp = OTP.empty
         var otpVerifying: OTPVerifyingProgress = .idle
 
+        var errorText: String? {
+            guard let error = otpVerifying.error else { return nil }
+            switch error {
+            case let .genericError(failure):
+                return "Có lỗi xảy ra. Vui lòng thử lại."
+            case .codeMismatch:
+                return "Dãy số bạn điền không đúng. Bạn hãy thử lại nhé!"
+            }
+        }
+
         public init(email: Email) {
             self.email = email
         }
@@ -88,7 +98,9 @@ public struct ConfirmationCodeReducer {
         case .otpVerified:
             state.otpVerifying = .loaded(Confirmed())
             return .none
-        case .otpFailed:
+        case let .otpFailed(reason):
+            state.otpVerifying = .failure(reason)
+            state.otpText = ""
             return .none
         }
     }

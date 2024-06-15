@@ -39,6 +39,15 @@ public extension AuthAPIService {
                         .mapErrorToDomainError()
                         .mapToResult()
                 }
+            },
+            verifyEmailExistence: { email in
+                Effect.publisher {
+                    networkClient
+                        .requestPublisher(.verifyEmailExistence(email: email))
+                        .mapToResponse(String.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
             }
         )
     }
@@ -52,7 +61,7 @@ public extension AuthAPIService {
             .requestPublisher(.logIn(email: email, password: password))
             .mapToResponse(LoginResponse.self, apiVersion: .v1)
             .mapErrorToDomainError()
-            .map { ($0.user.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
+            .map { ($0.profile.asAuthenticatedUserEntity(), $0.asCredentialsEntity()) }
             .eraseToAnyPublisher()
     }
 }

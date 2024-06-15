@@ -1,7 +1,14 @@
+import AuthenticationUseCase
+import Combine
 import ComposableArchitecture
 import CoreUI
+import Networking
 import SwiftUI
 import SwiftUIIntrospect
+
+#if DEBUG
+    import DevSettingsUseCase
+#endif
 
 public struct EmailRegistrationPage: View {
     @ObserveInjection var iO
@@ -17,32 +24,37 @@ public struct EmailRegistrationPage: View {
     struct ViewState: Equatable {
         @BindingViewState var email: String
         var emailValidationError: String?
+        var emailVerificationError: String?
+        var isEmailBeingVerified: Bool
     }
 
     public var body: some View {
-        NavigationStack {
-            VStack(alignment: .center) {
-                brandLogo
-                Spacing(height: .size24)
-                Text("Đăng ký Mouka").typography(.titleScreen)
-                Spacing(height: .size24)
-                continueWithGoogle
-                divider
-                emailInputField
-                Spacing(height: .size24)
-                nextButton
-                Spacing(height: .size24)
-                logInPrompt
-                Spacer()
+        LoadingOverlay(loading: viewStore.isEmailBeingVerified) {
+            NavigationStack {
+                VStack(alignment: .center) {
+                    brandLogo
+                    Spacing(height: .size24)
+                    Text("Đăng ký Mouka").typography(.titleScreen)
+                    Spacing(height: .size24)
+                    errorMessage
+                    continueWithGoogle
+                    divider
+                    emailInputField
+                    Spacing(height: .size24)
+                    nextButton
+                    Spacing(height: .size24)
+                    logInPrompt
+                    Spacer()
+                }
+                .padding(16)
+                .navigationBarHidden(true)
+                .navigationDestination(
+                    store: store.scope(
+                        state: \.$destination.password,
+                        action: \.destination.password
+                    )
+                ) { PasswordCreationPage(store: $0) }
             }
-            .padding(16)
-            .navigationBarHidden(true)
-            .navigationDestination(
-                store: store.scope(
-                    state: \.$destination.password,
-                    action: \.destination.password
-                )
-            ) { PasswordCreationPage(store: $0) }
         }
         .enableInjection()
     }
@@ -51,6 +63,29 @@ public struct EmailRegistrationPage: View {
         Image(systemName: "b.square")
             .resizable()
             .frame(width: 72, height: 72)
+    }
+
+    @ViewBuilder private var errorMessage: some View {
+        Group {
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.red)
+                Text(viewStore.emailVerificationError ?? "")
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(16)
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.red.opacity(0.1))
+            }
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.red, lineWidth: 1)
+            }
+
+            Spacing(height: .size12)
+        }
+        .isHidden(hidden: viewStore.emailVerificationError == nil)
     }
 
     @ViewBuilder private var divider: some View {
@@ -126,8 +161,76 @@ extension BindingViewStore<EmailSignUpReducer.State> {
         // swiftformat:disable redundantSelf
         EmailRegistrationPage.ViewState(
             email: self.$emailText,
-            emailValidationError: self.emailValidationError
+            emailValidationError: self.emailValidationError,
+            emailVerificationError: self.emailServerError,
+            isEmailBeingVerified: self.emailVerificationProgress.isLoading
         )
         // swiftformat:enable redundantSelf
+    }
+}
+
+// MARK: Previews
+
+#Preview("Already registered email") {
+    NavigationStack {
+        EmailRegistrationPage(
+            store: Store(
+                initialState: .init(),
+                reducer: { EmailSignUpReducer() },
+                withDependencies: {
+                    $0.devSettingsUseCase = mockDevSettingsUseCase()
+                    $0.verifyEmailUseCase.verifyExistence = { _ in
+                        return Effect.publisher {
+                            Just(())
+                                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main) // simulate latency
+                                .map { _ -> Result<VerifyEmailRegistrationResponse, VerifyEmailRegistrationFailure> in
+                                    .failure(.emailAlreadyRegistered)
+                                }
+                        }
+                    }
+                }
+            )
+        )
+    }
+}
+
+#Preview("Unregistered email") {
+    NavigationStack {
+        EmailRegistrationPage(
+            store: Store(
+                initialState: .init(),
+                reducer: { EmailSignUpReducer() },
+                withDependencies: {
+                    $0.devSettingsUseCase = mockDevSettingsUseCase()
+                    $0.verifyEmailUseCase.verifyExistence = { _ in
+                        return Effect.publisher {
+                            Just(())
+                                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main) // simulate latency
+                                .map { _ -> Result<VerifyEmailRegistrationResponse, VerifyEmailRegistrationFailure> in
+                                    .success(.init(message: ""))
+                                }
+                        }
+                    }
+                }
+            )
+        )
+    }
+}
+
+import AuthAPIService
+import AuthAPIServiceInterface
+
+#Preview("Custom mock") {
+    NavigationStack {
+        EmailRegistrationPage(
+            store: Store(
+                initialState: .init(),
+                reducer: { EmailSignUpReducer() },
+                withDependencies: {
+                    $0.context = .live
+                    $0.devSettingsUseCase = mockDevSettingsUseCase()
+                }
+            )
+        )
     }
 }

@@ -79,15 +79,15 @@ public extension Container {
     var logInUseCase: Factory<LogInUseCase> {
         self {
             .live(
-                authService: self.authAPIService.callAsFunction(),
-                keychainService: self.keychainService.callAsFunction()
+                //                authService: self.authAPIService.callAsFunction(),
+//                keychainService: self.keychainService.callAsFunction()
             )
         }
     }
 
     var signUpUseCase: Factory<SignUpUseCase> {
         self {
-            SignUpUseCase.live
+            SignUpUseCase.live()
         }
     }
 

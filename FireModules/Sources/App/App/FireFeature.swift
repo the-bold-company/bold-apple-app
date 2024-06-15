@@ -9,7 +9,7 @@ public struct AppView: View {
     public var body: some View {
         CoordinatorView(
             store: Store(
-                initialState: Coordinator.State.authenticatedInitialState,
+                initialState: Coordinator.State.unAuthenticatedInitialState,
                 reducer: { Coordinator() }
             )
         )

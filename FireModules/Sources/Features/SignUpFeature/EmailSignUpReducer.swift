@@ -1,3 +1,4 @@
+import AuthenticationUseCase
 import ComposableArchitecture
 import DomainEntities
 import Foundation
@@ -13,10 +14,11 @@ public struct EmailSignUpReducer {
 
     public struct State: Equatable {
         @BindingState var emailText: String = ""
+        @PresentationState public var destination: Destination.State?
         var email = Email.empty
         var emailValidationError: String?
-
-        @PresentationState public var destination: Destination.State?
+        var emailServerError: String?
+        var emailVerificationProgress: LoadingProgress<Confirmed, VerifyEmailRegistrationFailure> = .idle
 
         public init() {
             #if DEBUG
@@ -44,10 +46,13 @@ public struct EmailSignUpReducer {
         public enum DelegateAction {}
 
         @CasePathable
-        public enum LocalAction {}
+        public enum LocalAction {
+            case emailHasNotBeenRegistered
+            case emailVerificationFailed(VerifyEmailRegistrationFailure)
+        }
     }
 
-    private let emailValidator = EmailValidator()
+    @Dependency(\.verifyEmailUseCase.verifyExistence) var verifyEmailExistence
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -57,6 +62,8 @@ public struct EmailSignUpReducer {
                 return handleViewAction(viewAction, state: &state)
 //            case let .delegate(delegateAction):
 //                return handleDelegateAction(delegateAction, state: &state)
+            case let ._local(localAction):
+                return handleLocalAction(localAction, state: &state)
             case .binding(\.$emailText):
                 state.email.update(state.emailText)
                 return .none
@@ -79,14 +86,35 @@ public struct EmailSignUpReducer {
                 state.emailValidationError = error.errorDescription
             }
 
-            guard state.email.getOrNil() != nil else { return .none }
+            guard let email = state.email.getOrNil() else { return .none }
 
-            // TODO: Call API to check if email is in the system
-            state.destination = .password(.init(email: state.email))
-            return .none
+            state.emailVerificationProgress = .loading
+
+            return verifyEmailExistence(.init(email: email))
+                .map(
+                    success: { _ in Action._local(.emailHasNotBeenRegistered) },
+                    failure: { Action._local(.emailVerificationFailed($0)) }
+                )
         case .signInButtonTapped:
             return .none
         }
+    }
+
+    private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case .emailHasNotBeenRegistered:
+            state.emailVerificationProgress = .loaded(Confirmed())
+            state.destination = .password(.init(email: state.email))
+        case let .emailVerificationFailed(reason):
+            state.emailVerificationProgress = .failure(reason)
+            switch reason {
+            case .genericError:
+                state.emailServerError = "Oops! Đã xảy ra sự cố khi đăng kỳ. Hãy thử lại sau một chút."
+            case .emailAlreadyRegistered:
+                state.emailServerError = "Tài khoản đã tồn tại. Vui lòng đăng nhập hoặc sử dụng email khác để đăng ký."
+            }
+        }
+        return .none
     }
 
     private func handleDelegateAction(_: Action.DelegateAction, state _: inout State) -> Effect<Action> {

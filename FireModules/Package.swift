@@ -480,6 +480,7 @@ extension Target {
         infras: [Module.Infra]? = nil,
         thirdParties: [Dependency.ThirdParty]? = nil,
         features: [Module.Feature]? = nil,
+        others: [Dependency]? = nil,
         enableDevDependenies: Bool = false
     ) -> Target {
         var dependencies = [Dependency]()
@@ -511,6 +512,10 @@ extension Target {
 
         if let thirdParties {
             dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        if let others {
+            dependencies.append(contentsOf: others)
         }
 
         return Target.target(

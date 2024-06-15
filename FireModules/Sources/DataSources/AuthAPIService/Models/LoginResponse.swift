@@ -8,19 +8,21 @@
 import DomainEntities
 
 struct LoginResponse: Decodable {
-    let token: String
+    let accessToken: String
     let refreshToken: String
-    let user: UserDetails
+    let idToken: String
+    let profile: UserProfileResponse
 
     init(from decoder: Decoder) throws {
-        self.token = try decoder.decode("token")
+        self.accessToken = try decoder.decode("accessToken")
         self.refreshToken = try decoder.decode("refreshToken")
-        self.user = try decoder.decode("user")
+        self.idToken = try decoder.decode("idToken")
+        self.profile = try decoder.decode("profile")
     }
 }
 
 extension LoginResponse {
     func asCredentialsEntity() -> CredentialsEntity {
-        return CredentialsEntity(accessToken: token, refreshToken: refreshToken)
+        return CredentialsEntity(accessToken: accessToken, refreshToken: refreshToken, idToken: idToken)
     }
 }

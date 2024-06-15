@@ -17,6 +17,7 @@ enum AuthAPI {
         case logIn(email: String, password: String)
         case signUp(email: String, password: String)
         case otp(email: String, code: String)
+        case verifyEmailExistence(email: String)
     }
 }
 
@@ -56,17 +57,19 @@ extension AuthAPI.v1: BaseTargetType {
     var path: String {
         switch self {
         case .logIn:
-            return "/auth/login"
+            return "/auth/sign-in-web"
         case .signUp:
             return "/auth/sign-up"
         case .otp:
             return "/auth/confirm-sign-up"
+        case .verifyEmailExistence:
+            return "/auth/check-email"
         }
     }
 
     var method: Method {
         switch self {
-        case .logIn, .signUp, .otp:
+        case .logIn, .signUp, .otp, .verifyEmailExistence:
             return .post
         }
     }
@@ -87,6 +90,13 @@ extension AuthAPI.v1: BaseTargetType {
                 parameters: [
                     "email": email,
                     "confirmationCode": code,
+                ],
+                encoding: JSONEncoding.default
+            )
+        case let .verifyEmailExistence(email):
+            return .requestParameters(
+                parameters: [
+                    "email": email,
                 ],
                 encoding: JSONEncoding.default
             )

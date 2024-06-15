@@ -10,12 +10,22 @@ public extension DependencyValues {
         get { self[MFAUseCaseKey.self] }
         set { self[MFAUseCaseKey.self] = newValue }
     }
+
+    var verifyEmailUseCase: VerifyEmailUseCase {
+        get { self[VerifyEmailUseCaseKey.self] }
+        set { self[VerifyEmailUseCaseKey.self] = newValue }
+    }
+
+    var logInUseCase: LogInUseCase {
+        get { self[LogInUseCaseKey.self] }
+        set { self[LogInUseCaseKey.self] = newValue }
+    }
 }
 
 // MARK: SignUpUseCase dependency registration
 
 enum SignUpUseCaseKey: DependencyKey {
-    public static let liveValue = SignUpUseCase.live
+    public static let liveValue = SignUpUseCase.live()
 }
 
 #if DEBUG
@@ -24,11 +34,24 @@ enum SignUpUseCaseKey: DependencyKey {
             signUp: unimplemented("\(Self.self).signUp")
         )
 
-        static let previewValue = SignUpUseCase.noop
+        static let previewValue = SignUpUseCase.live()
     }
 #endif
 
 // MARK: LogInUseCase dependency registration
+
+enum LogInUseCaseKey: DependencyKey {
+    static let liveValue = LogInUseCase.live()
+
+    #if DEBUG
+        static let testValue = LogInUseCase(
+            logInAsync: unimplemented("\(Self.self).logInAsync"),
+            logIn: unimplemented("\(Self.self).logIn")
+        )
+
+        static let previewValue = LogInUseCase.live()
+    #endif
+}
 
 // MARK: MFAUseCase dependency registration
 
@@ -44,3 +67,16 @@ enum MFAUseCaseKey: DependencyKey {
         static let previewValue = MFAUseCase.noop
     }
 #endif
+
+// MARK: VerifyEmail dependency registration
+
+enum VerifyEmailUseCaseKey: DependencyKey {
+    public static let liveValue = VerifyEmailUseCase.live
+
+    #if DEBUG
+        static let testValue = VerifyEmailUseCase(
+            verifyExistence: unimplemented("\(Self.self).verifyExistence")
+        )
+        static let previewValue = VerifyEmailUseCase.live
+    #endif
+}

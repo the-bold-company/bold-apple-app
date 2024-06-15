@@ -5,6 +5,9 @@ public enum AuthenticationLogic {}
 
 // MARK: Log in use case logic
 
+public typealias LogInRequest = AuthenticationLogic.LogIn.Request
+public typealias LogInResponse = AuthenticationLogic.LogIn.Response
+public typealias LogInFailure = AuthenticationLogic.LogIn.Failure
 public extension AuthenticationLogic {
     enum LogIn {
         public struct Request {
@@ -23,12 +26,12 @@ public extension AuthenticationLogic {
 
         public enum Failure: LocalizedError {
             case genericError(DomainError)
-            case invalidCredentials(DomainError, errorCode: Int)
+            case invalidCredentials(DomainError)
 
             public init(domainError: DomainError) {
                 switch domainError.errorCode {
-                case .some(101):
-                    self = .invalidCredentials(domainError, errorCode: domainError.errorCode!)
+                case .some(14001):
+                    self = .invalidCredentials(domainError)
                 default:
                     self = .genericError(domainError)
                 }
@@ -36,7 +39,7 @@ public extension AuthenticationLogic {
 
             public var errorDescription: String? {
                 switch self {
-                case let .invalidCredentials(error, _),
+                case let .invalidCredentials(error),
                      let .genericError(error):
                     return error.errorDescription
                 }
@@ -44,7 +47,7 @@ public extension AuthenticationLogic {
 
             public var failureReason: String? {
                 switch self {
-                case let .invalidCredentials(error, _),
+                case let .invalidCredentials(error),
                      let .genericError(error):
                     return error.failureReason
                 }
@@ -103,7 +106,62 @@ public extension AuthenticationLogic {
 
         public enum Failure: LocalizedError {
             case genericError(DomainError)
-            case codeMismatch
+            case codeMismatch(DomainError)
+
+            public init(domainError: DomainError) {
+                switch domainError.errorCode {
+                case .some(14001):
+                    self = .codeMismatch(domainError)
+                default:
+                    self = .genericError(domainError)
+                }
+            }
+
+            public var errorDescription: String? {
+                switch self {
+                case let .codeMismatch(error),
+                     let .genericError(error):
+                    return error.errorDescription
+                }
+            }
+
+            public var failureReason: String? {
+                switch self {
+                case let .codeMismatch(error),
+                     let .genericError(error):
+                    return error.failureReason
+                }
+            }
+        }
+    }
+}
+
+// MARK: Verify email existence logic
+
+public typealias VerifyEmailRegistrationRequest = AuthenticationLogic.VerifyEmailRegistration.Request
+public typealias VerifyEmailRegistrationResponse = AuthenticationLogic.VerifyEmailRegistration.Response
+public typealias VerifyEmailRegistrationFailure = AuthenticationLogic.VerifyEmailRegistration.Failure
+public extension AuthenticationLogic {
+    enum VerifyEmailRegistration {
+        public struct Request {
+            let email: String
+
+            public init(email: String) {
+                self.email = email
+            }
+        }
+
+        public struct Response: Equatable {
+            public let message: String
+
+            public init(message: String) {
+                self.message = message
+            }
+        }
+
+        public enum Failure: LocalizedError {
+            case genericError(DomainError)
+            case emailAlreadyRegistered
         }
     }
 }

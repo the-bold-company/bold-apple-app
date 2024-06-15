@@ -10,14 +10,14 @@ public struct SignUpFeatureCoordinator {
     public struct Destination {
         public enum State: Equatable {
             case signUp(EmailSignUpReducer.State)
-            case logIn
+            case logIn(LoginReducer.State)
             case forgotPassword
             case otp(ConfirmationCodeReducer.State)
         }
 
         public enum Action {
             case signUp(EmailSignUpReducer.Action)
-            case logIn
+            case logIn(LoginReducer.Action)
             case forgotPassword
             case otp(ConfirmationCodeReducer.Action)
         }
@@ -25,6 +25,10 @@ public struct SignUpFeatureCoordinator {
         public var body: some ReducerOf<Self> {
             Scope(state: \.signUp, action: \.signUp) {
                 EmailSignUpReducer()
+            }
+
+            Scope(state: \.logIn, action: \.logIn) {
+                LoginReducer()
             }
 
             Scope(state: \.otp, action: \.otp) {
@@ -40,6 +44,7 @@ public struct SignUpFeatureCoordinator {
 
         public init(routes: [Route<Destination.State>]? = nil) {
             self.routes = routes ?? [.root(.signUp(.init()), embedInNavigationView: true)]
+//            self.routes = routes ?? [.root(.logIn(.init()), embedInNavigationView: true)]
         }
     }
 
@@ -114,21 +119,40 @@ public struct SignUpFeatureCoordinator {
             default:
                 return .none
             }
-        case .view, .binding:
+        case .view, .binding, ._local:
             return .none
         }
     }
 
-    private func handleOTPDelegate(_ action: ConfirmationCodeReducer.Action, state _: inout State) -> Effect<Action> {
+    private func handleOTPDelegate(_ action: ConfirmationCodeReducer.Action, state: inout State) -> Effect<Action> {
         switch action {
         case let .delegate(delegateAction):
             switch delegateAction {
             case let .otpVerified(email):
-                return .send(.delegate(.signUpSuccessfully(email)))
+                return .routeWithDelaysIfUnsupported(state.routes) {
+                    $0.popToRoot()
+                    $0.push(.logIn(.init()))
+                }
             case .otpFailed:
                 return .none
             }
         case .binding, ._local:
+            return .none
+        }
+    }
+
+    private func handleLogInDelegate(_ action: LoginReducer.Action, state _: inout State) -> Effect<Action> {
+        switch action {
+        case let .delegate(delegateAction):
+            switch delegateAction {
+            case .userLoggedIn:
+                return .none
+            case .logInFailed:
+                return .none
+            case .forgotPassword, .signUp:
+                return .none
+            }
+        case .binding, .view:
             return .none
         }
     }

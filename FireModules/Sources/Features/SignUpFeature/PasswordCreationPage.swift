@@ -13,6 +13,10 @@ import DomainEntities
 import Networking
 import SwiftUI
 
+#if DEBUG
+    import DevSettingsUseCase
+#endif
+
 public struct PasswordCreationPage: View {
     @ObserveInjection var iO
 
@@ -127,32 +131,25 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
         PasswordCreationPage(
             store: Store(
                 initialState: .init(email: Email("dev@mouka.com")),
-                reducer: { PasswordSignUpReducer()._printChanges() },
+                reducer: { PasswordSignUpReducer() },
                 withDependencies: {
                     $0.signUpUseCase.signUp = { _ in
-                        let mockURL = URL.local.appendingPathComponent("mock/sign-up/sign_up_successful.json")
+                        let mockURL = URL.local(backward: 6).appendingPathComponent("mock/auth/sign-up/response.json")
                         let mock = try! Data(contentsOf: mockURL)
 
                         return Effect.publisher {
                             Just(mock)
-                                .delay(for: .seconds(1), scheduler: DispatchQueue.main) // simulate latency
+                                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main) // simulate latency
                                 .map { try! $0.decoded() as API.v1.Response<EmptyDataResponse> }
                                 .map { _ in
                                     Result<AuthenticationLogic.SignUp.Response, AuthenticationLogic.SignUp.Failure>.success(.init())
                                 }
                         }
                     }
+
+                    $0.devSettingsUseCase = mockDevSettingsUseCase()
                 }
             )
         )
-    }
-}
-
-private extension URL {
-    static var local: URL {
-        var path = #file.components(separatedBy: "/")
-        path.removeLast(6)
-        let json = path.joined(separator: "/")
-        return URL(fileURLWithPath: json)
     }
 }

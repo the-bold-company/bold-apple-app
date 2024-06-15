@@ -7,22 +7,16 @@
 
 import DomainEntities
 
-struct UserDetails: Decodable {
-    let username: String?
+struct UserProfileResponse: Decodable {
     let email: String
-    let accountType: String?
-    let phone: String?
 
     init(from decoder: Decoder) throws {
-        self.username = try decoder.decodeIfPresent("username")
         self.email = try decoder.decode("email")
-        self.accountType = try decoder.decodeIfPresent("accountType")
-        self.phone = try decoder.decodeIfPresent("phone")
     }
 }
 
-extension UserDetails {
+extension UserProfileResponse {
     func asAuthenticatedUserEntity() -> AuthenticatedUserEntity {
-        return AuthenticatedUserEntity(email: email, phone: phone, username: username)
+        return AuthenticatedUserEntity(email: email, phone: nil, username: nil)
     }
 }

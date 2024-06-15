@@ -44,11 +44,6 @@ public struct CoordinatorView: View {
                         action: Coordinator.Destination.Action.authentication,
                         then: SignUpFeatureRoot.init(store:)
                     )
-                case .loginRoute:
-                    CaseLet(
-                        /Coordinator.Destination.State.loginRoute,
-                        action: Coordinator.Destination.Action.loginRoute
-                    ) { LoginPage(store: $0) }
                 case .homeRoute:
                     CaseLet(
                         /Coordinator.Destination.State.homeRoute,

@@ -106,7 +106,7 @@ public extension API {
             public let message: String
 
             public init(from decoder: Decoder) throws {
-                self.code = try decoder.decode("statusCode")
+                self.code = try decoder.decode("code")
                 self.message = try decoder.decode("message")
             }
         }
