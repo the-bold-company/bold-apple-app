@@ -18,6 +18,8 @@ enum AuthAPI {
         case signUp(email: String, password: String)
         case otp(email: String, code: String)
         case verifyEmailExistence(email: String)
+        case forgotPassword(email: String)
+        case confirmResetPassword(email: String, password: String, code: String)
     }
 }
 
@@ -64,12 +66,17 @@ extension AuthAPI.v1: BaseTargetType {
             return "/auth/confirm-sign-up"
         case .verifyEmailExistence:
             return "/auth/check-email"
+        case .forgotPassword:
+            return "/auth/forgot-password"
+        case .confirmResetPassword:
+            return "/auth/confirm-forgot-password"
         }
     }
 
     var method: Method {
         switch self {
-        case .logIn, .signUp, .otp, .verifyEmailExistence:
+        case .logIn, .signUp, .otp, .verifyEmailExistence, .forgotPassword,
+             .confirmResetPassword:
             return .post
         }
     }
@@ -93,10 +100,20 @@ extension AuthAPI.v1: BaseTargetType {
                 ],
                 encoding: JSONEncoding.default
             )
-        case let .verifyEmailExistence(email):
+        case let .verifyEmailExistence(email),
+             let .forgotPassword(email):
             return .requestParameters(
                 parameters: [
                     "email": email,
+                ],
+                encoding: JSONEncoding.default
+            )
+        case let .confirmResetPassword(email, password, code):
+            return .requestParameters(
+                parameters: [
+                    "email": email,
+                    "password": password,
+                    "confirmationCode": code,
                 ],
                 encoding: JSONEncoding.default
             )

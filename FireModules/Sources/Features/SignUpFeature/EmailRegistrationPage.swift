@@ -47,7 +47,7 @@ public struct EmailRegistrationPage: View {
                     Spacer()
                 }
                 .padding(16)
-                .navigationBarHidden(true)
+                .toolbar(.hidden)
                 .navigationDestination(
                     store: store.scope(
                         state: \.$destination.password,

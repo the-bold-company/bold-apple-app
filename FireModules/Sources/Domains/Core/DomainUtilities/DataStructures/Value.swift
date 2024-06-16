@@ -15,6 +15,8 @@ public protocol Value<Object, Err>: CustomStringConvertible {
     func getErrorOrNil() -> Err?
     func getErrorOrCrash() -> Err
 
+    func getSelfOrNil() -> Self?
+
     var errorOnly: EitherThisOrNothing<Err> { get }
 }
 
@@ -69,6 +71,10 @@ public extension Value {
         case .success: fatalError()
         case let .failure(error): return error
         }
+    }
+
+    func getSelfOrNil() -> Self? {
+        isValid ? self : nil
     }
 
     var errorOnly: EitherThisOrNothing<Err> {

@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import DomainEntities
 import TCACoordinators
 import TCAExtensions
 
@@ -11,14 +12,14 @@ public struct SignUpFeatureCoordinator {
         public enum State: Equatable {
             case signUp(EmailSignUpReducer.State)
             case logIn(LoginReducer.State)
-            case forgotPassword
+            case forgotPassword(ForgotPasswordReducer.State)
             case otp(ConfirmationCodeReducer.State)
         }
 
         public enum Action {
             case signUp(EmailSignUpReducer.Action)
             case logIn(LoginReducer.Action)
-            case forgotPassword
+            case forgotPassword(ForgotPasswordReducer.Action)
             case otp(ConfirmationCodeReducer.Action)
         }
 
@@ -34,6 +35,10 @@ public struct SignUpFeatureCoordinator {
             Scope(state: \.otp, action: \.otp) {
                 ConfirmationCodeReducer()
             }
+
+            Scope(state: \.forgotPassword, action: \.forgotPassword) {
+                ForgotPasswordReducer()
+            }
         }
     }
 
@@ -43,8 +48,8 @@ public struct SignUpFeatureCoordinator {
         public var routes: [Route<Destination.State>]
 
         public init(routes: [Route<Destination.State>]? = nil) {
-            self.routes = routes ?? [.root(.signUp(.init()), embedInNavigationView: true)]
-//            self.routes = routes ?? [.root(.logIn(.init()), embedInNavigationView: true)]
+//            self.routes = routes ?? [.root(.signUp(.init()), embedInNavigationView: true)]
+            self.routes = routes ?? [.root(.logIn(.init()), embedInNavigationView: true)]
         }
     }
 
@@ -55,7 +60,7 @@ public struct SignUpFeatureCoordinator {
 
         @CasePathable
         public enum DelegateAction {
-            case signUpSuccessfully(Email)
+            case logInSuccessfully(AuthenticatedUserEntity)
         }
 
         @CasePathable
@@ -74,7 +79,7 @@ public struct SignUpFeatureCoordinator {
         Reduce { state, action in
             switch action {
             case let .delegate(delegateAction):
-                return handleDelegateAction(delegateAction, state: &state)
+                return .none
             case let ._local(localAction):
                 return handleLocalAction(localAction, state: &state)
             }
@@ -84,25 +89,18 @@ public struct SignUpFeatureCoordinator {
         }
     }
 
-    private func handleDelegateAction(_ action: Action.DelegateAction, state _: inout State) -> Effect<Action> {
-        switch action {
-        case .signUpSuccessfully:
-            return .none
-        }
-    }
-
     private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
         switch action {
-        case let .routeAction(_, screenAction):
+        case let .routeAction(index, screenAction):
             switch screenAction {
             case let .signUp(signUpAction):
                 return handleSignUpDelegate(signUpAction, state: &state)
             case let .otp(otpAction):
                 return handleOTPDelegate(otpAction, state: &state)
-            case .logIn:
-                return .none
-            case .forgotPassword:
-                return .none
+            case let .logIn(logInAction):
+                return handleLogInDelegate(logInAction, state: &state)
+            case let .forgotPassword(forgotPasswordAction):
+                return handleForgotPasswordDelegate(forgotPasswordAction, index: index, state: &state)
             }
         case .updateRoutes:
             return .none
@@ -114,7 +112,7 @@ public struct SignUpFeatureCoordinator {
         case let .destination(destinationAction):
             switch destinationAction {
             case let .presented(.password(.delegate(.signUpConfirmed(email, _)))):
-                state.routes.push(.otp(.init(email: email)))
+                state.routes.push(.otp(.init(challenge: .signUpOTP(email))))
                 return .none
             default:
                 return .none
@@ -128,11 +126,16 @@ public struct SignUpFeatureCoordinator {
         switch action {
         case let .delegate(delegateAction):
             switch delegateAction {
-            case let .otpVerified(email):
-                return .routeWithDelaysIfUnsupported(state.routes) {
-                    $0.popToRoot()
-                    $0.push(.logIn(.init()))
+            case let .otpVerified(challenge):
+                switch challenge {
+                case let .signUpOTP(email),
+                     let .resetPasswordOTP(email, _):
+                    return .routeWithDelaysIfUnsupported(state.routes) {
+                        $0.popToRoot()
+                        $0.push(.logIn(.init(email: email)))
+                    }
                 }
+
             case .otpFailed:
                 return .none
             }
@@ -141,18 +144,47 @@ public struct SignUpFeatureCoordinator {
         }
     }
 
-    private func handleLogInDelegate(_ action: LoginReducer.Action, state _: inout State) -> Effect<Action> {
+    private func handleLogInDelegate(_ action: LoginReducer.Action, state: inout State) -> Effect<Action> {
         switch action {
         case let .delegate(delegateAction):
             switch delegateAction {
-            case .userLoggedIn:
-                return .none
+            case let .userLoggedIn(user):
+                return .send(.delegate(.logInSuccessfully(user)))
             case .logInFailed:
                 return .none
-            case .forgotPassword, .signUp:
+            case let .forgotPasswordInitiated(email):
+                state.routes.push(.forgotPassword(.init(email: email)))
+
                 return .none
+            case .signUpInitiate:
+                return .routeWithDelaysIfUnsupported(state.routes) {
+                    $0.popToRoot()
+                    $0.push(.signUp(.init()))
+                    $0.remove(at: 0)
+                }
             }
         case .binding, .view:
+            return .none
+        }
+    }
+
+    private func handleForgotPasswordDelegate(_ action: ForgotPasswordReducer.Action, index _: Int, state: inout State) -> Effect<Action> {
+        switch action {
+        case let .delegate(delegateAction):
+            switch delegateAction {
+            case .dismiss:
+                state.routes.goBack()
+                return .none
+            }
+        case let .destination(destinationAction):
+            switch destinationAction {
+            case let .presented(.createNewPassword(.delegate(.signUpConfirmed(email, password)))):
+                state.routes.push(.otp(.init(challenge: .resetPasswordOTP(email, password))))
+                return .none
+            default:
+                return .none
+            }
+        case .binding, .view, ._local:
             return .none
         }
     }

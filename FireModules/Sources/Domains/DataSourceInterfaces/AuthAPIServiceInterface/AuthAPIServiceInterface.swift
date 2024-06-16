@@ -7,34 +7,35 @@ import Foundation
 
 public typealias LogInAPIResult = Result<(AuthenticatedUserEntity, CredentialsEntity), DomainError>
 public typealias SignUpAPIResult = Result<EmptyDataResponse, DomainError>
-public typealias ConfirmOTPResult = Result<EmptyDataResponse, DomainError>
+public typealias ConfirmOTPResult = Result<MessageOnlyResponse, DomainError>
 public typealias VerifyEmailExistenceResult = Result<String, DomainError>
+public typealias ForgotPasswordResult = Result<MessageOnlyResponse, DomainError>
 
 public struct AuthAPIService {
-    public typealias LogInFunctionAsync = @Sendable (_ email: String, _ password: String) async throws -> (AuthenticatedUserEntity, CredentialsEntity)
-    public typealias LogInFunction = @Sendable (_ email: String, _ password: String) -> Effect<LogInAPIResult>
-    public typealias SignUpFunction = @Sendable (_ email: String, _ password: String) -> Effect<SignUpAPIResult>
-    public typealias ConfirmOTPFunction = @Sendable (_ email: String, _ code: String) -> Effect<ConfirmOTPResult>
-    public typealias VerifyEmailExistenceFunction = @Sendable (_ email: String) -> Effect<VerifyEmailExistenceResult>
-
-    public var logIn: LogInFunction
-    public var signUp: SignUpFunction
-    public var logInAsync: LogInFunctionAsync
-    public var confirmOTP: ConfirmOTPFunction
-    public var verifyEmailExistence: VerifyEmailExistenceFunction
+    public var logIn: @Sendable (_ email: String, _ password: String) -> Effect<LogInAPIResult>
+    public var logInAsync: @Sendable (_ email: String, _ password: String) async throws -> (AuthenticatedUserEntity, CredentialsEntity)
+    public var signUp: @Sendable (_ email: String, _ password: String) -> Effect<SignUpAPIResult>
+    public var confirmOTP: @Sendable (_ email: String, _ code: String) -> Effect<ConfirmOTPResult>
+    public var verifyEmailExistence: @Sendable (_ email: String) -> Effect<VerifyEmailExistenceResult>
+    public var forgotPassword: @Sendable (_ email: String) -> Effect<ForgotPasswordResult>
+    public var confirmOTPForgotPassword: @Sendable (_ email: String, _ password: String, _ code: String) -> Effect<ConfirmOTPResult>
 
     public init(
-        logIn: @escaping LogInFunction,
-        logInAsync: @escaping LogInFunctionAsync,
-        signUp: @escaping SignUpFunction,
-        confirmOTP: @escaping ConfirmOTPFunction,
-        verifyEmailExistence: @escaping VerifyEmailExistenceFunction
+        logIn: @escaping @Sendable (_ email: String, _ password: String) -> Effect<LogInAPIResult>,
+        logInAsync: @escaping @Sendable (_ email: String, _ password: String) async throws -> (AuthenticatedUserEntity, CredentialsEntity),
+        signUp: @escaping @Sendable (_ email: String, _ password: String) -> Effect<SignUpAPIResult>,
+        confirmOTP: @escaping @Sendable (_ email: String, _ code: String) -> Effect<ConfirmOTPResult>,
+        verifyEmailExistence: @escaping @Sendable (_ email: String) -> Effect<VerifyEmailExistenceResult>,
+        forgotPassword: @escaping @Sendable (_ email: String) -> Effect<ForgotPasswordResult>,
+        confirmOTPForgotPassword: @escaping @Sendable (_ email: String, _ password: String, _ code: String) -> Effect<ConfirmOTPResult>
     ) {
         self.logIn = logIn
         self.logInAsync = logInAsync
         self.signUp = signUp
         self.confirmOTP = confirmOTP
         self.verifyEmailExistence = verifyEmailExistence
+        self.forgotPassword = forgotPassword
+        self.confirmOTPForgotPassword = confirmOTPForgotPassword
     }
 }
 
@@ -45,7 +46,9 @@ public extension AuthAPIService {
             logInAsync: unimplemented("\(Self.self).logInAsync"),
             signUp: unimplemented("\(Self.self).signUp"),
             confirmOTP: unimplemented("\(Self.self).confirmOTP"),
-            verifyEmailExistence: unimplemented("\(Self.self).verifyEmailExistence")
+            verifyEmailExistence: unimplemented("\(Self.self).verifyEmailExistence"),
+            forgotPassword: unimplemented("\(Self.self).forgotPassword"),
+            confirmOTPForgotPassword: unimplemented("\(Self.self).confirmOTPForgotPassword")
         )
     }
 }

@@ -58,6 +58,7 @@ public struct CoordinatorView: View {
                     ) { DevSettingsPage(store: $0) }
                 }
             }
+            .toolbar(.hidden)
         }
         .task {
             store.send(.onLaunch)

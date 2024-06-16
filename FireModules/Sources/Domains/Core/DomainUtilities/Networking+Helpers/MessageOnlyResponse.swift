@@ -1,6 +1,6 @@
 import Foundation
 
-public struct SimpleMessageResponse: Decodable, Equatable {
+public struct MessageOnlyResponse: Decodable, Equatable {
     public let message: String
 
     public enum CodingKeys: CodingKey {

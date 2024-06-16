@@ -46,8 +46,8 @@ public struct LoginReducer {
         public enum DelegateAction {
             case userLoggedIn(AuthenticatedUserEntity)
             case logInFailed(AuthenticationLogic.LogIn.Failure)
-            case forgotPassword(Email?)
-            case signUp
+            case forgotPasswordInitiated(Email?)
+            case signUpInitiate
         }
 
         @CasePathable
@@ -111,9 +111,9 @@ public struct LoginReducer {
                     failure: { Action.delegate(.logInFailed($0)) }
                 )
         case .forgotPasswordButtonTapped:
-            return .send(.delegate(.forgotPassword(state.email.isValid ? state.email : nil)))
+            return .send(.delegate(.forgotPasswordInitiated(state.email.isValid ? state.email : nil)))
         case .signUpButtonTapped:
-            return .send(.delegate(.signUp))
+            return .send(.delegate(.signUpInitiate))
         }
     }
 
@@ -134,7 +134,7 @@ public struct LoginReducer {
                 // state.serverError = "Tài khoản này đã được đăng ký với một cách khác. Hãy đăng nhập lại hoặc chọn cách đăng ký khác."
             }
             return .none
-        case .forgotPassword, .signUp:
+        case .forgotPasswordInitiated, .signUpInitiate:
             return .none
         }
     }

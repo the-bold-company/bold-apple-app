@@ -9,8 +9,10 @@ public extension AuthAPIService {
     static func local(
         logInResponseMockURL: URL,
         signUpResponseMockURL: URL,
-        confirmOTPMockURL: URL,
-        verifyEmailExistenceMockURL: URL
+        confirmSignUpOTPMockURL: URL,
+        verifyEmailExistenceMockURL: URL,
+        forgotPasswordMockURL: URL,
+        confirmForgotPasswordOTPMockURL: URL
     ) -> Self {
         .init(
             logIn: { _, _ in
@@ -34,10 +36,10 @@ public extension AuthAPIService {
                 }
             },
             confirmOTP: { _, _ in
-                let mock = try! Data(contentsOf: confirmOTPMockURL)
+                let mock = try! Data(contentsOf: confirmSignUpOTPMockURL)
                 return Effect.publisher {
                     Just(mock)
-                        .mapToResponse(EmptyDataResponse.self, apiVersion: .v1)
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }
@@ -47,6 +49,24 @@ public extension AuthAPIService {
                 return Effect.publisher {
                     Just(mock)
                         .mapToResponse(String.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
+            },
+            forgotPassword: { _ in
+                let mock = try! Data(contentsOf: forgotPasswordMockURL)
+                return Effect.publisher {
+                    Just(mock)
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
+            },
+            confirmOTPForgotPassword: { _, _, _ in
+                let mock = try! Data(contentsOf: confirmForgotPasswordOTPMockURL)
+                return Effect.publisher {
+                    Just(mock)
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }

@@ -32,7 +32,11 @@ public struct SignUpFeatureRoot: View {
                         then: LoginPage.init(store:)
                     )
                 case .forgotPassword:
-                    EmptyView()
+                    CaseLet(
+                        /Destination.State.forgotPassword,
+                        action: Destination.Action.forgotPassword,
+                        then: ForgotPasswordPage.init(store:)
+                    )
                 }
             }
         }
@@ -48,25 +52,11 @@ import DevSettingsUseCase
 import Networking
 import Utilities
 
-#Preview {
-    SignUpFeatureRoot(
-        store: .init(
-            initialState: .init(routes: [Route.root(.signUp(.init()), embedInNavigationView: true)]),
-            reducer: { SignUpFeatureCoordinator() },
-            withDependencies: {
-                $0.devSettingsUseCase = mockDevSettingsUseCase()
-                $0.signUpUseCase = mockSignUpUseCase()
-                $0.mfaUseCase = mockMFAUseCase()
-                $0.verifyEmailUseCase = mockVerifyingEmailUseCase()
-            }
-        )
-    )
-}
-
 #Preview("Custom dependencies") {
     SignUpFeatureRoot(
         store: .init(
-            initialState: .init(routes: [Route.root(.signUp(.init()), embedInNavigationView: true)]),
+            initialState: .init(routes: [Route.root(.logIn(.init()), embedInNavigationView: true)]),
+//            initialState: .init(routes: [Route.root(.signUp(.init()), embedInNavigationView: true)]),
             reducer: {
                 SignUpFeatureCoordinator()
             },

@@ -20,6 +20,11 @@ public extension DependencyValues {
         get { self[LogInUseCaseKey.self] }
         set { self[LogInUseCaseKey.self] = newValue }
     }
+
+    var forgotPassword: ForgotPasswordUseCase {
+        get { self[ForgotPasswordUseCaseKey.self] }
+        set { self[ForgotPasswordUseCaseKey.self] = newValue }
+    }
 }
 
 // MARK: SignUpUseCase dependency registration
@@ -62,7 +67,8 @@ enum MFAUseCaseKey: DependencyKey {
 #if DEBUG
     extension MFAUseCaseKey {
         static let testValue = MFAUseCase(
-            verifyOTP: unimplemented("\(Self.self).verifyOTP")
+            verifyOTP: unimplemented("\(Self.self).verifyOTP"),
+            confirmOTPResetPassword: unimplemented("\(Self.self).confirmOTPResetPassword")
         )
         static let previewValue = MFAUseCase.noop
     }
@@ -78,5 +84,18 @@ enum VerifyEmailUseCaseKey: DependencyKey {
             verifyExistence: unimplemented("\(Self.self).verifyExistence")
         )
         static let previewValue = VerifyEmailUseCase.live
+    #endif
+}
+
+// MARK: ForgotPassword dependency registration
+
+enum ForgotPasswordUseCaseKey: DependencyKey {
+    public static let liveValue = ForgotPasswordUseCase.live()
+
+    #if DEBUG
+        static let testValue = ForgotPasswordUseCase(
+            forgotPassword: unimplemented("\(Self.self).forgotPassword")
+        )
+        static let previewValue = ForgotPasswordUseCase.live()
     #endif
 }

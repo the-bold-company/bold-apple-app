@@ -90,14 +90,9 @@ public typealias OTPResponse = AuthenticationLogic.OTP.Response
 public typealias OTPFailure = AuthenticationLogic.OTP.Failure
 public extension AuthenticationLogic {
     enum OTP {
-        public struct Request {
-            let email: String
-            let code: String
-
-            public init(email: String, code: String) {
-                self.email = email
-                self.code = code
-            }
+        public enum Request {
+            case signUpOTP(email: String, code: String)
+            case resetPasswordOTP(email: String, password: String, code: String)
         }
 
         public struct Response: Equatable {
@@ -162,6 +157,63 @@ public extension AuthenticationLogic {
         public enum Failure: LocalizedError {
             case genericError(DomainError)
             case emailAlreadyRegistered
+        }
+    }
+}
+
+// MARK: Reset password logic
+
+public typealias ForgotPasswordRequest = AuthenticationLogic.ForgotPassword.Request
+public typealias ForgotPasswordResponse = AuthenticationLogic.ForgotPassword.Response
+public typealias ForgotPasswordFailure = AuthenticationLogic.ForgotPassword.Failure
+public extension AuthenticationLogic {
+    enum ForgotPassword {
+        public struct Request {
+            let email: String
+
+            public init(email: String) {
+                self.email = email
+            }
+        }
+
+        public struct Response: Equatable {
+            public let message: String
+
+            public init(message: String) {
+                self.message = message
+            }
+        }
+
+        public enum Failure: LocalizedError {
+            case genericError(DomainError)
+            case emailHasNotBeenRegistered
+
+            public init(domainError: DomainError) {
+                switch domainError.errorCode {
+                case .some(14001):
+                    self = .emailHasNotBeenRegistered
+                default:
+                    self = .genericError(domainError)
+                }
+            }
+
+            public var errorDescription: String? {
+                switch self {
+                case .emailHasNotBeenRegistered:
+                    return "Email has not been registered"
+                case let .genericError(error):
+                    return error.errorDescription
+                }
+            }
+
+            public var failureReason: String? {
+                switch self {
+                case .emailHasNotBeenRegistered:
+                    return "Email has not been registered"
+                case let .genericError(error):
+                    return error.failureReason
+                }
+            }
         }
     }
 }

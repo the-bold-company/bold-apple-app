@@ -91,9 +91,14 @@ public extension API {
 
             public init(from decoder: any Decoder) throws {
                 self.code = try decoder.decodeIfPresent("code")
-                self.data = M.self == EmptyDataResponse.self
-                    ? EmptyDataResponse() as? M
-                    : try decoder.decodeIfPresent("data")
+
+                if M.self == EmptyDataResponse.self {
+                    self.data = EmptyDataResponse() as? M
+                } else if M.self == MessageOnlyResponse.self {
+                    self.data = try? MessageOnlyResponse(from: decoder) as? M
+                } else {
+                    self.data = try decoder.decodeIfPresent("data")
+                }
                 self.message = try decoder.decode("message")
                 self.error = code != nil
                     ? try? Failure(from: decoder)

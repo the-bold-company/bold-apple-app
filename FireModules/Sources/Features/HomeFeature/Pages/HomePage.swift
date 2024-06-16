@@ -64,9 +64,9 @@ public struct HomePage: View {
             ) { InvestmentHomePage(store: $0) }
         }
         .task {
-            viewStore.send(.forward(.loadPortfolio))
-            viewStore.send(.forward(.loadFundList))
-            viewStore.send(.forward(.loadTransactionHistory))
+//            viewStore.send(.forward(.loadPortfolio))
+//            viewStore.send(.forward(.loadFundList))
+//            viewStore.send(.forward(.loadTransactionHistory))
         }
         .enableInjection()
     }

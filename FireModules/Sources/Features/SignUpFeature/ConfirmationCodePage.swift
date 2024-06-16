@@ -106,7 +106,7 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
 #Preview("OTP Confirmed") {
     ConfirmationCodePage(
         store: .init(
-            initialState: .init(email: Email("dev@mouka.ai")),
+            initialState: .init(challenge: .signUpOTP(Email("dev@mouka.ai"))),
             reducer: { ConfirmationCodeReducer() },
             withDependencies: {
                 $0.devSettingsUseCase = mockDevSettingsUseCase()
@@ -127,7 +127,7 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
 #Preview("OTP invalid") {
     ConfirmationCodePage(
         store: .init(
-            initialState: .init(email: Email("dev@mouka.ai")),
+            initialState: .init(challenge: .signUpOTP(Email("dev@mouka.ai"))),
             reducer: { ConfirmationCodeReducer() },
             withDependencies: {
                 $0.devSettingsUseCase = mockDevSettingsUseCase()
@@ -148,7 +148,7 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
 #Preview("Custom mock") {
     ConfirmationCodePage(
         store: .init(
-            initialState: .init(email: Email("dev@mouka.ai")),
+            initialState: .init(challenge: .resetPasswordOTP(Email("dev@mouka.ai"), Password("Qwerty@123"))),
             reducer: { ConfirmationCodeReducer() },
             withDependencies: {
                 $0.context = .live

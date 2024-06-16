@@ -28,8 +28,8 @@ public extension DependencyValues {
 
 public extension DevSettingsUseCase {
     static let noop = Self(
-        get: { fatalError() },
-        set: { _ in fatalError() },
+        get: { DevSettings() },
+        set: { _ in },
         stream: { fatalError() }
     )
 }

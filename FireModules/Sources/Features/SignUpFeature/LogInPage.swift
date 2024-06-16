@@ -89,6 +89,7 @@ public struct LoginPage: View {
             Text(viewStore.emailError ?? "")
                 .typography(.bodyDefault)
                 .foregroundColor(.red)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .isHidden(hidden: viewStore.emailError == nil)
 
@@ -114,6 +115,7 @@ public struct LoginPage: View {
             Text(viewStore.passwordError ?? "")
                 .typography(.bodyDefault)
                 .foregroundColor(.red)
+                .frame(maxWidth: .infinity, alignment: .leading)
         }
         .isHidden(hidden: viewStore.passwordError == nil)
     }
@@ -135,7 +137,7 @@ public struct LoginPage: View {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.coreui.sentimentNegative)
                 Text(viewStore.serverError ?? "")
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(16)
             .background {
@@ -153,17 +155,19 @@ public struct LoginPage: View {
     }
 
     @ViewBuilder private var signUpPrompt: some View {
-        Text("Chưa có tài khoản? ")
-            .foregroundColor(Color.coreui.forestGreen)
-            .font(.system(size: 16))
-            +
-            Text("Đăng ký miễn phí")
-            .foregroundColor(Color.coreui.forestGreen)
-            .font(.system(size: 16))
-            .bold()
-//            .onTapGesture {
-//                store.send(.view(.signUpButtonTapped))
-//            }
+        Group {
+            Text("Chưa có tài khoản? ")
+                .foregroundColor(Color.coreui.forestGreen)
+                .font(.system(size: 16))
+                +
+                Text("Đăng ký miễn phí")
+                .foregroundColor(Color.coreui.forestGreen)
+                .font(.system(size: 16))
+                .bold()
+        }
+        .onTapGesture {
+            store.send(.view(.signUpButtonTapped))
+        }
     }
 }
 

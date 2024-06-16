@@ -35,7 +35,7 @@ public extension AuthAPIService {
                 Effect.publisher {
                     networkClient
                         .requestPublisher(.otp(email: email, code: otp))
-                        .mapToResponse(EmptyDataResponse.self, apiVersion: .v1)
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }
@@ -45,6 +45,24 @@ public extension AuthAPIService {
                     networkClient
                         .requestPublisher(.verifyEmailExistence(email: email))
                         .mapToResponse(String.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
+            },
+            forgotPassword: { email in
+                Effect.publisher {
+                    networkClient
+                        .requestPublisher(.forgotPassword(email: email))
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
+            },
+            confirmOTPForgotPassword: { email, password, otp in
+                Effect.publisher {
+                    networkClient
+                        .requestPublisher(.confirmResetPassword(email: email, password: password, code: otp))
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }

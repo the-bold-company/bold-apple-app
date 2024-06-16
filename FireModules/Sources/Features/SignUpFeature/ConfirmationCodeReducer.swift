@@ -4,11 +4,41 @@ import TCAExtensions
 
 typealias OTPVerifyingProgress = LoadingProgress<Confirmed, OTPFailure>
 
+public enum OTPChallenge: Equatable {
+    case signUpOTP(Email)
+    case resetPasswordOTP(Email, Password)
+
+    func validate() -> Self? {
+        switch self {
+        case let .signUpOTP(email):
+            return email.isValid ? self : nil
+        case let .resetPasswordOTP(email, password):
+            return email.isValid && password.isValid
+                ? self
+                : nil
+        }
+    }
+
+    func challenge(withCode code: String) -> OTPUseCaseOutput {
+        @Dependency(\.mfaUseCase) var mfaUseCase
+
+        switch self {
+        case let .signUpOTP(email):
+            return mfaUseCase.verifyOTP(.signUpOTP(email: email.getOrCrash(), code: code))
+        case let .resetPasswordOTP(email, password):
+            return mfaUseCase.confirmOTPResetPassword(.resetPasswordOTP(
+                email: email.getOrCrash(),
+                password: password.getOrCrash(),
+                code: code
+            ))
+        }
+    }
+}
+
 @Reducer
 public struct ConfirmationCodeReducer {
     public struct State: Equatable {
         @BindingState var otpText: String = ""
-        let email: Email
 
         var otp = OTP.empty
         var otpVerifying: OTPVerifyingProgress = .idle
@@ -16,15 +46,17 @@ public struct ConfirmationCodeReducer {
         var errorText: String? {
             guard let error = otpVerifying.error else { return nil }
             switch error {
-            case let .genericError(failure):
+            case .genericError:
                 return "Có lỗi xảy ra. Vui lòng thử lại."
             case .codeMismatch:
                 return "Dãy số bạn điền không đúng. Bạn hãy thử lại nhé!"
             }
         }
 
-        public init(email: Email) {
-            self.email = email
+        let challenge: OTPChallenge
+
+        public init(challenge: OTPChallenge) {
+            self.challenge = challenge
         }
     }
 
@@ -40,17 +72,17 @@ public struct ConfirmationCodeReducer {
 
         @CasePathable
         public enum DelegateAction {
-            case otpVerified(Email)
+            case otpVerified(OTPChallenge)
             case otpFailed(OTPFailure)
         }
 
         @CasePathable
         public enum LocalAction {
-            case verifyOTP(email: String, code: String)
+            case verifyOTP(OTPChallenge, OTP)
         }
     }
 
-    @Dependency(\.mfaUseCase.verifyOTP) var verifyOTP
+//    @Dependency(\.mfaUseCase.verifyOTP) var verifyOTP
 
     public init() {}
 
@@ -61,8 +93,8 @@ public struct ConfirmationCodeReducer {
             case .binding(\.$otpText):
                 state.otp.update(state.otpText)
 
-                if let otp = state.otp.getOrNil(), let email = state.email.getOrNil() {
-                    return .send(._local(.verifyOTP(email: email, code: otp)))
+                if let otp = state.otp.getSelfOrNil(), let challenge = state.challenge.validate() {
+                    return .send(._local(.verifyOTP(challenge, otp)))
                 }
                 return .none
             case let .view(viewAction):
@@ -83,11 +115,11 @@ public struct ConfirmationCodeReducer {
 
     private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
         switch action {
-        case let .verifyOTP(email, code):
+        case let .verifyOTP(challenge, code):
             state.otpVerifying = .loading
-            return verifyOTP(.init(email: email, code: code))
+            return challenge.challenge(withCode: code.otpString)
                 .map(
-                    success: { _ in Action.delegate(.otpVerified(Email(email))) },
+                    success: { _ in Action.delegate(.otpVerified(challenge)) },
                     failure: { Action.delegate(.otpFailed($0)) }
                 )
         }

@@ -32,7 +32,7 @@ public struct Coordinator {
             }
 
             Scope(state: \.authentication, action: \.authentication) {
-                SignUpFeatureCoordinator()._printChanges()
+                SignUpFeatureCoordinator()
             }
 
             Scope(state: \.homeRoute, action: \.homeRoute) {
@@ -112,7 +112,7 @@ public struct Coordinator {
         switch action {
         case let .delegate(signUpDelegate):
             switch signUpDelegate {
-            case .signUpSuccessfully:
+            case .logInSuccessfully:
                 return .routeWithDelaysIfUnsupported(state.routes) {
                     $0.popToRoot()
                     $0.push(.homeRoute(.init()))

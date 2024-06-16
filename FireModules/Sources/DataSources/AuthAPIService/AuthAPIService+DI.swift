@@ -9,7 +9,9 @@ extension AuthAPIServiceKey: DependencyKey {
 //    public static let liveValue = AuthAPIService.local(
 //        logInResponseMockURL: .local(backward: 6).appendingPathComponent("mock/auth/log-in/response.json"),
 //        signUpResponseMockURL: .local(backward: 6).appendingPathComponent("mock/auth/sign-up/response.json"),
-//        confirmOTPMockURL: .local(backward: 6).appendingPathComponent("mock/auth/confirm-sign-up/response.json"),
-//        verifyEmailExistenceMockURL: .local(backward: 6).appendingPathComponent("mock/auth/check-email/response.json")
+//        confirmSignUpOTPMockURL: .local(backward: 6).appendingPathComponent("mock/auth/confirm-sign-up/response.json"),
+//        verifyEmailExistenceMockURL: .local(backward: 6).appendingPathComponent("mock/auth/check-email/response.json"),
+//        forgotPasswordMockURL: .local(backward: 6).appendingPathComponent("mock/auth/forgot-password/response.json"),
+//        confirmForgotPasswordOTPMockURL: .local(backward: 6).appendingPathComponent("mock/auth/confirm-forgot-password/response.json")
 //    )
 }
