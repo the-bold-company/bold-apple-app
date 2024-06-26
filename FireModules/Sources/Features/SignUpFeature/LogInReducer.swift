@@ -121,10 +121,10 @@ public struct LoginReducer {
         switch action {
         case let .userLoggedIn(user):
             state.serverError = nil
-            state.logInProgress = .loaded(user)
+            state.logInProgress = .loaded(.success(user))
             return .none
         case let .logInFailed(error):
-            state.logInProgress = .failure(error)
+            state.logInProgress = .loaded(.failure(error))
 
             switch error {
             case .genericError:

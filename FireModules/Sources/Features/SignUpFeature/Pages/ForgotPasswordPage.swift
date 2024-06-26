@@ -9,9 +9,9 @@ public struct ForgotPasswordPage: View {
 
     struct ViewState: Equatable {
         @BindingViewState var email: String
-        var verifyingEmailProgress: LoadingProgress<Confirmed, ForgotPasswordFailure>
+        var isLoading: Bool
         var emailValidationError: String?
-        var serverError: String?
+        var userFriendlyError: String?
     }
 
     let store: StoreOf<ForgotPasswordReducer>
@@ -23,7 +23,7 @@ public struct ForgotPasswordPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.verifyingEmailProgress.isLoading) {
+        LoadingOverlay(loading: viewStore.isLoading) {
             NavigationStack {
                 VStack(alignment: .center) {
                     Spacing(height: .size24)
@@ -74,7 +74,7 @@ public struct ForgotPasswordPage: View {
             HStack(alignment: .top, spacing: 8) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .foregroundColor(.coreui.sentimentNegative)
-                Text(viewStore.serverError ?? "")
+                Text(viewStore.userFriendlyError ?? "")
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding(16)
@@ -89,7 +89,7 @@ public struct ForgotPasswordPage: View {
 
             Spacing(height: .size24)
         }
-        .isHidden(hidden: viewStore.serverError == nil)
+        .isHidden(hidden: viewStore.userFriendlyError == nil)
     }
 
     @ViewBuilder private var actionButtons: some View {
@@ -116,9 +116,9 @@ extension BindingViewStore<ForgotPasswordReducer.State> {
         // swiftformat:disable redundantSelf
         ForgotPasswordPage.ViewState(
             email: self.$emailText,
-            verifyingEmailProgress: self.forgotPasswordConfirmProgress,
+            isLoading: self.forgotPasswordConfirmProgress.is(\.loading),
             emailValidationError: self.emailValidationError,
-            serverError: self.serverError
+            userFriendlyError: self.forgotPasswordConfirmProgress[case: \.loaded.failure]?.userFriendlyError
         )
         // swiftformat:enable redundantSelf
     }

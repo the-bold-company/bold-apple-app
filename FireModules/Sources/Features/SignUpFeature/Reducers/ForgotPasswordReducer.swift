@@ -15,19 +15,6 @@ public struct ForgotPasswordReducer {
 
         var email: Email { Email(emailText) }
         var emailValidationError: String?
-        var serverError: String? {
-            switch forgotPasswordConfirmProgress {
-            case .idle, .loading, .loaded:
-                return nil
-            case let .failure(reason):
-                switch reason {
-                case .genericError:
-                    return "Oops! Đã xảy ra sự cố khi đổi mật khẩu. Hãy thử lại sau một chút."
-                case .emailHasNotBeenRegistered:
-                    return "Email này không có trong hệ thống của mouka. Vui lòng kiểm tra lại hoặc thử một email khác."
-                }
-            }
-        }
 
         public init(email: Email? = nil) {
             self.emailText = email?.getOrNil() ?? ""
@@ -114,10 +101,10 @@ public struct ForgotPasswordReducer {
     private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
         switch action {
         case let .forgotPasswordFailure(reason):
-            state.forgotPasswordConfirmProgress = .failure(reason)
+            state.forgotPasswordConfirmProgress = .loaded(.failure(reason))
             return .none
         case .forgotPasswordConfirmed:
-            state.forgotPasswordConfirmProgress = .loaded(Confirmed())
+            state.forgotPasswordConfirmProgress = .loaded(.success(Confirmed()))
             guard state.email.isValid else { return .none }
             state.destination = .createNewPassword(.init(email: state.email))
             return .none
@@ -144,7 +131,13 @@ public extension ForgotPasswordReducer {
     }
 }
 
-enum EmailVerificationError: LocalizedError {
-    case genericError(DomainError)
-    case emailDoesNotExistInTheSystem
+extension ForgotPasswordFailure {
+    var userFriendlyError: String? {
+        switch self {
+        case .genericError:
+            return "Oops! Đã xảy ra sự cố khi đổi mật khẩu. Hãy thử lại sau một chút."
+        case .emailHasNotBeenRegistered:
+            return "Email này không có trong hệ thống của mouka. Vui lòng kiểm tra lại hoặc thử một email khác."
+        }
+    }
 }

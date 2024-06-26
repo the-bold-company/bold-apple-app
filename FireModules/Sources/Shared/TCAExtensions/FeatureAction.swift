@@ -2,12 +2,10 @@ import ComposableArchitecture
 import Foundation
 import TCACoordinators
 
-public protocol FeatureAction {
-    associatedtype ViewAction
+public protocol FeatureAction: ViewAction {
     associatedtype DelegateAction
     associatedtype LocalAction
 
-    static func view(_: ViewAction) -> Self
     static func delegate(_: DelegateAction) -> Self
     static func _local(_: LocalAction) -> Self
 }
@@ -15,8 +13,8 @@ public protocol FeatureAction {
 public extension Scope where ParentAction: FeatureAction {
     @inlinable
     init(
-        toChildState: WritableKeyPath<ParentState, Child.State>,
-        toChildAction: CasePath<ParentAction.LocalAction, Child.Action>,
+        state toChildState: WritableKeyPath<ParentState, Child.State>,
+        action toChildAction: AnyCasePath<ParentAction.LocalAction, Child.Action>,
         @ReducerBuilder<Child.State, Child.Action> child: () -> Child
     ) {
         self = .init(state: toChildState, action: (/ParentAction._local) .. toChildAction, child: child)

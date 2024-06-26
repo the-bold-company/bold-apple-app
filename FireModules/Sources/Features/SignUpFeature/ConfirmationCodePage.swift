@@ -11,9 +11,9 @@ public struct ConfirmationCodePage: View {
 
     struct ViewState: Equatable {
         @BindingViewState var otp: String
-        var otpVerifyingProgress: LoadingProgress<Confirmed, OTPFailure>
+        var isLoading: Bool
         var isOTPValid: Bool
-        var errorText: String?
+        var userFriendlyError: String?
     }
 
     private let store: StoreOf<ConfirmationCodeReducer>
@@ -25,7 +25,7 @@ public struct ConfirmationCodePage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.otpVerifyingProgress.isLoading) {
+        LoadingOverlay(loading: viewStore.isLoading) {
             VStack(alignment: .center) {
                 Spacing(height: .size24)
                 Text("Xác nhận email").typography(.titleScreen)
@@ -64,11 +64,11 @@ public struct ConfirmationCodePage: View {
     @ViewBuilder private var errorMessage: some View {
         Group {
             Spacing(size: .size12)
-            Text(viewStore.errorText ?? "")
+            Text(viewStore.userFriendlyError ?? "")
                 .typography(.bodyDefault)
                 .foregroundColor(.red)
         }
-        .isHidden(hidden: viewStore.errorText == nil)
+        .isHidden(hidden: viewStore.userFriendlyError == nil)
     }
 
     @ViewBuilder private func resendCountdown() -> some View {
@@ -95,9 +95,9 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
         // swiftformat:disable redundantSelf
         ConfirmationCodePage.ViewState(
             otp: self.$otpText,
-            otpVerifyingProgress: self.otpVerifying,
+            isLoading: self.otpVerifying.is(\.loading),
             isOTPValid: self.otp.isValid,
-            errorText: self.errorText
+            userFriendlyError: self.otpVerifying[case: \.loaded.failure]?.userFriendlyError
         )
         // swiftformat:enable redundantSelf
     }

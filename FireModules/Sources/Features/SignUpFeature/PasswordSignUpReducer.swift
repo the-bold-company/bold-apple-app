@@ -104,10 +104,10 @@ public struct PasswordSignUpReducer {
     private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
         switch action {
         case .signUpConfirmed:
-            state.signUpProgress = .loaded(Confirmed())
+            state.signUpProgress = .loaded(.success(Confirmed()))
             return .none
         case let .signUpFailed(error):
-            state.signUpProgress = .failure(error)
+            state.signUpProgress = .loaded(.failure(error))
             return .none
         }
     }

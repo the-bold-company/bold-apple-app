@@ -17,7 +17,6 @@ public struct EmailSignUpReducer {
         @PresentationState public var destination: Destination.State?
         var email = Email.empty
         var emailValidationError: String?
-        var emailServerError: String?
         var emailVerificationProgress: LoadingProgress<Confirmed, VerifyEmailRegistrationFailure> = .idle
 
         public init() {
@@ -30,14 +29,14 @@ public struct EmailSignUpReducer {
     }
 
     public enum Action: BindableAction, FeatureAction {
-        case view(ViewAction)
+        case view(View)
         case delegate(DelegateAction)
         case _local(LocalAction)
         case binding(BindingAction<State>)
         case destination(PresentationAction<Destination.Action>)
 
         @CasePathable
-        public enum ViewAction {
+        public enum View {
             case nextButtonTapped
             case signInButtonTapped
         }
@@ -60,8 +59,8 @@ public struct EmailSignUpReducer {
             switch action {
             case let .view(viewAction):
                 return handleViewAction(viewAction, state: &state)
-//            case let .delegate(delegateAction):
-//                return handleDelegateAction(delegateAction, state: &state)
+            case let .delegate(delegateAction):
+                return handleDelegateAction(delegateAction, state: &state)
             case let ._local(localAction):
                 return handleLocalAction(localAction, state: &state)
             case .binding(\.$emailText):
@@ -103,16 +102,10 @@ public struct EmailSignUpReducer {
     private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
         switch action {
         case .emailHasNotBeenRegistered:
-            state.emailVerificationProgress = .loaded(Confirmed())
+            state.emailVerificationProgress = .loaded(.success(Confirmed()))
             state.destination = .password(.init(email: state.email))
         case let .emailVerificationFailed(reason):
-            state.emailVerificationProgress = .failure(reason)
-            switch reason {
-            case .genericError:
-                state.emailServerError = "Oops! Đã xảy ra sự cố khi đăng kỳ. Hãy thử lại sau một chút."
-            case .emailAlreadyRegistered:
-                state.emailServerError = "Tài khoản đã tồn tại. Vui lòng đăng nhập hoặc sử dụng email khác để đăng ký."
-            }
+            state.emailVerificationProgress = .loaded(.failure(reason))
         }
         return .none
     }
@@ -137,6 +130,17 @@ public extension EmailSignUpReducer {
             Scope(state: \.password, action: \.password) {
                 PasswordSignUpReducer()
             }
+        }
+    }
+}
+
+extension VerifyEmailRegistrationFailure {
+    var userFriendlyError: String {
+        switch self {
+        case .genericError:
+            return "Oops! Đã xảy ra sự cố khi đăng kỳ. Hãy thử lại sau một chút."
+        case .emailAlreadyRegistered:
+            return "Tài khoản đã tồn tại. Vui lòng đăng nhập hoặc sử dụng email khác để đăng ký."
         }
     }
 }

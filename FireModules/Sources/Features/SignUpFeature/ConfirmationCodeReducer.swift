@@ -42,17 +42,6 @@ public struct ConfirmationCodeReducer {
 
         var otp = OTP.empty
         var otpVerifying: OTPVerifyingProgress = .idle
-
-        var errorText: String? {
-            guard let error = otpVerifying.error else { return nil }
-            switch error {
-            case .genericError:
-                return "Có lỗi xảy ra. Vui lòng thử lại."
-            case .codeMismatch:
-                return "Dãy số bạn điền không đúng. Bạn hãy thử lại nhé!"
-            }
-        }
-
         let challenge: OTPChallenge
 
         public init(challenge: OTPChallenge) {
@@ -81,8 +70,6 @@ public struct ConfirmationCodeReducer {
             case verifyOTP(OTPChallenge, OTP)
         }
     }
-
-//    @Dependency(\.mfaUseCase.verifyOTP) var verifyOTP
 
     public init() {}
 
@@ -128,12 +115,23 @@ public struct ConfirmationCodeReducer {
     private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
         switch action {
         case .otpVerified:
-            state.otpVerifying = .loaded(Confirmed())
+            state.otpVerifying = .loaded(.success(Confirmed()))
             return .none
         case let .otpFailed(reason):
-            state.otpVerifying = .failure(reason)
+            state.otpVerifying = .loaded(.failure(reason))
             state.otpText = ""
             return .none
+        }
+    }
+}
+
+extension OTPFailure {
+    var userFriendlyError: String? {
+        switch self {
+        case .genericError:
+            return "Có lỗi xảy ra. Vui lòng thử lại."
+        case .codeMismatch:
+            return "Dãy số bạn điền không đúng. Bạn hãy thử lại nhé!"
         }
     }
 }

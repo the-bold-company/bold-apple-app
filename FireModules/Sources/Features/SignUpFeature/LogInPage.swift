@@ -13,7 +13,7 @@ public struct LoginPage: View {
         var emailError: String?
         var passwordError: String?
         var serverError: String?
-        var logInProgress: LoadingProgress<AuthenticatedUserEntity, LogInFailure>
+        var isLoading: Bool
     }
 
     let store: StoreOf<LoginReducer>
@@ -25,7 +25,7 @@ public struct LoginPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.logInProgress.isLoading) {
+        LoadingOverlay(loading: viewStore.isLoading) {
             VStack(alignment: .center) {
                 brandLogo
                 Spacing(height: .size24)
@@ -180,7 +180,7 @@ extension BindingViewStore<LoginReducer.State> {
             emailError: self.emailError,
             passwordError: self.passwordError,
             serverError: self.serverError,
-            logInProgress: self.logInProgress
+            isLoading: self.logInProgress.is(\.loading)
         )
         // swiftformat:enable redundantSelf
     }

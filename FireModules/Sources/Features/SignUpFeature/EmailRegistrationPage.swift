@@ -10,15 +10,16 @@ import SwiftUIIntrospect
     import DevSettingsUseCase
 #endif
 
+@ViewAction(for: EmailSignUpReducer.self)
 public struct EmailRegistrationPage: View {
     @ObserveInjection var iO
 
-    let store: StoreOf<EmailSignUpReducer>
-    @ObservedObject var viewStore: ViewStore<ViewState, EmailSignUpReducer.Action>
+    public let store: StoreOf<EmailSignUpReducer>
+    @ObservedObject private var viewStore: ViewStore<ViewState, EmailSignUpReducer.Action>
 
     public init(store: StoreOf<EmailSignUpReducer>) {
         self.store = store
-        self.viewStore = ViewStore(self.store, observe: \.emailRegistrationViewState)
+        self.viewStore = .init(store, observe: \.viewState)
     }
 
     struct ViewState: Equatable {
@@ -119,7 +120,7 @@ public struct EmailRegistrationPage: View {
 
     @ViewBuilder private var continueWithGoogle: some View {
         Button {
-//            viewStore.send(.view(.nextButtonTapped))
+            send(.nextButtonTapped)
         } label: {
             HStack {
                 Image(systemName: "apple.logo")
@@ -132,7 +133,7 @@ public struct EmailRegistrationPage: View {
 
     @ViewBuilder private var nextButton: some View {
         Button {
-            viewStore.send(.view(.nextButtonTapped))
+            send(.nextButtonTapped)
         } label: {
             Text("Đăng ký")
                 .frame(maxWidth: .infinity)
@@ -157,13 +158,13 @@ public struct EmailRegistrationPage: View {
 }
 
 extension BindingViewStore<EmailSignUpReducer.State> {
-    var emailRegistrationViewState: EmailRegistrationPage.ViewState {
+    var viewState: EmailRegistrationPage.ViewState {
         // swiftformat:disable redundantSelf
         EmailRegistrationPage.ViewState(
             email: self.$emailText,
             emailValidationError: self.emailValidationError,
-            emailVerificationError: self.emailServerError,
-            isEmailBeingVerified: self.emailVerificationProgress.isLoading
+            emailVerificationError: self.emailVerificationProgress[case: \.loaded.failure]?.userFriendlyError,
+            isEmailBeingVerified: self.emailVerificationProgress.is(\.loading)
         )
         // swiftformat:enable redundantSelf
     }

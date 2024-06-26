@@ -23,7 +23,7 @@ public struct PasswordCreationPage: View {
     struct ViewState: Equatable {
         @BindingViewState var password: String
         var passwordValidated: PasswordValidated
-        var signUpProgress: SignUpProgress
+        var isLoading: Bool
         var isFormValid: Bool
     }
 
@@ -36,7 +36,7 @@ public struct PasswordCreationPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.signUpProgress.isLoading) {
+        LoadingOverlay(loading: viewStore.isLoading) {
             VStack(alignment: .center) {
                 Spacing(height: .size24)
                 Text("Tạo mật khẩu").typography(.titleScreen)
@@ -119,7 +119,7 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
         PasswordCreationPage.ViewState(
             password: self.$passwordText,
             passwordValidated: self.passwordValidated,
-            signUpProgress: self.signUpProgress,
+            isLoading: self.signUpProgress.is(\.loading),
             isFormValid: self.password.isValid
         )
         // swiftformat:enable redundantSelf
