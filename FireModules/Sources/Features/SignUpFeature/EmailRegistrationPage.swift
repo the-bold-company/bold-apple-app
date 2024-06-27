@@ -5,24 +5,25 @@ import CoreUI
 import Networking
 import SwiftUI
 import SwiftUIIntrospect
+import TCAExtensions
 
 #if DEBUG
     import DevSettingsUseCase
 #endif
 
 @ViewAction(for: EmailSignUpReducer.self)
-public struct EmailRegistrationPage: View {
+public struct EmailRegistrationPage: TCAView {
     @ObserveInjection var iO
 
     public let store: StoreOf<EmailSignUpReducer>
-    @ObservedObject private var viewStore: ViewStore<ViewState, EmailSignUpReducer.Action>
+    @ObservedObject public private(set) var viewStore: ViewStore<ViewState, EmailSignUpReducer.Action>
 
     public init(store: StoreOf<EmailSignUpReducer>) {
         self.store = store
         self.viewStore = .init(store, observe: \.viewState)
     }
 
-    struct ViewState: Equatable {
+    public struct ViewState: Equatable {
         @BindingViewState var email: String
         var emailValidationError: String?
         var emailVerificationError: String?

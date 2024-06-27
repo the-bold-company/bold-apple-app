@@ -29,14 +29,14 @@ public struct EmailSignUpReducer {
     }
 
     public enum Action: BindableAction, FeatureAction {
-        case view(View)
+        case view(ViewAction)
         case delegate(DelegateAction)
         case _local(LocalAction)
         case binding(BindingAction<State>)
         case destination(PresentationAction<Destination.Action>)
 
         @CasePathable
-        public enum View {
+        public enum ViewAction {
             case nextButtonTapped
             case signInButtonTapped
         }
