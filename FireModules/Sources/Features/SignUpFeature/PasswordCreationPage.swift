@@ -46,7 +46,7 @@ public struct PasswordCreationPage: View {
                 actionButtons
             }
             .padding(16)
-            .navigationBarHidden(true)
+            .hideNavigationBar()
         }
         .enableInjection()
     }
@@ -57,8 +57,10 @@ public struct PasswordCreationPage: View {
             title: "Mật khẩu",
             text: viewStore.$password
         )
+        #if os(iOS)
         .autocapitalization(.none)
         .keyboardType(.alphabet)
+        #endif
         .textContentType(.password)
         .autocorrectionDisabled()
         Spacing(height: .size24)

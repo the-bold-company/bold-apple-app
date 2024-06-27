@@ -37,7 +37,7 @@ public struct InvestmentHomePage: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .navigationBarHidden(true)
+            .hideNavigationBar()
             .padding()
             .task {
                 viewStore.send(.forward(.onAppear))

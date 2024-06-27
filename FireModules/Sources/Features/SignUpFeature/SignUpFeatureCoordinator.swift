@@ -10,14 +10,14 @@ public struct SignUpFeatureCoordinator {
     @Reducer
     public struct Destination {
         public enum State: Equatable {
-            case signUp(EmailSignUpReducer.State)
+            case signUp(EmailSignUpFeature.State)
             case logIn(LoginReducer.State)
             case forgotPassword(ForgotPasswordReducer.State)
             case otp(ConfirmationCodeReducer.State)
         }
 
         public enum Action {
-            case signUp(EmailSignUpReducer.Action)
+            case signUp(EmailSignUpFeature.Action)
             case logIn(LoginReducer.Action)
             case forgotPassword(ForgotPasswordReducer.Action)
             case otp(ConfirmationCodeReducer.Action)
@@ -25,7 +25,7 @@ public struct SignUpFeatureCoordinator {
 
         public var body: some ReducerOf<Self> {
             Scope(state: \.signUp, action: \.signUp) {
-                EmailSignUpReducer()
+                EmailSignUpFeature()
             }
 
             Scope(state: \.logIn, action: \.logIn) {
@@ -107,7 +107,7 @@ public struct SignUpFeatureCoordinator {
         }
     }
 
-    private func handleSignUpDelegate(_ action: EmailSignUpReducer.Action, state: inout State) -> Effect<Action> {
+    private func handleSignUpDelegate(_ action: EmailSignUpFeature.Action, state: inout State) -> Effect<Action> {
         switch action {
         case let .destination(destinationAction):
             switch destinationAction {

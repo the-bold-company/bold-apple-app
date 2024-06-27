@@ -27,7 +27,7 @@ public struct StockSearchPage: View {
             searchedView
             Spacer()
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .padding()
         .enableInjection()
     }
@@ -46,17 +46,19 @@ public struct StockSearchPage: View {
                 .padding(.vertical, 10)
                 .padding(.leading, 40)
                 .padding(.trailing, 8)
-                .background(Color(.systemGray6))
-                .cornerRadius(10)
-                .focused($isSearchFocused)
-                .overlay(
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
-                            .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 8)
-                    }
-                )
+                #if os(iOS)
+                    .background(Color(.systemGray6))
+                #endif
+                    .cornerRadius(10)
+                    .focused($isSearchFocused)
+                    .overlay(
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(.gray)
+                                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                                .padding(.leading, 8)
+                        }
+                    )
 
                 Button(action: {
                     isSearchFocused = false
@@ -74,10 +76,14 @@ public struct StockSearchPage: View {
         List {
             Text("Trending")
                 .typography(.bodyDefaultBold)
+            #if os(iOS)
                 .foregroundColor(Color(uiColor: .systemGray))
+            #endif
                 .listRowInsets(.zero)
                 .listRowSeparator(.hidden)
+            #if os(iOS)
                 .listRowSpacing(0)
+            #endif
             Section {
                 ForEach(1 ..< 11) {
                     Text("\($0)")

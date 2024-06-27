@@ -36,6 +36,7 @@ struct FundPickerPage: View {
                     }
                     .tag(Optional(fund.id))
                 }
+                #if os(iOS)
                 .navigationBarItems(
                     leading: Button(action: {
                         viewStore.send(.removeSelection)
@@ -52,6 +53,7 @@ struct FundPickerPage: View {
                             .foregroundColor(.coreui.forestGreen)
                     }
                 )
+                #endif
             }
         }
         .enableInjection()

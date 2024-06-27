@@ -60,11 +60,13 @@ struct DevSettingsView: View {
                 themeLink()
             }
             .listStyle(.sidebar)
-            .navigationBarTitle("Dev Settings")
-            .navigationBarItems(
-                trailing: Button("Save") { viewModel.saveChanges() }
-                    .disabled(viewModel.applicableChanges.isEmpty)
-            )
+            #if os(iOS)
+                .navigationBarTitle("Dev Settings")
+                .navigationBarItems(
+                    trailing: Button("Save") { viewModel.saveChanges() }
+                        .disabled(viewModel.applicableChanges.isEmpty)
+                )
+            #endif
         }
         .enableInjection()
     }

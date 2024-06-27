@@ -63,9 +63,11 @@ public struct CoordinatorView: View {
         .task {
             store.send(.onLaunch)
         }
+        #if os(iOS)
         .onShake {
             store.send(.routeAction(viewStore.navigationStackCount - 1, action: .secretDevSettingsRoute))
         }
+        #endif
         .enableInjection()
     }
 }

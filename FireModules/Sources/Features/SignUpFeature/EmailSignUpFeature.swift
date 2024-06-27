@@ -9,7 +9,7 @@ import TCAExtensions
 #endif
 
 @Reducer
-public struct EmailSignUpReducer {
+public struct EmailSignUpFeature {
     public init() {}
 
     public struct State: Equatable {
@@ -115,7 +115,7 @@ public struct EmailSignUpReducer {
     }
 }
 
-public extension EmailSignUpReducer {
+public extension EmailSignUpFeature {
     @Reducer
     struct Destination {
         public enum State: Equatable {

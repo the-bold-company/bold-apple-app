@@ -42,7 +42,7 @@ public struct HomePage: View {
                     transactionList
                 }
             }
-            .navigationBarHidden(true)
+            .hideNavigationBar()
             .background(Color(red: 246 / 255, green: 246 / 255, blue: 246 / 255))
             .navigationDestination(
                 store: store.scope(

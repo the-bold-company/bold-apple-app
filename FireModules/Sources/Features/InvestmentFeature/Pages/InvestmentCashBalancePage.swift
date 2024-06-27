@@ -32,7 +32,7 @@ public struct InvestmentCashBalancePage: View {
             }
             .listStyle(.plain)
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .padding(.vertical)
         .task {
             viewStore.send(.forward(.onAppear))

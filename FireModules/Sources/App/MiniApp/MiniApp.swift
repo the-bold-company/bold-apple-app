@@ -39,7 +39,7 @@ public struct MiniApp: View {
                     Spacer()
                 }
                 .padding()
-                .navigationBarHidden(true)
+                .hideNavigationBar()
                 .navigationDestination(
                     store: store.scope(
                         state: \.$destination.miniAppEntryRoute,

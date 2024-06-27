@@ -3,6 +3,8 @@
 
 import PackageDescription
 
+// MARK: - Package dependencies
+
 var package = Package(
     name: "FireModules",
     platforms: [
@@ -28,7 +30,8 @@ var package = Package(
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.10.4"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
-        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
+//        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.2.0"),
+        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings.git", revision: "a01e983b566626a810deb9ecae193ff23cda1947"),
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
         .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
@@ -77,7 +80,7 @@ var package = Package(
     ]
 )
 
-// MARK: - Orchestrator - knows everything about everyone
+// MARK: Orchestrator dependencies - knows everything about everyone
 
 package.targets.append(contentsOf: [
     .orchestrator(
@@ -96,11 +99,9 @@ package.targets.append(contentsOf: [
             .authenticationUseCase,
             .fundDetailsUseCase,
             .fundCreationUseCase,
-            // "LogInUseCase", // TODO: Replace this with `AuthenticationUseCase`
             .fundListUseCase,
             .transactionRecordUseCase,
             .transactionListUseCase,
-            // .accountRegisterUseCase, // TODO: Replace this with `AuthenticationUseCase`
             .portfolioUseCase,
             .devSettingsUseCase,
             .investmentUseCase,
@@ -134,7 +135,7 @@ package.targets.append(contentsOf: [
     ),
 ])
 
-// MARK: - Features
+// MARK: Features
 
 package.targets.append(contentsOf: [
     .feature(
@@ -340,7 +341,7 @@ package.targets.append(contentsOf: [
     .dataSource(.marketAPIService, infras: [.networking]),
 ])
 
-// MARK: - Infrastructure
+// MARK: Infrastructure
 
 package.targets.append(contentsOf: [
     .infra(.utilities),
@@ -381,7 +382,7 @@ package.targets.append(contentsOf: [
     ),
 ])
 
-// MARK: - CoreUI
+// MARK: CoreUI
 
 package.targets.append(
     .designSystem(
@@ -411,7 +412,7 @@ package.targets.append(contentsOf: [
     .testApp(.app),
 ])
 
-// MARK: Helpers
+// MARK: - Helpers
 
 extension Product {
     static func singleTargetLibrary(_ name: String) -> Product {

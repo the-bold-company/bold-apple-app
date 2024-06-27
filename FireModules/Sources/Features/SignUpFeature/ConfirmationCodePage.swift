@@ -49,16 +49,20 @@ public struct ConfirmationCodePage: View {
                 Spacer()
             }
             .padding(16)
-            .navigationBarHidden(true)
+            .hideNavigationBar()
         }
         .enableInjection()
     }
 
     @ViewBuilder private var otpInput: some View {
-        FireOTPField(
-            text: viewStore.$otp,
-            slotsCount: 6
-        )
+        #if os(macOS)
+            TextField("", text: viewStore.$otp)
+        #elseif os(iOS)
+            FireOTPField(
+                text: viewStore.$otp,
+                slotsCount: 6
+            )
+        #endif
     }
 
     @ViewBuilder private var errorMessage: some View {
@@ -82,8 +86,12 @@ public struct ConfirmationCodePage: View {
 
         Text("Bạn không nhận được? ")
             .font(.system(size: 16))
+        #if os(macOS)
+            .foregroundColor(Color(.lightGray))
+        #elseif os(iOS)
             .foregroundColor(Color(uiColor: .lightGray))
-            + Text("Gửi lại")
+        #endif
+        + Text("Gửi lại")
             .font(.system(size: 16))
             .foregroundColor(Color.coreui.brightGreen)
             .bold()

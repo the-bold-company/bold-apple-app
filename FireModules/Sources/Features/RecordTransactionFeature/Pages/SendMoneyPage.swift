@@ -39,7 +39,9 @@ public struct SendMoneyPage: View {
                 VStack {
                     ScrollView {
                         VStack {
-                            amountInput
+                            #if os(iOS)
+                                amountInput
+                            #endif
                             fundPicker
                             descriptionInput
                         }
@@ -54,7 +56,7 @@ public struct SendMoneyPage: View {
             .task {
                 viewStore.send(.forward(.onAppear))
             }
-            .navigationBarHidden(true)
+            .hideNavigationBar()
             .sheet(
                 store: store.scope(
                     state: \.$fundPicker,
@@ -65,28 +67,30 @@ public struct SendMoneyPage: View {
         .enableInjection()
     }
 
-    @ViewBuilder
-    private var amountInput: some View {
-        ZStack(alignment: .center) {
-            CurrencyField(value: viewStore.$amount)
-                .font(.custom(FontFamily.Inter.semiBold, size: 36))
-                .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] })
-            Button(action: {
-                // Action to perform when the button is tapped
-            }) {
-                Text("VND")
-            }
-            .fireButtonStyle(type: .secondary(shape: .capsule))
-            .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 48 })
+    #if os(iOS)
+        @ViewBuilder
+        private var amountInput: some View {
+            ZStack(alignment: .center) {
+                CurrencyField(value: viewStore.$amount)
+                    .font(.custom(FontFamily.Inter.semiBold, size: 36))
+                    .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] })
+                Button(action: {
+                    // Action to perform when the button is tapped
+                }) {
+                    Text("VND")
+                }
+                .fireButtonStyle(type: .secondary(shape: .capsule))
+                .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 48 })
 
-            Text("Current balance: \(CurrencyKit.shared.currencyString(for: viewStore.sourceFund.balance, isoCurrencyCode: viewStore.sourceFund.currency))")
-                .foregroundColor(.coreui.darkCharcoal)
-                .typography(.bodyDefault)
-                .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 72 })
+                Text("Current balance: \(CurrencyKit.shared.currencyString(for: viewStore.sourceFund.balance, isoCurrencyCode: viewStore.sourceFund.currency))")
+                    .foregroundColor(.coreui.darkCharcoal)
+                    .typography(.bodyDefault)
+                    .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 72 })
+            }
+            .frame(height: 180)
+            .frame(maxWidth: .infinity)
         }
-        .frame(height: 180)
-        .frame(maxWidth: .infinity)
-    }
+    #endif
 
     @ViewBuilder
     private var fundPicker: some View {
@@ -116,7 +120,9 @@ public struct SendMoneyPage: View {
             Spacing(height: .size8)
             TextEditor(text: viewStore.$description)
                 .autocorrectionDisabled()
+            #if os(iOS)
                 .textInputAutocapitalization(.sentences)
+            #endif
                 .multilineTextAlignment(.leading)
                 .frame(height: 48)
                 .frame(maxWidth: .infinity)

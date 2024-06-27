@@ -57,7 +57,7 @@ public struct FundCreationPage: View {
                 }
                 .fireButtonStyle()
             }
-            .navigationBarHidden(true)
+            .hideNavigationBar()
             .padding()
         }
         .enableInjection()
@@ -70,7 +70,9 @@ public struct FundCreationPage: View {
             text: viewStore.$fundName
         )
         .autocorrectionDisabled()
-        .textInputAutocapitalization(.sentences)
+        #if os(iOS)
+            .textInputAutocapitalization(.sentences)
+        #endif
     }
 
     @ViewBuilder
@@ -91,7 +93,9 @@ public struct FundCreationPage: View {
                 }
                 .fireButtonStyle(type: .primary(shape: .capsule))
 
-                CurrencyField(value: viewStore.$balance)
+                #if os(iOS)
+                    CurrencyField(value: viewStore.$balance)
+                #endif
 
                 Spacer()
             }
@@ -111,7 +115,9 @@ public struct FundCreationPage: View {
             Spacing(height: .size8)
             TextEditor(text: viewStore.$description)
                 .autocorrectionDisabled()
+            #if os(iOS)
                 .textInputAutocapitalization(.sentences)
+            #endif
                 .multilineTextAlignment(.leading)
                 .frame(height: 100.0)
                 .frame(maxWidth: .infinity)

@@ -12,17 +12,17 @@ configurations:
       settingsExternalData: DevSettingsExternalData
       settingsImports:
         - DevSettingsUseCase
-  - sources:
-      include:
-        - ../../FireModules/Sources/Domains/DataInterfaces/PersistenceServiceInterface
-    templates:
-      - Templates/AutoMockable/AutoMockable.stencil
-    output: ../../FireModules/Sources/Data/PersistenceService/Generated/
-    baseIndentation: 4
-    args:
-      autoMockableImports:
-        - PersistenceServiceInterface
-        - DomainEntities
+  # - sources:
+  #     include:
+  #       - ../../FireModules/Sources/Domains/DataInterfaces/PersistenceServiceInterface
+  #   templates:
+  #     - Templates/AutoMockable/AutoMockable.stencil
+  #   output: ../../FireModules/Sources/Data/PersistenceService/Generated/
+  #   baseIndentation: 4
+  #   args:
+  #     autoMockableImports:
+  #       - PersistenceServiceInterface
+  #       - DomainEntities
   - sources:
       include:
         - ../../FireModules/Sources/Domains/UseCases/LogInUseCase

@@ -48,7 +48,7 @@ public struct FundDetailsPage: View {
                 }
             }
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .task {
             viewStore.send(.forward(.loadTransactionHistory))
         }

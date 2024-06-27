@@ -45,7 +45,7 @@ public struct ForgotPasswordPage: View {
                     )
                 ) { CreateNewPasswordPage(store: $0) }
             }
-            .navigationBarHidden(true)
+            .hideNavigationBar()
             .toolbar(.hidden)
         }
         .enableInjection()
@@ -56,8 +56,10 @@ public struct ForgotPasswordPage: View {
             title: "Email",
             text: viewStore.$email
         )
+        #if os(iOS)
         .autocapitalization(.none)
-        .keyboardType(.alphabet)
+        .keyboardType(.emailAddress)
+        #endif
         .autocorrectionDisabled()
         Group {
             Spacing(size: .size12)

@@ -12,10 +12,9 @@
     {
       "identity" : "automaticsettings",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/krzysztofzablocki/AutomaticSettings",
+      "location" : "https://github.com/krzysztofzablocki/AutomaticSettings.git",
       "state" : {
-        "revision" : "1e9fbd197e5343a25187c6c22ba69be4ffbb6360",
-        "version" : "1.1.0"
+        "revision" : "a01e983b566626a810deb9ecae193ff23cda1947"
       }
     },
     {
@@ -68,8 +67,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/johnpatrickmorgan/FlowStacks",
       "state" : {
-        "revision" : "ffb40788e7ef62b241da7e6b4cbe69e0d39524d0",
-        "version" : "0.6.1"
+        "revision" : "939b9ca8ef376e293f8d10f1ba179c19d6667e5a",
+        "version" : "0.6.2"
       }
     },
     {
@@ -149,8 +148,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-case-paths",
       "state" : {
-        "revision" : "ecb5b29e65bfc58b4c90216d4ca6ef3a573a28a7",
-        "version" : "1.4.1"
+        "revision" : "b871e5ed11a23e52c2896a92ce2c829982ff8619",
+        "version" : "1.4.2"
       }
     },
     {
@@ -212,8 +211,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-identified-collections",
       "state" : {
-        "revision" : "d533cd18b0b456b106694a9899f917ee595f2666",
-        "version" : "1.0.2"
+        "revision" : "2f5ab6e091dd032b63dacbda052405756010dc3b",
+        "version" : "1.1.0"
       }
     },
     {
@@ -230,8 +229,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-perception",
       "state" : {
-        "revision" : "64f7f6c28c6a4d3c4b9da2ba02383e29ab48a8cf",
-        "version" : "1.2.2"
+        "revision" : "d3ab98dc2887d1cc3bed676f6fa354da4cb22b3c",
+        "version" : "1.2.4"
       }
     },
     {
@@ -275,8 +274,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swiftui-navigation",
       "state" : {
-        "revision" : "7ab04c6e2e6a73d34d5a762970ef88bf0aedb084",
-        "version" : "1.4.0"
+        "revision" : "b7c9a79f6f6b1fefb87d3e5a83a9c2fe7cdc9720",
+        "version" : "1.5.0"
       }
     },
     {

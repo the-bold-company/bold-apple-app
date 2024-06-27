@@ -27,21 +27,23 @@ public struct InvestmentTradeAssetPickerPage: View {
             Text("Which asset type would you like to add").typography(.titleScreen)
             assetOptions
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .padding()
-        .fullScreenCover(
-            store: store.scope(
-                state: \.$destination.underConstructionRoute,
-                action: \.destination.underConstructionRoute
-            )
-        ) { _ in return UnderConstructionPage() }
-        .navigationDestination(
-            store: store.scope(
-                state: \.$destination.stockSearchHomeRoute,
-                action: \.destination.stockSearchHomeRoute
-            )
-        ) { StockSearchHomePage(store: $0) }
-        .enableInjection()
+        #if os(iOS)
+            .fullScreenCover(
+                store: store.scope(
+                    state: \.$destination.underConstructionRoute,
+                    action: \.destination.underConstructionRoute
+                )
+            ) { _ in return UnderConstructionPage() }
+        #endif
+            .navigationDestination(
+                store: store.scope(
+                    state: \.$destination.stockSearchHomeRoute,
+                    action: \.destination.stockSearchHomeRoute
+                )
+            ) { StockSearchHomePage(store: $0) }
+            .enableInjection()
     }
 
     @ViewBuilder

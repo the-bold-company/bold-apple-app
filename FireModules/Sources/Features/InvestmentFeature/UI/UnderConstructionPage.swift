@@ -35,7 +35,7 @@ public struct UnderConstructionPage: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .padding()
         .enableInjection()
     }

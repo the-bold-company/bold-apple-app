@@ -11,14 +11,14 @@ import TCAExtensions
     import DevSettingsUseCase
 #endif
 
-@ViewAction(for: EmailSignUpReducer.self)
+@ViewAction(for: EmailSignUpFeature.self)
 public struct EmailRegistrationPage: TCAView {
     @ObserveInjection var iO
 
-    public let store: StoreOf<EmailSignUpReducer>
-    @ObservedObject public private(set) var viewStore: ViewStore<ViewState, EmailSignUpReducer.Action>
+    public let store: StoreOf<EmailSignUpFeature>
+    @ObservedObject public private(set) var viewStore: ViewStore<ViewState, EmailSignUpFeature.Action>
 
-    public init(store: StoreOf<EmailSignUpReducer>) {
+    public init(store: StoreOf<EmailSignUpFeature>) {
         self.store = store
         self.viewStore = .init(store, observe: \.viewState)
     }
@@ -108,9 +108,11 @@ public struct EmailRegistrationPage: TCAView {
             title: "Email",
             text: viewStore.$email
         )
+        #if os(iOS)
         .autocapitalization(.none)
         .keyboardType(.emailAddress)
         .textContentType(.emailAddress)
+        #endif
         .autocorrectionDisabled()
 
         Text(viewStore.emailValidationError ?? " ")
@@ -158,7 +160,7 @@ public struct EmailRegistrationPage: TCAView {
     }
 }
 
-extension BindingViewStore<EmailSignUpReducer.State> {
+extension BindingViewStore<EmailSignUpFeature.State> {
     var viewState: EmailRegistrationPage.ViewState {
         // swiftformat:disable redundantSelf
         EmailRegistrationPage.ViewState(
@@ -178,7 +180,7 @@ extension BindingViewStore<EmailSignUpReducer.State> {
         EmailRegistrationPage(
             store: Store(
                 initialState: .init(),
-                reducer: { EmailSignUpReducer() },
+                reducer: { EmailSignUpFeature() },
                 withDependencies: {
                     $0.devSettingsUseCase = mockDevSettingsUseCase()
                     $0.verifyEmailUseCase.verifyExistence = { _ in
@@ -201,7 +203,7 @@ extension BindingViewStore<EmailSignUpReducer.State> {
         EmailRegistrationPage(
             store: Store(
                 initialState: .init(),
-                reducer: { EmailSignUpReducer() },
+                reducer: { EmailSignUpFeature() },
                 withDependencies: {
                     $0.devSettingsUseCase = mockDevSettingsUseCase()
                     $0.verifyEmailUseCase.verifyExistence = { _ in
@@ -227,7 +229,7 @@ import AuthAPIServiceInterface
         EmailRegistrationPage(
             store: Store(
                 initialState: .init(),
-                reducer: { EmailSignUpReducer() },
+                reducer: { EmailSignUpFeature() },
                 withDependencies: {
                     $0.context = .live
                     $0.devSettingsUseCase = mockDevSettingsUseCase()

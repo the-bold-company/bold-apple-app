@@ -42,7 +42,7 @@ public struct RecordPortfolioTransactionPage: View {
                 inputs
                 addTransactionButton
             }
-            .navigationBarHidden(true)
+            .hideNavigationBar()
             .padding()
             .alert(store: store.scope(
                 state: \.$destination.recordTransactionFailureAlert,
@@ -142,8 +142,10 @@ public struct RecordPortfolioTransactionPage: View {
                     .typography(.titleSmall)
                     .foregroundColor(.coreui.forestGreen)
                 Spacing(size: .size4)
-                CurrencyField(value: viewStore.$amount, formatter: amountformatter)
-                    .keyboardType(.decimalPad)
+                #if os(iOS)
+                    CurrencyField(value: viewStore.$amount, formatter: amountformatter)
+                        .keyboardType(.decimalPad)
+                #endif
             }
             .padding(.vertical(4))
 

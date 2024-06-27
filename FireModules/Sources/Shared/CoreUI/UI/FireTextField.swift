@@ -34,7 +34,9 @@ public struct FireTextField: View {
                 },
                 onCommit: {}
             )
+            #if os(iOS)
             .autocapitalization(.none)
+            #endif
             .padding(16)
             .background(
                 RoundedRectangle(cornerRadius: 10)

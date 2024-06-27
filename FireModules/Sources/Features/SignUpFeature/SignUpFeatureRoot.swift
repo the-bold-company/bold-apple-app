@@ -40,7 +40,7 @@ public struct SignUpFeatureRoot: View {
                 }
             }
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
     }
 }
 

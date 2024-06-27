@@ -43,7 +43,7 @@ public struct LoginPage: View {
             }
             .padding(16)
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .enableInjection()
     }
 
