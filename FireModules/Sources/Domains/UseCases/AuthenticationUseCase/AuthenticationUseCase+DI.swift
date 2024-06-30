@@ -34,13 +34,13 @@ enum SignUpUseCaseKey: DependencyKey {
 }
 
 #if DEBUG
-    extension SignUpUseCaseKey {
-        static let testValue = SignUpUseCase(
-            signUp: unimplemented("\(Self.self).signUp")
-        )
+extension SignUpUseCaseKey {
+    static let testValue = SignUpUseCase(
+        signUp: unimplemented("\(Self.self).signUp")
+    )
 
-        static let previewValue = SignUpUseCase.live()
-    }
+    static let previewValue = SignUpUseCase.live()
+}
 #endif
 
 // MARK: LogInUseCase dependency registration
@@ -49,12 +49,12 @@ enum LogInUseCaseKey: DependencyKey {
     static let liveValue = LogInUseCase.live()
 
     #if DEBUG
-        static let testValue = LogInUseCase(
-            logInAsync: unimplemented("\(Self.self).logInAsync"),
-            logIn: unimplemented("\(Self.self).logIn")
-        )
+    static let testValue = LogInUseCase(
+        logInAsync: unimplemented("\(Self.self).logInAsync"),
+        logIn: unimplemented("\(Self.self).logIn")
+    )
 
-        static let previewValue = LogInUseCase.live()
+    static let previewValue = LogInUseCase.live()
     #endif
 }
 
@@ -65,13 +65,13 @@ enum MFAUseCaseKey: DependencyKey {
 }
 
 #if DEBUG
-    extension MFAUseCaseKey {
-        static let testValue = MFAUseCase(
-            verifyOTP: unimplemented("\(Self.self).verifyOTP"),
-            confirmOTPResetPassword: unimplemented("\(Self.self).confirmOTPResetPassword")
-        )
-        static let previewValue = MFAUseCase.noop
-    }
+extension MFAUseCaseKey {
+    static let testValue = MFAUseCase(
+        verifyOTP: unimplemented("\(Self.self).verifyOTP"),
+        confirmOTPResetPassword: unimplemented("\(Self.self).confirmOTPResetPassword")
+    )
+    static let previewValue = MFAUseCase.noop
+}
 #endif
 
 // MARK: VerifyEmail dependency registration
@@ -80,10 +80,10 @@ enum VerifyEmailUseCaseKey: DependencyKey {
     public static let liveValue = VerifyEmailUseCase.live
 
     #if DEBUG
-        static let testValue = VerifyEmailUseCase(
-            verifyExistence: unimplemented("\(Self.self).verifyExistence")
-        )
-        static let previewValue = VerifyEmailUseCase.live
+    static let testValue = VerifyEmailUseCase(
+        verifyExistence: unimplemented("\(Self.self).verifyExistence")
+    )
+    static let previewValue = VerifyEmailUseCase.live
     #endif
 }
 
@@ -93,9 +93,9 @@ enum ForgotPasswordUseCaseKey: DependencyKey {
     public static let liveValue = ForgotPasswordUseCase.live()
 
     #if DEBUG
-        static let testValue = ForgotPasswordUseCase(
-            forgotPassword: unimplemented("\(Self.self).forgotPassword")
-        )
-        static let previewValue = ForgotPasswordUseCase.live()
+    static let testValue = ForgotPasswordUseCase(
+        forgotPassword: unimplemented("\(Self.self).forgotPassword")
+    )
+    static let previewValue = ForgotPasswordUseCase.live()
     #endif
 }

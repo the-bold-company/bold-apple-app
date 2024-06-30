@@ -40,7 +40,7 @@ public struct SendMoneyPage: View {
                     ScrollView {
                         VStack {
                             #if os(iOS)
-                                amountInput
+                            amountInput
                             #endif
                             fundPicker
                             descriptionInput
@@ -68,28 +68,28 @@ public struct SendMoneyPage: View {
     }
 
     #if os(iOS)
-        @ViewBuilder
-        private var amountInput: some View {
-            ZStack(alignment: .center) {
-                CurrencyField(value: viewStore.$amount)
-                    .font(.custom(FontFamily.Inter.semiBold, size: 36))
-                    .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] })
-                Button(action: {
-                    // Action to perform when the button is tapped
-                }) {
-                    Text("VND")
-                }
-                .fireButtonStyle(type: .secondary(shape: .capsule))
-                .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 48 })
-
-                Text("Current balance: \(CurrencyKit.shared.currencyString(for: viewStore.sourceFund.balance, isoCurrencyCode: viewStore.sourceFund.currency))")
-                    .foregroundColor(.coreui.darkCharcoal)
-                    .typography(.bodyDefault)
-                    .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 72 })
+    @ViewBuilder
+    private var amountInput: some View {
+        ZStack(alignment: .center) {
+            CurrencyField(value: viewStore.$amount)
+                .font(.custom(FontFamily.Inter.semiBold, size: 36))
+                .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] })
+            Button(action: {
+                // Action to perform when the button is tapped
+            }) {
+                Text("VND")
             }
-            .frame(height: 180)
-            .frame(maxWidth: .infinity)
+            .fireButtonStyle(type: .secondary(shape: .capsule))
+            .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 48 })
+
+            Text("Current balance: \(CurrencyKit.shared.currencyString(for: viewStore.sourceFund.balance, isoCurrencyCode: viewStore.sourceFund.currency))")
+                .foregroundColor(.coreui.darkCharcoal)
+                .typography(.bodyDefault)
+                .alignmentGuide(VerticalAlignment.center, computeValue: { dimension in dimension[VerticalAlignment.center] - 72 })
         }
+        .frame(height: 180)
+        .frame(maxWidth: .infinity)
+    }
     #endif
 
     @ViewBuilder

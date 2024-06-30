@@ -14,6 +14,7 @@ struct MiniFireApp: App {
     var body: some Scene {
         WindowGroup {
             MiniApp(store: MiniFireApp.store)
+                .frame(minWidth: 500, minHeight: 500) // Add this on the host app to constraint the minimum size of the app window on desktop
                 .enableInjection()
         }
     }

@@ -21,7 +21,7 @@
 #--header ignore
 #--hexgrouping none
 #--hexliteralcase lowercase
-#--ifdef no-indent
+--ifdef no-indent
 #--importgrouping alphabetized
 #--indent 4
 #--indentcase false

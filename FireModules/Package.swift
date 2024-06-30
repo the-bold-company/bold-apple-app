@@ -16,7 +16,8 @@ var package = Package(
         .singleTargetLibrary("MiniApp"),
         .singleTargetLibrary("Intents"),
         .singleTargetLibrary("AppPlaybook"),
-        .singleTargetLibrary("SignUpFeature"),
+        .singleTargetLibrary("AuthenticationFeature"),
+        .singleTargetLibrary("CoreUI"),
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
@@ -25,7 +26,7 @@ var package = Package(
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
-        .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
+        .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.2.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.10.4"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
@@ -62,7 +63,7 @@ var package = Package(
                 Module.Infra.coreUI.asDependency,
                 Module.Feature.homeFeature.asDependency,
                 Module.Feature.logInFeature.asDependency,
-                Module.Feature.signUpFeature.asDependency,
+                Module.Feature.authenticationFeature.asDependency,
                 Module.Feature.onboardingFeature.asDependency,
                 .ThirdParty.playbook.asDependency,
                 .ThirdParty.playbookUI.asDependency,
@@ -90,7 +91,7 @@ package.targets.append(contentsOf: [
             .fundFeature,
             .homeFeature,
             .recordTransactionFeature,
-            .signUpFeature,
+            .authenticationFeature,
             .onboardingFeature,
             .settingsFeature,
             .investmentFeature,
@@ -147,7 +148,7 @@ package.targets.append(contentsOf: [
     ),
     .feature(.onboardingFeature),
     .feature(
-        .signUpFeature,
+        .authenticationFeature,
         useCases: [
             .authenticationUseCase,
         ],
@@ -405,7 +406,7 @@ package.targets.append(contentsOf: [
     .testFeature(.homeFeature),
     .testFeature(.fundFeature),
     .testFeature(.recordTransactionFeature),
-    .testFeature(.signUpFeature),
+    .testFeature(.authenticationFeature),
     .testFeature(.investmentFeature),
 ])
 package.targets.append(contentsOf: [
@@ -786,7 +787,7 @@ enum Module {
     enum Feature: String, DependencyRepresentable {
         case onboardingFeature = "OnboardingFeature"
         case logInFeature = "LogInFeature"
-        case signUpFeature = "SignUpFeature"
+        case authenticationFeature = "AuthenticationFeature"
         case homeFeature = "HomeFeature"
         case fundFeature = "FundFeature"
         case investmentFeature = "InvestmentFeature"

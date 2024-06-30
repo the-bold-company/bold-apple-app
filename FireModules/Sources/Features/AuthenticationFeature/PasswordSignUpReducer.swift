@@ -4,7 +4,7 @@ import DomainEntities
 import TCAExtensions
 
 #if DEBUG
-    import DevSettingsUseCase
+import DevSettingsUseCase
 #endif
 
 typealias PasswordValidated = [Validated<String, PasswordValidationError>]
@@ -28,9 +28,9 @@ public struct PasswordSignUpReducer {
             self.email = email
 
             #if DEBUG
-                @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
-                self.passwordText = devSettings.credentials.password
-                self.password = Password(passwordText)
+            @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
+            self.passwordText = devSettings.credentials.password
+            self.password = Password(passwordText)
             #endif
         }
     }

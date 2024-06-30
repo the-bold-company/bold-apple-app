@@ -5,13 +5,13 @@
 //  Created by Hien Tran on 10/12/2023.
 //
 
+import AuthenticationFeature
 import FundFeature
 import HomeFeature
 import LogInFeature
 import OnboardingFeature
 import RecordTransactionFeature
 import SettingsFeature
-import SignUpFeature
 import SwiftUI
 import TCACoordinators
 

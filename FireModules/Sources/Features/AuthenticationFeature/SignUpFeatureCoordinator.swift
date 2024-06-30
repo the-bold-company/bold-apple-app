@@ -163,7 +163,7 @@ public struct SignUpFeatureCoordinator {
                     $0.remove(at: 0)
                 }
             }
-        case .binding, .view:
+        case .binding, .view, ._local:
             return .none
         }
     }

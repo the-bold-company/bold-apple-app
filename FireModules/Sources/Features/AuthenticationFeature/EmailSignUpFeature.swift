@@ -5,7 +5,7 @@ import Foundation
 import TCAExtensions
 
 #if DEBUG
-    import DevSettingsUseCase
+import DevSettingsUseCase
 #endif
 
 @Reducer
@@ -21,9 +21,9 @@ public struct EmailSignUpFeature {
 
         public init() {
             #if DEBUG
-                @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
-                self.emailText = devSettings.credentials.username
-                self.email = Email(emailText)
+            @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
+            self.emailText = devSettings.credentials.username
+            self.email = Email(emailText)
             #endif
         }
     }

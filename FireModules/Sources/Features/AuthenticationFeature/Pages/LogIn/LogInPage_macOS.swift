@@ -1,3 +1,4 @@
+#if os(macOS)
 import AuthenticationUseCase
 import Combine
 import ComposableArchitecture
@@ -7,11 +8,18 @@ import SwiftUI
 public struct LoginPage: View {
     @ObserveInjection private var iO
 
+    @FocusState private var focusedField: FocusedField?
+
+    enum FocusedField: Hashable {
+        case email
+        case password
+    }
+
     struct ViewState: Equatable {
         @BindingViewState var email: String
         @BindingViewState var password: String
-        var emailError: String?
-        var passwordError: String?
+        var emailValidationError: String?
+        var passwordValidationError: String?
         var serverError: String?
         var isLoading: Bool
     }
@@ -25,7 +33,7 @@ public struct LoginPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.isLoading) {
+        ZStack {
             VStack(alignment: .center) {
                 brandLogo
                 Spacing(height: .size24)
@@ -39,16 +47,21 @@ public struct LoginPage: View {
                 loginButton
                 Spacing(height: .size24)
                 signUpPrompt
-                Spacer()
             }
-            .padding(16)
+            .frame(width: 400)
+            .padding(.all, 40)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
+            .padding(.horizontal, 40)
         }
-        .hideNavigationBar()
+        .padding()
+        .background(Color(hex: 0xB7F2C0))
         .enableInjection()
     }
 
     @ViewBuilder private var brandLogo: some View {
-        Image(systemName: "b.square")
+        Image(systemName: "leaf")
             .resizable()
             .frame(width: 72, height: 72)
     }
@@ -63,42 +76,45 @@ public struct LoginPage: View {
             }
             .frame(maxWidth: .infinity)
         }
-        .fireButtonStyle(type: .secondary(shape: .roundedCorner))
+        .moukaButtonStyle(.secondary)
     }
 
     @ViewBuilder private var divider: some View {
         Spacing(height: .size16)
-        ZStack {
-            Divider()
-                .background(Color.gray)
+        HStack(spacing: 16) {
+            VStack {
+                Divider().background(Color(hex: 0xEBEBF0))
+            }
+
             Text("Hoặc")
-                .padding(.horizontal, 16)
-                .background(Color.white)
+                .foregroundStyle(Color(hex: 0x6B7280))
+
+            VStack {
+                Divider().background(Color(hex: 0xEBEBF0))
+            }
         }
         Spacing(height: .size16)
     }
 
     @ViewBuilder
     private var inputFields: some View {
-        FireTextField(
+        MoukaTextField(
             title: "Email",
-            text: viewStore.$email
+            text: viewStore.$email,
+            focusedField: $focusedField,
+            fieldId: .email,
+            error: viewStore.emailValidationError
         )
-        Group {
-            Spacing(size: .size12)
-            Text(viewStore.emailError ?? "")
-                .typography(.bodyDefault)
-                .foregroundColor(.red)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .isHidden(hidden: viewStore.emailError == nil)
 
         Spacing(height: .size24)
 
         ZStack(alignment: .topTrailing) {
-            FireSecureTextField(
+            MoukaSecureTextField(
                 title: "Mật khẩu",
-                text: viewStore.$password
+                text: viewStore.$password,
+                focusedField: $focusedField,
+                fieldId: .password,
+                error: viewStore.passwordValidationError
             )
 
             Text("Quên mật khẩu?")
@@ -109,15 +125,6 @@ public struct LoginPage: View {
                 }
         }
         .frame(maxWidth: .infinity)
-
-        Group {
-            Spacing(size: .size12)
-            Text(viewStore.passwordError ?? "")
-                .typography(.bodyDefault)
-                .foregroundColor(.red)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .isHidden(hidden: viewStore.passwordError == nil)
     }
 
     @ViewBuilder
@@ -128,7 +135,7 @@ public struct LoginPage: View {
             Text("Đăng nhập")
                 .frame(maxWidth: .infinity)
         }
-        .fireButtonStyle()
+        .moukaButtonStyle(.primary, disabled: viewStore.emailValidationError != nil && viewStore.passwordValidationError != nil)
     }
 
     @ViewBuilder private var errorMessage: some View {
@@ -177,8 +184,8 @@ extension BindingViewStore<LoginReducer.State> {
         LoginPage.ViewState(
             email: self.$emailText,
             password: self.$passwordText,
-            emailError: self.emailError,
-            passwordError: self.passwordError,
+            emailValidationError: self.emailValidationError,
+            passwordValidationError: self.passwordValidationError,
             serverError: self.serverError,
             isLoading: self.logInProgress.is(\.loading)
         )
@@ -188,20 +195,20 @@ extension BindingViewStore<LoginReducer.State> {
 
 // MARK: Previews
 
-import AuthAPIService
-import AuthAPIServiceInterface
+// import AuthAPIService
+// import AuthAPIServiceInterface
 
 #Preview("Custom mock") {
-    NavigationStack {
-        LoginPage(
-            store: Store(
-                initialState: .init(),
-                reducer: { LoginReducer() },
-                withDependencies: {
-                    $0.context = .live
-                    $0.devSettingsUseCase = mockDevSettingsUseCase()
-                }
-            )
+    LoginPage(
+        store: Store(
+            initialState: .init(),
+            reducer: { LoginReducer() },
+            withDependencies: {
+                $0.context = .live
+                $0.devSettingsUseCase = mockDevSettingsUseCase()
+            }
         )
-    }
+    )
+    .previewLayout(.fixed(width: 3000, height: 2000))
 }
+#endif

@@ -1,3 +1,4 @@
+import AuthenticationFeature
 import AuthenticationUseCase
 import ComposableArchitecture
 import CoreUI
@@ -5,7 +6,6 @@ import DI
 import DomainEntities
 import Factory
 import KeychainService
-import SignUpFeature
 import SwiftUI
 
 public struct MiniApp: View {
@@ -51,6 +51,7 @@ public struct MiniApp: View {
         .task {
             viewStore.send(.forward(.logIn))
         }
+        .preferredColorScheme(.light)
         .enableInjection()
     }
 }

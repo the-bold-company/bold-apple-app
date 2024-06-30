@@ -1,3 +1,4 @@
+#if os(macOS)
 import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
@@ -10,37 +11,73 @@ public struct SignUpFeatureRoot: View {
     }
 
     public var body: some View {
-        TCARouter(store.scope(state: \.self, action: \._local)) { screen in
-            SwitchStore(screen) { screen in
-                switch screen {
-                case .signUp:
-                    CaseLet(
-                        /Destination.State.signUp,
-                        action: Destination.Action.signUp,
-                        then: EmailRegistrationPage.init(store:)
-                    )
-                case .otp:
-                    CaseLet(
-                        /Destination.State.otp,
-                        action: Destination.Action.otp,
-                        then: ConfirmationCodePage.init(store:)
-                    )
-                case .logIn:
-                    CaseLet(
-                        /Destination.State.logIn,
-                        action: Destination.Action.logIn,
-                        then: LoginPage.init(store:)
-                    )
-                case .forgotPassword:
-                    CaseLet(
-                        /Destination.State.forgotPassword,
-                        action: Destination.Action.forgotPassword,
-                        then: ForgotPasswordPage.init(store:)
-                    )
-                }
-            }
+//        TCARouter(store.scope(state: \.self, action: \._local)) { screen in
+//            SwitchStore(screen) { screen in
+//                switch screen {
+//                case .signUp:
+//                    CaseLet(
+//                        /Destination.State.signUp,
+//                        action: Destination.Action.signUp,
+//                        then: EmailRegistrationPage.init(store:)
+        ////                         then: { store in Text("Initiatives") }
+//                    )
+//                case .otp:
+//                    CaseLet(
+//                        /Destination.State.otp,
+//                        action: Destination.Action.otp,
+//                        then: ConfirmationCodePage.init(store:)
+//                    )
+//                case .logIn:
+//                    CaseLet(
+//                        /Destination.State.logIn,
+//                        action: Destination.Action.logIn,
+//                        then: LoginPage.init(store:)
+        ////                         then: { store in Text("Initiatives") }
+//                    )
+//                case .forgotPassword:
+//                    CaseLet(
+//                        /Destination.State.forgotPassword,
+//                        action: Destination.Action.forgotPassword,
+//                        then: ForgotPasswordPage.init(store:)
+//                    )
+//                }
+//            }
+//        }
+//        .hideNavigationBar()
+//        NavigationView {
+//            List {
+//                Section(header: Text("Workspace")) {
+//                    NavigationLink(destination: Text("Initiatives")) {
+//                        Text("Initiatives")
+//                    }
+//                    NavigationLink(destination: Text("Projects")) {
+//                        Text("Projects")
+//                    }
+//                    NavigationLink(destination: Text("Teams")) {
+//                        Text("Teams")
+//                    }
+//                }
+//                Section(header: Text("Favorites")) {
+//                    NavigationLink(destination: Text("Focused Projects")) {
+//                        Text("Focused Projects")
+//                    }
+//                    NavigationLink(destination: Text("Active Web Issues")) {
+//                        Text("Active Web Issues")
+//                    }
+//                }
+//            }
+//            .listStyle(SidebarListStyle())
+//            .navigationTitle("Sidebar")
+//            Text("Select an item")
+//        }
+        NavigationStack {
+            LoginPage(
+                store: Store(
+                    initialState: .init(),
+                    reducer: { LoginReducer() }
+                )
+            )
         }
-        .hideNavigationBar()
     }
 }
 
@@ -126,3 +163,4 @@ func mockDevSettingsUseCase() -> DevSettingsUseCase {
     mockSettings.credentials.password = "Qwerty@123"
     return DevSettingsUseCase.mock(initialDevSettings: mockSettings)
 }
+#endif

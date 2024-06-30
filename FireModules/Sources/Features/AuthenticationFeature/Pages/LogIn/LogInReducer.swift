@@ -5,7 +5,7 @@ import TCAExtensions
 import Utilities
 
 #if DEBUG
-    import DevSettingsUseCase
+import DevSettingsUseCase
 #endif
 
 @Reducer
@@ -19,19 +19,22 @@ public struct LoginReducer {
 
         var email: Email { Email(emailText) }
         var password: NonEmptyString { NonEmptyString(passwordText) }
-        var emailError: String?
-        var passwordError: String?
+        var emailValidationError: String?
+        var passwordValidationError: String?
 
         public init(email: Email? = nil) {
-            #if DEBUG
-                @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
-
-                self.emailText = email?.emailString ?? devSettings.credentials.username
-                self.passwordText = email == nil
-                    ? devSettings.credentials.password
-                    : ""
+            #if DEBUG // && os(iOS)
+//                @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
+//
+//                self.emailText = email?.emailString ?? devSettings.credentials.username
+//                self.passwordText = email == nil
+//                    ? devSettings.credentials.password
+//                    : ""
+//                self.email = email
+            self.emailText = email?.emailString ?? ""
             #else
-                self.email = email
+            self.email = email
+//                self.emailText = email?.emailString ?? ""
             #endif
         }
     }
@@ -88,14 +91,14 @@ public struct LoginReducer {
 
             switch emailError {
             case .patternInvalid:
-                state.emailError = "Email không hợp lệ."
+                state.emailValidationError = "Email không hợp lệ."
             case .fieldEmpty:
-                state.emailError = "Vui lòng điền thông tin."
+                state.emailValidationError = "Vui lòng điền thông tin."
             case .none:
-                state.emailError = nil
+                state.emailValidationError = nil
             }
 
-            state.passwordError = passwordError != nil
+            state.passwordValidationError = passwordError != nil
                 ? "Vui lòng điền thông tin."
                 : nil
 

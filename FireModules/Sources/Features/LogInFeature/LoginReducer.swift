@@ -17,10 +17,10 @@ public struct LoginReducer {
     public struct State: Equatable {
         public init() {
             #if DEBUG
-                @Injected(\LogInFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
+            @Injected(\LogInFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
 
-                self.email = devSettings.credentials.username
-                self.password = devSettings.credentials.password
+            self.email = devSettings.credentials.username
+            self.password = devSettings.credentials.password
             #endif
         }
 

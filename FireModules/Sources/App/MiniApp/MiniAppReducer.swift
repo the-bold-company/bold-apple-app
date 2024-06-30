@@ -79,11 +79,11 @@ public struct MiniAppReducer {
                 .debounce(id: CancelId.logIn, for: .milliseconds(300), scheduler: mainQueue)
                 .cancellable(id: CancelId.logIn, cancelInFlight: true)
             case let .delegate(.logInSuccesfully(response)):
-                state.logInState = .loaded(response.user)
+                state.logInState = .loaded(.success(response.user))
                 state.destination = .miniAppEntryRoute(.init())
                 return .none
             case let .delegate(.logInFailure(error)):
-                state.logInState = .failure(error)
+                state.logInState = .loaded(.failure(error))
                 return .none
             case .binding, .destination:
                 return .none

@@ -38,11 +38,11 @@ public enum DevSettingsUseCaseKey: DependencyKey {
     public static let liveValue = DevSettingsUseCase.live
 
     #if DEBUG
-        public static let testValue = DevSettingsUseCase(
-            get: unimplemented("\(Self.self).get"),
-            set: unimplemented("\(Self.self).set"),
-            stream: unimplemented("\(Self.self).stream")
-        )
-        public static let previewValue = DevSettingsUseCase.noop
+    public static let testValue = DevSettingsUseCase(
+        get: unimplemented("\(Self.self).get"),
+        set: unimplemented("\(Self.self).set"),
+        stream: unimplemented("\(Self.self).stream")
+    )
+    public static let previewValue = DevSettingsUseCase.noop
     #endif
 }

@@ -94,7 +94,7 @@ public struct FundCreationPage: View {
                 .fireButtonStyle(type: .primary(shape: .capsule))
 
                 #if os(iOS)
-                    CurrencyField(value: viewStore.$balance)
+                CurrencyField(value: viewStore.$balance)
                 #endif
 
                 Spacer()

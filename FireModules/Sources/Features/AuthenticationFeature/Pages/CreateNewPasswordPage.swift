@@ -7,7 +7,7 @@ import Networking
 import SwiftUI
 
 #if DEBUG
-    import DevSettingsUseCase
+import DevSettingsUseCase
 #endif
 
 public struct CreateNewPasswordPage: View {

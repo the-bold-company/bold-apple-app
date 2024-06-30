@@ -143,8 +143,8 @@ public struct RecordPortfolioTransactionPage: View {
                     .foregroundColor(.coreui.forestGreen)
                 Spacing(size: .size4)
                 #if os(iOS)
-                    CurrencyField(value: viewStore.$amount, formatter: amountformatter)
-                        .keyboardType(.decimalPad)
+                CurrencyField(value: viewStore.$amount, formatter: amountformatter)
+                    .keyboardType(.decimalPad)
                 #endif
             }
             .padding(.vertical(4))

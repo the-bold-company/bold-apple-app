@@ -56,12 +56,12 @@ public struct ConfirmationCodePage: View {
 
     @ViewBuilder private var otpInput: some View {
         #if os(macOS)
-            TextField("", text: viewStore.$otp)
+        TextField("", text: viewStore.$otp)
         #elseif os(iOS)
-            FireOTPField(
-                text: viewStore.$otp,
-                slotsCount: 6
-            )
+        FireOTPField(
+            text: viewStore.$otp,
+            slotsCount: 6
+        )
         #endif
     }
 
