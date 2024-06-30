@@ -135,7 +135,7 @@ public struct LoginPage: View {
             Text("Đăng nhập")
                 .frame(maxWidth: .infinity)
         }
-        .moukaButtonStyle(.primary, disabled: viewStore.emailValidationError != nil && viewStore.passwordValidationError != nil)
+        .moukaButtonStyle(.primary, disabled: viewStore.emailValidationError == nil || viewStore.passwordValidationError == nil)
     }
 
     @ViewBuilder private var errorMessage: some View {

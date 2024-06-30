@@ -61,10 +61,14 @@ public struct LoginReducer {
         }
 
         @CasePathable
-        public enum LocalAction {}
+        public enum LocalAction {
+            case verifyEmail
+            case verifyPassword
+        }
     }
 
     @Dependency(\.logInUseCase.logIn) var logIn
+    @Dependency(\.mainQueue) var mainQueue
 
     public init() {}
 
@@ -77,6 +81,22 @@ public struct LoginReducer {
                 return handleViewAction(viewAction, state: &state)
             case let .delegate(delegateAction):
                 return handleDelegateAction(delegateAction, state: &state)
+            case let ._local(localAction):
+                return handleLocalAction(localAction, state: &state)
+            case .binding(\.$emailText):
+                enum CancelId { case verifyEmail }
+
+                return .run { send in
+                    await send(._local(.verifyEmail))
+                }
+                .debounce(id: CancelId.verifyEmail, for: .milliseconds(300), scheduler: mainQueue)
+            case .binding(\.$passwordText):
+                enum CancelId { case verifyPassword }
+
+                return .run { send in
+                    await send(._local(.verifyPassword))
+                }
+                .debounce(id: CancelId.verifyPassword, for: .milliseconds(300), scheduler: mainQueue)
             case .binding:
                 return .none
             }
@@ -86,22 +106,6 @@ public struct LoginReducer {
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
         case .logInButtonTapped:
-            let emailError = state.email.getErrorOrNil()
-            let passwordError = state.password.getErrorOrNil()
-
-            switch emailError {
-            case .patternInvalid:
-                state.emailValidationError = "Email không hợp lệ."
-            case .fieldEmpty:
-                state.emailValidationError = "Vui lòng điền thông tin."
-            case .none:
-                state.emailValidationError = nil
-            }
-
-            state.passwordValidationError = passwordError != nil
-                ? "Vui lòng điền thông tin."
-                : nil
-
             guard let email = state.email.getOrNil(),
                   let password = state.password.getOrNil()
             else { return .none }
@@ -138,6 +142,30 @@ public struct LoginReducer {
             }
             return .none
         case .forgotPasswordInitiated, .signUpInitiate:
+            return .none
+        }
+    }
+
+    private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case .verifyEmail:
+            let emailError = state.email.getErrorOrNil()
+
+            switch emailError {
+            case .patternInvalid:
+                state.emailValidationError = "Email không hợp lệ."
+            case .fieldEmpty:
+                state.emailValidationError = "Vui lòng điền thông tin."
+            case .none:
+                state.emailValidationError = nil
+            }
+            return .none
+        case .verifyPassword:
+            let passwordError = state.password.getErrorOrNil()
+
+            state.passwordValidationError = passwordError != nil
+                ? "Vui lòng điền thông tin."
+                : nil
             return .none
         }
     }
