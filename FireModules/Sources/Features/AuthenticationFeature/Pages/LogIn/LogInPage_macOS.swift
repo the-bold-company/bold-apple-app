@@ -18,16 +18,17 @@ public struct LoginPage: View {
     struct ViewState: Equatable {
         @BindingViewState var email: String
         @BindingViewState var password: String
+        var isFormValid: Bool
         var emailValidationError: String?
         var passwordValidationError: String?
         var serverError: String?
         var isLoading: Bool
     }
 
-    let store: StoreOf<LoginReducer>
-    @ObservedObject var viewStore: ViewStore<ViewState, LoginReducer.Action>
+    let store: StoreOf<LogInFeature>
+    @ObservedObject var viewStore: ViewStore<ViewState, LogInFeature.Action>
 
-    public init(store: StoreOf<LoginReducer>) {
+    public init(store: StoreOf<LogInFeature>) {
         self.store = store
         self.viewStore = ViewStore(self.store, observe: \.viewState)
     }
@@ -55,6 +56,7 @@ public struct LoginPage: View {
             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
             .padding(.horizontal, 40)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
         .background(Color(hex: 0xB7F2C0))
         .enableInjection()
@@ -121,7 +123,7 @@ public struct LoginPage: View {
                 .typography(.bodyDefaultBold)
                 .foregroundColor(.coreui.forestGreen)
                 .onTapGesture {
-                    store.send(.view(.forgotPasswordButtonTapped))
+//                    store.send(.view(.forgotPasswordButtonTapped))
                 }
         }
         .frame(maxWidth: .infinity)
@@ -135,7 +137,7 @@ public struct LoginPage: View {
             Text("Đăng nhập")
                 .frame(maxWidth: .infinity)
         }
-        .moukaButtonStyle(.primary, disabled: viewStore.emailValidationError == nil || viewStore.passwordValidationError == nil)
+        .moukaButtonStyle(.primary, disabled: !viewStore.isFormValid)
     }
 
     @ViewBuilder private var errorMessage: some View {
@@ -173,42 +175,24 @@ public struct LoginPage: View {
                 .bold()
         }
         .onTapGesture {
-            store.send(.view(.signUpButtonTapped))
+//            store.send(.view(.signUpButtonTapped))
         }
     }
 }
 
-extension BindingViewStore<LoginReducer.State> {
+extension BindingViewStore<LogInFeature.State> {
     var viewState: LoginPage.ViewState {
         // swiftformat:disable redundantSelf
         LoginPage.ViewState(
             email: self.$emailText,
             password: self.$passwordText,
-            emailValidationError: self.emailValidationError,
-            passwordValidationError: self.passwordValidationError,
+            isFormValid: self.formValidation.is(\.valid),
+            emailValidationError: self.formValidation[case: \.invalid]?.emailValidationError,
+            passwordValidationError: self.formValidation[case: \.invalid]?.passwordValidationError,
             serverError: self.serverError,
             isLoading: self.logInProgress.is(\.loading)
         )
         // swiftformat:enable redundantSelf
     }
-}
-
-// MARK: Previews
-
-// import AuthAPIService
-// import AuthAPIServiceInterface
-
-#Preview("Custom mock") {
-    LoginPage(
-        store: Store(
-            initialState: .init(),
-            reducer: { LoginReducer() },
-            withDependencies: {
-                $0.context = .live
-                $0.devSettingsUseCase = mockDevSettingsUseCase()
-            }
-        )
-    )
-    .previewLayout(.fixed(width: 3000, height: 2000))
 }
 #endif

@@ -1,3 +1,4 @@
+#if os(iOS)
 import ComposableArchitecture
 import DomainEntities
 import TCACoordinators
@@ -11,14 +12,14 @@ public struct SignUpFeatureCoordinator {
     public struct Destination {
         public enum State: Equatable {
             case signUp(EmailSignUpFeature.State)
-            case logIn(LoginReducer.State)
+            case logIn(LogInFeature.State)
             case forgotPassword(ForgotPasswordReducer.State)
             case otp(ConfirmationCodeReducer.State)
         }
 
         public enum Action {
             case signUp(EmailSignUpFeature.Action)
-            case logIn(LoginReducer.Action)
+            case logIn(LogInFeature.Action)
             case forgotPassword(ForgotPasswordReducer.Action)
             case otp(ConfirmationCodeReducer.Action)
         }
@@ -29,7 +30,7 @@ public struct SignUpFeatureCoordinator {
             }
 
             Scope(state: \.logIn, action: \.logIn) {
-                LoginReducer()
+                LogInFeature()
             }
 
             Scope(state: \.otp, action: \.otp) {
@@ -144,7 +145,7 @@ public struct SignUpFeatureCoordinator {
         }
     }
 
-    private func handleLogInDelegate(_ action: LoginReducer.Action, state: inout State) -> Effect<Action> {
+    private func handleLogInDelegate(_ action: LogInFeature.Action, state: inout State) -> Effect<Action> {
         switch action {
         case let .delegate(delegateAction):
             switch delegateAction {
@@ -189,3 +190,4 @@ public struct SignUpFeatureCoordinator {
         }
     }
 }
+#endif

@@ -42,7 +42,7 @@ public struct FireSecureTextField: View {
                     TextField(
                         "",
                         text: $text,
-                        onCommit: { print(text) }
+                        onCommit: {}
                     )
                     .padding([.leading, .bottom, .top], 16)
                 }

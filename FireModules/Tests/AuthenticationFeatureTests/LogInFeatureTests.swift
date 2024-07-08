@@ -1,20 +1,15 @@
-////
-////  LogInReducerTests.swift
-////
-////
-////  Created by Hien Tran on 20/02/2024.
-////
-//
-// import ComposableArchitecture
-// import DevSettingsUseCase
-////import DI
-// import DomainEntities
-// @testable import LogInFeature
-// import TestHelpers
-// import XCTest
-//
-// @MainActor
-// final class LogInReducerTests: XCTestCase {
+// swiftlint:disable line_length
+// swiftlint:disable file_length
+
+import AuthAPIService
+@testable import AuthenticationFeature
+import ComposableArchitecture
+import DomainEntities
+import TestHelpers
+import XCTest
+
+@MainActor
+final class LogInFeatureTests: XCTestCase {
 //    var initialState: LoginReducer.State!
 //
 //    override func setUpWithError() throws {
@@ -29,7 +24,7 @@
 //    override func tearDownWithError() throws {
 //        Container.shared.manager.pop()
 //    }
-//
+
 //    func testUsernameAndPassword_isPreFilled_whenDevSettingsAreSet() async throws {
 //        // Arrange
 //        var mockCredentials = DevSettings.Credentials()
@@ -50,7 +45,7 @@
 //        XCAssertNoDifference(store.state.email, "user@fire.com")
 //        XCAssertNoDifference(store.state.password, "P@ssword123")
 //    }
-//
+
 //    func testUsernameAndPassword_isEmpty_whenDevSettingsAreNotSet() async throws {
 //        // Arrange
 //        Container.shared.devSettingsUseCase.register {
@@ -64,26 +59,40 @@
 //        // Act & Assert
 //        XCAssertTCAStateNoDifference(store.state, LoginReducer.State())
 //    }
-//
-//    func testNavigateToHome_WhenLogInSuccessfully() async throws {
-//        // Arrange
-//        let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
-//        let logInUseCaseMock = LogInUseCaseProtocolMock()
-//        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorReturnValue = .success(mockUser)
-//        let store = TestStore(
-//            initialState: initialState,
-//            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
-//        )
-//        store.exhaustivity = .off(showSkippedAssertions: false)
-//
-//        // Act
-//        await store.send(.delegate(.logInButtonTapped))
-//
-//        // Assert
-//        await store.receive(\.logInSuccesfully)
-//        await store.receive(/LoginReducer.Action.navigate(.goToHome))
-//    }
-//
+
+    func testEnterValidCredentials_ShouldLogInSuccessfully() async throws {
+        // Arrange
+        let store = TestStore(initialState: .init()) {
+            LogInFeature()
+        } withDependencies: {
+            $0.context = .live
+            $0.authAPIService = .directMock(logInResponseMock: """
+            {
+              "message": "Execute successfully",
+              "data": {
+                "accessToken": "eyJraWQiOiJQcVFzbE9vSmFZRV",
+                "refreshToken": "eyJraWQiOiJQcVFzbE9vSmFZRV",
+                "idToken": "eyJraWQiOiJQcVFzbE9vSmFZRV",
+                "profile": {
+                  "email": "hien2@yopmail.com"
+                }
+              }
+            }
+            """)
+        }
+        store.exhaustivity = .off
+
+        // Act
+        await store.send(.set(\.$emailText, "user@mouka.ai"))
+        await store.send(.set(\.$passwordText, "Qwerty@123"))
+        await store.send(.view(.logInButtonTapped))
+
+        // Assert
+        await store.receive(\.delegate.userLoggedIn) {
+            $0.logInProgress = .loaded(.success(.init(email: "hien2@yopmail.com")))
+        }
+    }
+
 //    func testShowError_WhenLogInFailed() async throws {
 //        // Arrange
 //        let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
@@ -161,4 +170,7 @@
 //        await store.send(.delegate(.logInButtonTapped))
 //        XCAssertTCAStateNoDifference(store.state.areInputsValid, false)
 //    }
-// }
+}
+
+// swiftlint:enable line_length
+// swiftlint:enable file_length

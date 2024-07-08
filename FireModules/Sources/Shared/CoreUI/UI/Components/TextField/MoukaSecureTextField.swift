@@ -51,7 +51,6 @@ public struct MoukaSecureTextField<FocusField: Hashable>: View {
                     $0.isBezeled = false
                     $0.drawsBackground = true
                     $0.backgroundColor = .clear
-                    print($0.frame.height)
                 }
                 #elseif os(iOS)
                 .autocapitalization(.none)
@@ -84,7 +83,6 @@ public struct MoukaSecureTextField<FocusField: Hashable>: View {
                     $0.isBezeled = false
                     $0.drawsBackground = true
                     $0.backgroundColor = .clear
-                    print($0.frame.height)
                 }
                 #elseif os(iOS)
                 .autocapitalization(.none)

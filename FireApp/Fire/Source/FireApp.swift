@@ -6,7 +6,8 @@ import SwiftUI
 struct FireApp: App {
     var body: some Scene {
         WindowGroup {
-            AppView()
+            MoukaApp()
+                .preferredColorScheme(.light)
         }
     }
 }

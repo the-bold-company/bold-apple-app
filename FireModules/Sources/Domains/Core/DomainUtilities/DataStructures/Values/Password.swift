@@ -1,5 +1,36 @@
-import DomainUtilities
 import Foundation
+
+public struct Password: Value, Equatable {
+    public var value: Result<String, PasswordValidationError> {
+        return validators.validate(passwordString).asResult
+    }
+
+    private let validators = ValidatorCollection(
+        LengthValidator(min: 8, max: 60).eraseToAnyValidator(),
+        LowercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
+        UppercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
+        NumericLetterValidator(atleast: 1).eraseToAnyValidator(),
+        SpecilaCharacterValidator(atleast: 1).eraseToAnyValidator()
+    )
+
+    public private(set) var passwordString: String
+
+    public init(_ passwordString: String) {
+        self.passwordString = passwordString
+    }
+
+    public func validateAll() -> [Validated<String, PasswordValidationError>] {
+        validators.validateAll(passwordString)
+    }
+
+    public mutating func update(_ newPassword: String) {
+        passwordString = newPassword
+    }
+}
+
+public extension Password {
+    static let empty = Password("")
+}
 
 public enum PasswordValidationError: Int, Equatable, LocalizedError, CaseIterable {
     case incorrectLength = 0
@@ -8,7 +39,7 @@ public enum PasswordValidationError: Int, Equatable, LocalizedError, CaseIterabl
     case notContainNumericCharacter = 3
     case notContainSpecialCharacter = 4
 
-    var ruleDescription: String {
+    public var ruleDescription: String {
         switch self {
         case .incorrectLength:
             return "Có ít nhất 8 chữ cái"
@@ -133,36 +164,4 @@ struct PasswordValidator: Validator {
         NumericLetterValidator(atleast: 1)
         SpecilaCharacterValidator(atleast: 1)
     }
-}
-
-public struct Password: Value, Equatable {
-    public var value: Result<String, PasswordValidationError> {
-        return validators.validate(passwordString).asResult
-    }
-
-    private let validators = ValidatorCollection(
-        LengthValidator(min: 8, max: 60).eraseToAnyValidator(),
-        LowercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
-        UppercaseLetterValidator(atleast: 1).eraseToAnyValidator(),
-        NumericLetterValidator(atleast: 1).eraseToAnyValidator(),
-        SpecilaCharacterValidator(atleast: 1).eraseToAnyValidator()
-    )
-
-    public private(set) var passwordString: String
-
-    public init(_ passwordString: String) {
-        self.passwordString = passwordString
-    }
-
-    public func validateAll() -> [Validated<String, PasswordValidationError>] {
-        validators.validateAll(passwordString)
-    }
-
-    public mutating func update(_ newPassword: String) {
-        passwordString = newPassword
-    }
-}
-
-public extension Password {
-    static let empty = Password("")
 }

@@ -1,3 +1,4 @@
+#if os(iOS)
 import ComposableArchitecture
 import DI
 import DomainEntities
@@ -15,7 +16,8 @@ public struct Coordinator {
             case homeRoute(HomeReducer.State)
             case secretDevSettingsRoute
             case devSettingsRoute(DevSettingsReducer.State)
-            case authentication(SignUpFeatureCoordinator.State)
+//            case authentication(SignUpFeatureCoordinator.State)
+            case logIn(LogInFeature.State)
         }
 
         public enum Action {
@@ -23,7 +25,8 @@ public struct Coordinator {
             case homeRoute(HomeReducer.Action)
             case secretDevSettingsRoute
             case devSettingsRoute(DevSettingsReducer.Action)
-            case authentication(SignUpFeatureCoordinator.Action)
+//            case authentication(SignUpFeatureCoordinator.Action)
+            case logIn(LogInFeature.Action)
         }
 
         public var body: some ReducerOf<Self> {
@@ -31,8 +34,12 @@ public struct Coordinator {
                 LandingFeature()
             }
 
-            Scope(state: \.authentication, action: \.authentication) {
-                SignUpFeatureCoordinator()
+//            Scope(state: \.authentication, action: \.authentication) {
+//                SignUpFeatureCoordinator()
+//            }
+
+            Scope(state: \.logIn, action: \.logIn) {
+                LogInFeature()
             }
 
             Scope(state: \.homeRoute, action: \.homeRoute) {
@@ -51,7 +58,8 @@ public struct Coordinator {
         )
 
         public static let unAuthenticatedInitialState = State(
-            routes: [.root(.authentication(.init()), embedInNavigationView: true)]
+            //            routes: [.root(.authentication(.init()), embedInNavigationView: true)]
+            routes: [.root(.logIn(.init()), embedInNavigationView: true)]
         )
 
         public var routes: [Route<Destination.State>]
@@ -93,8 +101,10 @@ public struct Coordinator {
                     state.routes.presentSheet(.devSettingsRoute(.init()))
                 case .devSettingsRoute:
                     break
-                case let .authentication(authenticationAction):
-                    return handleAuthenticationAction(authenticationAction, index: index, state: &state)
+//                case let .authentication(authenticationAction):
+//                    return handleAuthenticationAction(authenticationAction, index: index, state: &state)
+                case let .logIn(logInAction):
+                    return handleAuthenticationAction(logInAction, index: index, state: &state)
                 }
             case .updateRoutes, .binding:
                 break
@@ -108,31 +118,45 @@ public struct Coordinator {
 
     // MARK: - Authentication delegation
 
-    private func handleAuthenticationAction(_ action: SignUpFeatureCoordinator.Action, index _: Int, state: inout State) -> Effect<Action> {
+    private func handleAuthenticationAction(_ action: LogInFeature.Action, index _: Int, state: inout State) -> Effect<Action> {
         switch action {
-        case let .delegate(signUpDelegate):
-            switch signUpDelegate {
-            case .logInSuccessfully:
+//        case let .delegate(signUpDelegate):
+//            switch signUpDelegate {
+//            case .logInSuccessfully:
+//                return .routeWithDelaysIfUnsupported(state.routes) {
+//                    $0.popToRoot()
+//                    $0.push(.homeRoute(.init()))
+//                }
+//            }
+//        case ._local:
+//            return .none
+        case let .delegate(delegateAction):
+            switch delegateAction {
+            case .userLoggedIn:
                 return .routeWithDelaysIfUnsupported(state.routes) {
                     $0.popToRoot()
                     $0.push(.homeRoute(.init()))
                 }
+            case .logInFailed, .forgotPasswordInitiated, .signUpInitiate:
+                return .none
             }
-        case ._local:
+        case .binding, .view, ._local:
             return .none
         }
     }
 
     // MARK: - Onboarding delegation
 
-    private func handleOnboardingFeatureAction(_ action: LandingFeature.Action, index _: Int, state: inout State) -> Effect<Action> {
+    private func handleOnboardingFeatureAction(_ action: LandingFeature.Action, index _: Int, state _: inout State) -> Effect<Action> {
         switch action {
         case .loginButtonTapped:
 //            state.routes.push(.loginRoute(.init()))
             break
         case .signUpButtonTapped:
-            state.routes.push(.authentication(.init()))
+//            state.routes.push(.authentication(.init()))
+            break
         }
         return .none
     }
 }
+#endif

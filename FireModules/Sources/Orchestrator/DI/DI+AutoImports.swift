@@ -10,6 +10,5 @@
 @_exported import FundFeature
 @_exported import HomeFeature
 @_exported import InvestmentFeature
-@_exported import LogInFeature
 @_exported import RecordTransactionFeature
 @_exported import SettingsFeature

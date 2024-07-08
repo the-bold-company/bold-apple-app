@@ -1,3 +1,4 @@
+import CasePaths
 import DomainEntities
 import Foundation
 
@@ -11,10 +12,15 @@ public typealias LogInFailure = AuthenticationLogic.LogIn.Failure
 public extension AuthenticationLogic {
     enum LogIn {
         public struct Request {
-            public let email: String
-            public let password: String
+            public let email: Email
+            public let password: NonEmptyString
 
-            public init(email: String, password: String) {
+            public init(email emailString: String, password passwordString: String) {
+                self.email = Email(emailString)
+                self.password = NonEmptyString(passwordString)
+            }
+
+            public init(email: Email, password: NonEmptyString) {
                 self.email = email
                 self.password = password
             }
@@ -24,9 +30,11 @@ public extension AuthenticationLogic {
             public let user: AuthenticatedUserEntity
         }
 
+        @CasePathable
         public enum Failure: LocalizedError {
             case genericError(DomainError)
             case invalidCredentials(DomainError)
+            case invalidInputs(EmailValidationError?, NonEmptyStringValidationError?)
 
             public init(domainError: DomainError) {
                 switch domainError.errorCode {
@@ -42,6 +50,11 @@ public extension AuthenticationLogic {
                 case let .invalidCredentials(error),
                      let .genericError(error):
                     return error.errorDescription
+                case let .invalidInputs(emailValidationError, passwordValidationError):
+                    return """
+                    \(String(describing: emailValidationError?.errorDescription))
+                    \(String(describing: passwordValidationError?.errorDescription))
+                    """
                 }
             }
 
@@ -50,6 +63,8 @@ public extension AuthenticationLogic {
                 case let .invalidCredentials(error),
                      let .genericError(error):
                     return error.failureReason
+                case let .invalidInputs(emailValidationError, passwordValidationError):
+                    return "Invalid credentials"
                 }
             }
         }

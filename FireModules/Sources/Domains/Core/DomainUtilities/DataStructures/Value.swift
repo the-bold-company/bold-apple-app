@@ -34,12 +34,7 @@ public extension Value where Object: Equatable {
 
 public extension Value {
     var isValid: Bool {
-        do {
-            _ = try value.get()
-            return true
-        } catch {
-            return false
-        }
+        value.is(\.success)
     }
 
     func getOrCrash() -> Object {
@@ -51,26 +46,15 @@ public extension Value {
     }
 
     func getOrNil() -> Object? {
-        do {
-            let validValue = try value.get()
-            return validValue
-        } catch {
-            return nil
-        }
+        value[case: \.success]
     }
 
     func getErrorOrNil() -> Err? {
-        switch value {
-        case .success: return nil
-        case let .failure(error): return error
-        }
+        value[case: \.failure]
     }
 
     func getErrorOrCrash() -> Err {
-        switch value {
-        case .success: fatalError()
-        case let .failure(error): return error
-        }
+        value[case: \.failure]!
     }
 
     func getSelfOrNil() -> Self? {

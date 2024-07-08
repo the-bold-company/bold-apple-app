@@ -117,12 +117,12 @@ public extension MiniAppReducer {
     @Reducer
     struct Destination: Equatable {
         public enum State: Equatable {
-            case miniAppEntryRoute(SignUpFeatureCoordinator.State)
+            case miniAppEntryRoute(LogInFeature.State)
         }
 
         public enum Action {
             // case miniAppEntryRoute(StockSearchHomeReducer.Action)
-            case miniAppEntryRoute(SignUpFeatureCoordinator.Action)
+            case miniAppEntryRoute(LogInFeature.Action)
         }
 
         public var body: some ReducerOf<Self> {
@@ -130,7 +130,7 @@ public extension MiniAppReducer {
                 state: \.miniAppEntryRoute,
                 action: \.miniAppEntryRoute
             ) {
-                SignUpFeatureCoordinator()
+                LogInFeature()
             }
         }
     }

@@ -87,7 +87,6 @@ package.targets.append(contentsOf: [
     .orchestrator(
         .di,
         features: [
-            .logInFeature,
             .fundFeature,
             .homeFeature,
             .recordTransactionFeature,
@@ -406,7 +405,12 @@ package.targets.append(contentsOf: [
     .testFeature(.homeFeature),
     .testFeature(.fundFeature),
     .testFeature(.recordTransactionFeature),
-    .testFeature(.authenticationFeature),
+    .testFeature(
+        .authenticationFeature,
+        dataSources: [
+            .authAPIService,
+        ]
+    ),
     .testFeature(.investmentFeature),
 ])
 package.targets.append(contentsOf: [
@@ -659,10 +663,11 @@ extension Target {
         )
     }
 
-    static func testFeature(_ feature: Module.Feature) -> Target {
+    static func testFeature(_ feature: Module.Feature, dataSources: [Module.DataSource] = []) -> Target {
         var dependencies = [Dependency]()
         dependencies.append(Module.Infra.testHelpers.asDependency)
         dependencies.append(feature.asDependency)
+        dependencies.append(contentsOf: dataSources.map(\.implementation))
         return Target.testTarget(
             name: "\(feature.id)Tests",
             dependencies: dependencies

@@ -1,18 +1,39 @@
-import DomainUtilities
+import CasePaths
 import Foundation
 
+public struct Email: Value, Equatable {
+    public var value: Result<String, EmailValidationError> {
+        validators.validate(emailString).asResult
+    }
+
+    public let validators = ValidatorCollection(
+        NotEmpty().eraseToAnyValidator(),
+        EmailPatternValidator().eraseToAnyValidator()
+    )
+
+    public private(set) var emailString: String
+
+    public init(_ emailString: String) {
+        self.emailString = emailString
+    }
+
+    public func validateAll() -> [Validated<String, EmailValidationError>] {
+        validators.validateAll(emailString)
+    }
+
+    public mutating func update(_ newEmail: String) {
+        emailString = newEmail
+    }
+}
+
+public extension Email {
+    static let empty = Email("")
+}
+
+@CasePathable
 public enum EmailValidationError: LocalizedError, Equatable {
     case patternInvalid
     case fieldEmpty
-
-    public var errorDescription: String? {
-        switch self {
-        case .patternInvalid:
-            return "Email không hợp lệ. Bạn hãy thử lại nhé."
-        case .fieldEmpty:
-            return "Vui lòng điền thông tin"
-        }
-    }
 }
 
 public struct EmailPatternValidator: RegexValidator {
@@ -44,33 +65,4 @@ public struct EmailValidator: Validator {
         NotEmpty()
         EmailPatternValidator()
     }
-}
-
-public struct Email: Value, Equatable {
-    public var value: Result<String, EmailValidationError> {
-        validators.validate(emailString).asResult
-    }
-
-    public let validators = ValidatorCollection(
-        NotEmpty().eraseToAnyValidator(),
-        EmailPatternValidator().eraseToAnyValidator()
-    )
-
-    public private(set) var emailString: String
-
-    public init(_ emailString: String) {
-        self.emailString = emailString
-    }
-
-    public func validateAll() -> [Validated<String, EmailValidationError>] {
-        validators.validateAll(emailString)
-    }
-
-    mutating func update(_ newEmail: String) {
-        emailString = newEmail
-    }
-}
-
-public extension Email {
-    static let empty = Email("")
 }

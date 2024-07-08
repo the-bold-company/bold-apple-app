@@ -1,10 +1,4 @@
-//
-//  CoordinatorView.swift
-//
-//
-//  Created by Hien Tran on 10/12/2023.
-//
-
+#if os(iOS)
 import AuthenticationFeature
 import FundFeature
 import HomeFeature
@@ -38,11 +32,17 @@ public struct CoordinatorView: View {
                         /Coordinator.Destination.State.landingRoute,
                         action: Coordinator.Destination.Action.landingRoute
                     ) { LandingPage(store: $0) }
-                case .authentication:
+//                case .authentication:
+//                    CaseLet(
+//                        /Coordinator.Destination.State.authentication,
+//                        action: Coordinator.Destination.Action.authentication,
+//                        then: SignUpFeatureRoot.init(store:)
+//                    )
+                case .logIn:
                     CaseLet(
-                        /Coordinator.Destination.State.authentication,
-                        action: Coordinator.Destination.Action.authentication,
-                        then: SignUpFeatureRoot.init(store:)
+                        /Coordinator.Destination.State.logIn,
+                        action: Coordinator.Destination.Action.logIn,
+                        then: LoginPage.init(store:)
                     )
                 case .homeRoute:
                     CaseLet(
@@ -81,3 +81,4 @@ extension BindingViewStore<Coordinator.State> {
         // swiftformat:enable redundantSelf
     }
 }
+#endif

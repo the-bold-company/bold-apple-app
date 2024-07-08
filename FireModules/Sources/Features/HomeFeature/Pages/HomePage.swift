@@ -33,36 +33,34 @@ public struct HomePage: View {
     }
 
     public var body: some View {
-        NavigationStack {
-            VStack(alignment: .leading, spacing: 20) {
-                List {
-                    networth
-                    fundList
-                    investment
-                    transactionList
-                }
+        VStack(alignment: .leading, spacing: 20) {
+            List {
+                networth
+                fundList
+                investment
+                transactionList
             }
-            .hideNavigationBar()
-            .background(Color(red: 246 / 255, green: 246 / 255, blue: 246 / 255))
-            .navigationDestination(
-                store: store.scope(
-                    state: \.$destination.fundDetailsRoute,
-                    action: \.destination.fundDetailsRoute
-                )
-            ) { FundDetailsPage(store: $0) }
-            .navigationDestination(
-                store: store.scope(
-                    state: \.$destination.fundCreationRoute,
-                    action: \.destination.fundCreationRoute
-                )
-            ) { FundCreationPage(store: $0) }
-            .navigationDestination(
-                store: store.scope(
-                    state: \.$destination.investmentHomeRoute,
-                    action: \.destination.investmentHomeRoute
-                )
-            ) { InvestmentHomePage(store: $0) }
         }
+//            .hideNavigationBar()
+//            .background(Color(red: 246 / 255, green: 246 / 255, blue: 246 / 255))
+//            .navigationDestination(
+//                store: store.scope(
+//                    state: \.$destination.fundDetailsRoute,
+//                    action: \.destination.fundDetailsRoute
+//                )
+//            ) { FundDetailsPage(store: $0) }
+//            .navigationDestination(
+//                store: store.scope(
+//                    state: \.$destination.fundCreationRoute,
+//                    action: \.destination.fundCreationRoute
+//                )
+//            ) { FundCreationPage(store: $0) }
+//            .navigationDestination(
+//                store: store.scope(
+//                    state: \.$destination.investmentHomeRoute,
+//                    action: \.destination.investmentHomeRoute
+//                )
+//            ) { InvestmentHomePage(store: $0) }
         .task {
 //            viewStore.send(.forward(.loadPortfolio))
 //            viewStore.send(.forward(.loadFundList))

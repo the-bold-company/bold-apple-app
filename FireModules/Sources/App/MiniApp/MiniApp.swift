@@ -45,7 +45,7 @@ public struct MiniApp: View {
                         state: \.$destination.miniAppEntryRoute,
                         action: \.destination.miniAppEntryRoute
                     )
-                ) { SignUpFeatureRoot(store: $0) }
+                ) { LoginPage(store: $0) }
             }
         }
         .task {
