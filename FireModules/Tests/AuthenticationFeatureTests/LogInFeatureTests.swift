@@ -10,62 +10,18 @@ import XCTest
 
 @MainActor
 final class LogInFeatureTests: XCTestCase {
-//    var initialState: LoginReducer.State!
-//
-//    override func setUpWithError() throws {
-//        Container.shared.manager.trace.toggle()
-//        Container.shared.manager.push()
-//
-//        initialState = LoginReducer.State()
-//        initialState.email = "user@fire.com"
-//        initialState.password = "P@ssword123"
-//    }
-//
-//    override func tearDownWithError() throws {
-//        Container.shared.manager.pop()
-//    }
+    override func setUpWithError() throws {}
 
-//    func testUsernameAndPassword_isPreFilled_whenDevSettingsAreSet() async throws {
-//        // Arrange
-//        var mockCredentials = DevSettings.Credentials()
-//        mockCredentials.username = "user@fire.com"
-//        mockCredentials.password = "P@ssword123"
-//        Container.shared.devSettingsUseCase.register {
-//            DevSettingsUseCase.mock(
-//                initialDevSettings: DevSettings(credentials: mockCredentials)
-//            )
-//        }
-//
-//        let store = TestStore(
-//            initialState: LoginReducer.State(),
-//            reducer: { LoginReducer(logInUseCase: LogInUseCaseProtocolMock()) }
-//        )
-//
-//        // Assert
-//        XCAssertNoDifference(store.state.email, "user@fire.com")
-//        XCAssertNoDifference(store.state.password, "P@ssword123")
-//    }
-
-//    func testUsernameAndPassword_isEmpty_whenDevSettingsAreNotSet() async throws {
-//        // Arrange
-//        Container.shared.devSettingsUseCase.register {
-//            DevSettingsUseCase.mock(initialDevSettings: DevSettings())
-//        }
-//        let store = TestStore(
-//            initialState: LoginReducer.State(),
-//            reducer: { LoginReducer(logInUseCase: LogInUseCaseProtocolMock()) }
-//        )
-//
-//        // Act & Assert
-//        XCAssertTCAStateNoDifference(store.state, LoginReducer.State())
-//    }
+    override func tearDownWithError() throws {}
 
     func testEnterValidCredentials_ShouldLogInSuccessfully() async throws {
         // Arrange
+        let mainQueue = DispatchQueue.test
         let store = TestStore(initialState: .init()) {
             LogInFeature()
         } withDependencies: {
             $0.context = .live
+            $0.mainQueue = mainQueue.eraseToAnyScheduler()
             $0.authAPIService = .directMock(logInResponseMock: """
             {
               "message": "Execute successfully",
@@ -85,6 +41,7 @@ final class LogInFeatureTests: XCTestCase {
         // Act
         await store.send(.set(\.$emailText, "user@mouka.ai"))
         await store.send(.set(\.$passwordText, "Qwerty@123"))
+        await mainQueue.advance(by: .milliseconds(500))
         await store.send(.view(.logInButtonTapped))
 
         // Assert
@@ -93,83 +50,115 @@ final class LogInFeatureTests: XCTestCase {
         }
     }
 
-//    func testShowError_WhenLogInFailed() async throws {
-//        // Arrange
-//        let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
-//        let logInUseCaseMock = LogInUseCaseProtocolMock()
-//        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorClosure = { _, _ in
-//            return .failure(DomainError.custom(description: "Something's wrong"))
-//        }
-//        let store = TestStore(
-//            initialState: initialState,
-//            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
-//        )
-//        store.exhaustivity = .off(showSkippedAssertions: false)
-//
-//        // Act
-//        await store.send(.delegate(.logInButtonTapped))
-//
-//        // Assert
-//        await store.receive(\.logInFailure) {
-//            $0.loginError = "An error has occured"
-//        }
-//    }
-//
-//    func testLoadingState_WhenLogInSuccessfully() async throws {
-//        // Arrange
-//        let logInUseCaseMock = LogInUseCaseProtocolMock()
-//        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorReturnValue = .success(AuthenticatedUserEntity(email: "user@fire.com"))
-//        let store = TestStore(
-//            initialState: initialState,
-//            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
-//        )
-//        store.exhaustivity = .off(showSkippedAssertions: false)
-//
-//        // Act & Assert
-//        await store.send(.delegate(.logInButtonTapped)) {
-//            $0.logInInProgress = true
-//        }
-//
-//        await store.receive(\.logInSuccesfully) {
-//            $0.logInInProgress = false
-//        }
-//    }
-//
-//    func testLoadingState_WhenLogInFailed() async throws {
-//        // Arrange
-//        let logInUseCaseMock = LogInUseCaseProtocolMock()
-//        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorClosure = { _, _ in
-//            return .failure(DomainError.custom(description: "Something's wrong"))
-//        }
-//        let store = TestStore(
-//            initialState: initialState,
-//            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
-//        )
-//        store.exhaustivity = .off(showSkippedAssertions: false)
-//
-//        // Act & Assert
-//        await store.send(.delegate(.logInButtonTapped)) {
-//            $0.logInInProgress = true
-//        }
-//
-//        await store.receive(\.logInFailure) {
-//            $0.logInInProgress = false
-//        }
-//    }
-//
-//    func testUnableToLogIn_WhenInputsAreInvalid() async throws {
-//        let mockUser = AuthenticatedUserEntity(email: "user@fire.com")
-//        let logInUseCaseMock = LogInUseCaseProtocolMock()
-//        logInUseCaseMock.loginEmailStringPasswordStringResultAuthenticatedUserEntityDomainErrorReturnValue = .success(mockUser)
-//        let store = TestStore(
-//            initialState: LoginReducer.State(),
-//            reducer: { LoginReducer(logInUseCase: logInUseCaseMock) }
-//        )
-//
-//        // Act & Assert
-//        await store.send(.delegate(.logInButtonTapped))
-//        XCAssertTCAStateNoDifference(store.state.areInputsValid, false)
-//    }
+    func testShowError_WhenEnteringWrongCredentials() async throws {
+        let mainQueue = DispatchQueue.test
+        let store = TestStore(initialState: .init()) {
+            LogInFeature()
+        } withDependencies: {
+            $0.context = .live
+            $0.mainQueue = mainQueue.eraseToAnyScheduler()
+            $0.authAPIService = .directMock(logInResponseMock: """
+            {
+              "message": "Email or password is incorrect",
+              "code": 14001
+            }
+            """)
+        }
+        store.exhaustivity = .off
+
+        // Act
+        await store.send(.set(\.$emailText, "user@mouka.ai"))
+        await store.send(.set(\.$passwordText, "Qwerty@123"))
+        await mainQueue.advance(by: .milliseconds(500))
+        await store.send(.view(.logInButtonTapped))
+
+        // Assert
+        await store.receive(\.delegate.logInFailed.invalidCredentials) {
+            $0.serverError = "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại hoặc đăng ký tài khoản mới!"
+        }
+    }
+
+    func testLogInFailed_WhenResponseIsGenericError() async throws {
+        let mainQueue = DispatchQueue.test
+        let store = TestStore(initialState: .init()) {
+            LogInFeature()
+        } withDependencies: {
+            $0.context = .live
+            $0.mainQueue = mainQueue.eraseToAnyScheduler()
+            $0.authAPIService = .directMock(logInResponseMock: """
+            {
+              "message": "Something went wrong, please try again later",
+              "code": 14003
+            }
+            """)
+        }
+        store.exhaustivity = .off
+
+        // Act
+        await store.send(.set(\.$emailText, "user@mouka.ai"))
+        await store.send(.set(\.$passwordText, "Qwerty@123"))
+        await mainQueue.advance(by: .milliseconds(500))
+        await store.send(.view(.logInButtonTapped))
+
+        // Assert
+        await store.receive(\.delegate.logInFailed.genericError) {
+            $0.serverError = "Oops! Đã xảy ra sự cố khi đăng nhập. Hãy thử lại sau một chút."
+        }
+    }
+
+    func testFormInvalid_WhenPasswordIsEmpty() async throws {
+        // Arrange
+        let mainQueue = DispatchQueue.test
+        let store = TestStore(initialState: .init()) {
+            LogInFeature()
+        } withDependencies: {
+            $0.mainQueue = mainQueue.eraseToAnyScheduler()
+        }
+        store.exhaustivity = .off
+
+        // Act
+        await store.send(.set(\.$passwordText, ""))
+        await mainQueue.advance(by: .milliseconds(500))
+
+        // Assert
+        await store.receive(\._local.verifyPassword) {
+            XCTAssertTrue($0.formValidation.is(\.invalid))
+            XCAssertNoDifference($0.formValidation[case: \.invalid]?.passwordValidationError, "Vui lòng điền thông tin.")
+        }
+    }
+
+    func testFormInvalid_WhenEmailIsInvalid() async throws {
+        // Arrange
+        let mainQueue = DispatchQueue.test
+        let store = TestStore(initialState: .init()) {
+            LogInFeature()
+        } withDependencies: {
+            $0.mainQueue = mainQueue.eraseToAnyScheduler()
+        }
+        store.exhaustivity = .off
+
+        // Act & Assert
+        await store.send(.set(\.$emailText, ""))
+        await mainQueue.advance(by: .milliseconds(500))
+        await store.receive(\._local.verifyEmail) {
+            XCTAssertTrue($0.formValidation.is(\.invalid))
+            XCAssertNoDifference($0.formValidation[case: \.invalid]?.emailValidationError, "Vui lòng điền thông tin.")
+        }
+
+        await store.send(.set(\.$emailText, "user"))
+        await mainQueue.advance(by: .milliseconds(500))
+        await store.receive(\._local.verifyEmail) {
+            XCTAssertTrue($0.formValidation.is(\.invalid))
+            XCAssertNoDifference($0.formValidation[case: \.invalid]?.emailValidationError, "Email không hợp lệ.")
+        }
+
+        await store.send(.set(\.$emailText, "user"))
+        await mainQueue.advance(by: .milliseconds(500))
+        await store.receive(\._local.verifyEmail) {
+            XCTAssertTrue($0.formValidation.is(\.invalid))
+            XCAssertNoDifference($0.formValidation[case: \.invalid]?.emailValidationError, "Email không hợp lệ.")
+        }
+    }
 }
 
 // swiftlint:enable line_length

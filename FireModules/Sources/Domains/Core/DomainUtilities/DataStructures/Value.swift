@@ -2,7 +2,7 @@ import Foundation
 
 public protocol Value<Object, Err>: CustomStringConvertible {
     associatedtype Object
-    associatedtype Err: LocalizedError
+    associatedtype Err: Swift.Error
 
     var value: Result<Object, Err> { get }
 
@@ -20,13 +20,14 @@ public protocol Value<Object, Err>: CustomStringConvertible {
     var errorOnly: EitherThisOrNothing<Err> { get }
 }
 
-public extension Value where Object: Equatable {
+public extension Value where Object: Equatable, Err: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
-        do {
-            let leftValue = try lhs.value.get()
-            let rightValue = try rhs.value.get()
-            return leftValue == rightValue
-        } catch {
+        switch (lhs.value, rhs.value) {
+        case let (.success(lhsValue), .success(rhsValue)):
+            return lhsValue == rhsValue
+        case let (.failure(lhsErr), .failure(rhsErr)):
+            return lhsErr == rhsErr
+        default:
             return false
         }
     }
@@ -71,4 +72,4 @@ public extension Value {
     }
 }
 
-public enum NeverFail: LocalizedError {}
+public enum NeverFail: Error, Equatable {}
