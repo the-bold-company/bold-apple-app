@@ -12,7 +12,7 @@ import DevSettingsUseCase
 public struct LogInFeature {
     @Reducer(state: .equatable)
     public enum Destination {
-        case forgotPassword(ForgotPasswordReducer)
+        case forgotPassword(ForgotPasswordFeature)
     }
 
     public struct State: Equatable {

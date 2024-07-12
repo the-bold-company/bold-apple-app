@@ -17,10 +17,10 @@ public struct ForgotPasswordPage: View {
         var userFriendlyError: String?
     }
 
-    let store: StoreOf<ForgotPasswordReducer>
-    @ObservedObject var viewStore: ViewStore<ViewState, ForgotPasswordReducer.Action>
+    let store: StoreOf<ForgotPasswordFeature>
+    @ObservedObject var viewStore: ViewStore<ViewState, ForgotPasswordFeature.Action>
 
-    public init(store: StoreOf<ForgotPasswordReducer>) {
+    public init(store: StoreOf<ForgotPasswordFeature>) {
         self.store = store
         self.viewStore = ViewStore(store, observe: \.viewState)
     }
@@ -114,7 +114,7 @@ public struct ForgotPasswordPage: View {
     }
 }
 
-extension BindingViewStore<ForgotPasswordReducer.State> {
+extension BindingViewStore<ForgotPasswordFeature.State> {
     var viewState: ForgotPasswordPage.ViewState {
         // swiftformat:disable redundantSelf
         ForgotPasswordPage.ViewState(
@@ -131,7 +131,7 @@ extension BindingViewStore<ForgotPasswordReducer.State> {
         ForgotPasswordPage(
             store: Store(
                 initialState: .init(email: Email("dev@mouka.com")),
-                reducer: { ForgotPasswordReducer() }
+                reducer: { ForgotPasswordFeature() }
 //                withDependencies: {
 //                    $0.authAPIService = .directMock(forgotPasswordMock: """
 //                    {

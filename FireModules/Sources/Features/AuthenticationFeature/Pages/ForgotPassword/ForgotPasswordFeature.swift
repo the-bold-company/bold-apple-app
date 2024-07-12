@@ -6,7 +6,7 @@ import Foundation
 import TCAExtensions
 
 @Reducer
-public struct ForgotPasswordReducer {
+public struct ForgotPasswordFeature {
     @Reducer(state: .equatable)
     public enum Destination {
         case createNewPassword(CreateNewPasswordReducer)

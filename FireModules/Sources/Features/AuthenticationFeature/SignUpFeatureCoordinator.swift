@@ -13,14 +13,14 @@ public struct SignUpFeatureCoordinator {
         public enum State: Equatable {
             case signUp(EmailSignUpFeature.State)
             case logIn(LogInFeature.State)
-            case forgotPassword(ForgotPasswordReducer.State)
+            case forgotPassword(ForgotPasswordFeature.State)
             case otp(ConfirmationCodeReducer.State)
         }
 
         public enum Action {
             case signUp(EmailSignUpFeature.Action)
             case logIn(LogInFeature.Action)
-            case forgotPassword(ForgotPasswordReducer.Action)
+            case forgotPassword(ForgotPasswordFeature.Action)
             case otp(ConfirmationCodeReducer.Action)
         }
 
@@ -38,7 +38,7 @@ public struct SignUpFeatureCoordinator {
             }
 
             Scope(state: \.forgotPassword, action: \.forgotPassword) {
-                ForgotPasswordReducer()
+                ForgotPasswordFeature()
             }
         }
     }
@@ -169,7 +169,7 @@ public struct SignUpFeatureCoordinator {
         }
     }
 
-    private func handleForgotPasswordDelegate(_ action: ForgotPasswordReducer.Action, index _: Int, state: inout State) -> Effect<Action> {
+    private func handleForgotPasswordDelegate(_ action: ForgotPasswordFeature.Action, index _: Int, state: inout State) -> Effect<Action> {
         switch action {
         case let .delegate(delegateAction):
             switch delegateAction {
