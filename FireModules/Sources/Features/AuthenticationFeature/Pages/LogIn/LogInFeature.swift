@@ -10,9 +10,15 @@ import DevSettingsUseCase
 
 @Reducer
 public struct LogInFeature {
+    @Reducer(state: .equatable)
+    public enum Destination {
+        case forgotPassword(ForgotPasswordReducer)
+    }
+
     public struct State: Equatable {
         @BindingState var emailText: String = ""
         @BindingState var passwordText: String = ""
+        @PresentationState var destination: Destination.State?
 
         var logInProgress: LoadingProgress<AuthenticatedUserEntity, LogInFailure> = .idle
         var serverError: String?
@@ -79,7 +85,6 @@ public struct LogInFeature {
         public enum DelegateAction {
             case userLoggedIn(AuthenticatedUserEntity)
             case logInFailed(AuthenticationLogic.LogIn.Failure)
-            case forgotPasswordInitiated(Email?)
             case signUpInitiate
         }
 
@@ -94,6 +99,7 @@ public struct LogInFeature {
         public enum LocalAction {
             case verifyEmail
             case verifyPassword
+            case destination(PresentationAction<Destination.Action>)
         }
     }
 
@@ -132,6 +138,7 @@ public struct LogInFeature {
                 return .none
             }
         }
+        .ifLet(\.$destination, action: \._local.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
@@ -149,7 +156,7 @@ public struct LogInFeature {
                     failure: { Action.delegate(.logInFailed($0)) }
                 )
         case .forgotPasswordButtonTapped:
-//            return .send(.delegate(.forgotPasswordInitiated(state.email.isValid ? state.email : nil)))
+            state.destination = .forgotPassword(.init(email: state.email.isValid ? state.email : nil))
             return .none
         case .signUpButtonTapped:
             return .send(.delegate(.signUpInitiate))
@@ -175,7 +182,7 @@ public struct LogInFeature {
                 // state.serverError = "Tài khoản này đã được đăng ký với một cách khác. Hãy đăng nhập lại hoặc chọn cách đăng ký khác."
             }
             return .none
-        case .forgotPasswordInitiated, .signUpInitiate:
+        case .signUpInitiate:
             return .none
         }
     }
@@ -200,6 +207,8 @@ public struct LogInFeature {
             let passwordError = state.password.getErrorOrNil()
 
             state.formValidation.invalidPassword(passwordError != nil ? "Vui lòng điền thông tin." : nil)
+            return .none
+        case .destination:
             return .none
         }
     }

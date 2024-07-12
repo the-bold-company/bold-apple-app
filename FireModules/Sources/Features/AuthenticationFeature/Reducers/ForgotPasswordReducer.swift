@@ -7,14 +7,16 @@ import TCAExtensions
 
 @Reducer
 public struct ForgotPasswordReducer {
+    @Reducer(state: .equatable)
+    public enum Destination {
+        case createNewPassword(CreateNewPasswordReducer)
+    }
+
     public struct State: Equatable {
         @PresentationState var destination: Destination.State?
         @BindingState var emailText: String
 
         var forgotPasswordConfirmProgress: LoadingProgress<Confirmed, ForgotPasswordFailure> = .idle
-
-        var email: Email { Email(emailText) }
-        var emailValidationError: String?
 
         public init(email: Email? = nil) {
             self.emailText = email?.getOrNil() ?? ""
@@ -22,7 +24,6 @@ public struct ForgotPasswordReducer {
     }
 
     public enum Action: BindableAction, FeatureAction {
-        case destination(PresentationAction<Destination.Action>)
         case binding(BindingAction<State>)
         case delegate(DelegateAction)
         case view(ViewAction)
@@ -43,10 +44,12 @@ public struct ForgotPasswordReducer {
         public enum LocalAction {
             case forgotPasswordConfirmed(Email)
             case forgotPasswordFailure(ForgotPasswordFailure)
+            case destination(PresentationAction<Destination.Action>)
         }
     }
 
     @Dependency(\.forgotPassword.forgotPassword) var forgotPassword
+    @Dependency(\.dismiss) var dismiss
 
     public init() {}
 
@@ -59,35 +62,25 @@ public struct ForgotPasswordReducer {
                 return handleViewAction(viewAction, state: &state)
             case let ._local(localAction):
                 return handleLocalAction(localAction, state: &state)
-            case .destination, .binding, .delegate:
+            case .binding, .delegate:
                 return .none
             }
         }
-        .ifLet(\.$destination, action: \.destination) {
-            Destination()
-        }
+        .ifLet(\.$destination, action: \._local.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
         case .nextButtonTapped:
-            if let emailText = state.email.getOrNil() {
-                state.emailValidationError = nil
-                state.forgotPasswordConfirmProgress = .loading
-                let email = state.email
+            state.forgotPasswordConfirmProgress = .loading
 
-                return forgotPassword(.init(email: emailText))
-                    .map(
-                        success: { _ in Action._local(.forgotPasswordConfirmed(email)) },
-                        failure: { Action._local(.forgotPasswordFailure($0)) }
-                    )
-            } else {
-                state.emailValidationError = "Email không hợp lệ."
-            }
-
-            return .none
+            return forgotPassword(.init(emailText: state.emailText))
+                .map(
+                    success: { [emailText = state.emailText] _ in Action._local(.forgotPasswordConfirmed(Email(emailText))) },
+                    failure: { Action._local(.forgotPasswordFailure($0)) }
+                )
         case .backButtonTapped:
-            return .send(.delegate(.dismiss))
+            return .run { _ in await dismiss() }
         }
     }
 
@@ -105,28 +98,10 @@ public struct ForgotPasswordReducer {
             return .none
         case .forgotPasswordConfirmed:
             state.forgotPasswordConfirmProgress = .loaded(.success(Confirmed()))
-            guard state.email.isValid else { return .none }
-            state.destination = .createNewPassword(.init(email: state.email))
+            state.destination = .createNewPassword(.init(email: Email(state.emailText)))
             return .none
-        }
-    }
-}
-
-public extension ForgotPasswordReducer {
-    @Reducer
-    struct Destination: Equatable {
-        public enum State: Equatable {
-            case createNewPassword(CreateNewPasswordReducer.State)
-        }
-
-        public enum Action {
-            case createNewPassword(CreateNewPasswordReducer.Action)
-        }
-
-        public var body: some ReducerOf<Self> {
-            Scope(state: \.createNewPassword, action: \.createNewPassword) {
-                CreateNewPasswordReducer()
-            }
+        case .destination:
+            return .none
         }
     }
 }
@@ -138,6 +113,8 @@ extension ForgotPasswordFailure {
             return "Oops! Đã xảy ra sự cố khi đổi mật khẩu. Hãy thử lại sau một chút."
         case .emailHasNotBeenRegistered:
             return "Email này không có trong hệ thống của mouka. Vui lòng kiểm tra lại hoặc thử một email khác."
+        case .emailInvalid:
+            return "Email không hợp lệ."
         }
     }
 }

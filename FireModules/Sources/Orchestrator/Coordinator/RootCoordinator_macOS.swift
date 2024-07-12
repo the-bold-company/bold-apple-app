@@ -21,7 +21,7 @@ public struct RootCoordinator {
 
         public var body: some Reducer<State, Action> {
             Scope(state: \.logIn, action: \.logIn) {
-                LogInFeature()._printChanges()
+                LogInFeature()
             }
 
             Scope(state: \.homeRoute, action: \.homeRoute) {

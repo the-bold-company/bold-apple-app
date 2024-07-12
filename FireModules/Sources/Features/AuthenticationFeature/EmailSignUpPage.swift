@@ -32,31 +32,29 @@ public struct EmailRegistrationPage: TCAView {
 
     public var body: some View {
         LoadingOverlay(loading: viewStore.isEmailBeingVerified) {
-            NavigationStack {
-                VStack(alignment: .center) {
-                    brandLogo
-                    Spacing(height: .size24)
-                    Text("Đăng ký Mouka").typography(.titleScreen)
-                    Spacing(height: .size24)
-                    errorMessage
-                    continueWithGoogle
-                    divider
-                    emailInputField
-                    Spacing(height: .size24)
-                    nextButton
-                    Spacing(height: .size24)
-                    logInPrompt
-                    Spacer()
-                }
-                .padding(16)
-                .toolbar(.hidden)
-                .navigationDestination(
-                    store: store.scope(
-                        state: \.$destination.password,
-                        action: \.destination.password
-                    )
-                ) { PasswordCreationPage(store: $0) }
+            VStack(alignment: .center) {
+                brandLogo
+                Spacing(height: .size24)
+                Text("Đăng ký Mouka").typography(.titleScreen)
+                Spacing(height: .size24)
+                errorMessage
+                continueWithGoogle
+                divider
+                emailInputField
+                Spacing(height: .size24)
+                nextButton
+                Spacing(height: .size24)
+                logInPrompt
+                Spacer()
             }
+            .padding(16)
+            .toolbar(.hidden)
+            .navigationDestination(
+                store: store.scope(
+                    state: \.$destination.password,
+                    action: \.destination.password
+                )
+            ) { PasswordCreationPage(store: $0) }
         }
         .enableInjection()
     }

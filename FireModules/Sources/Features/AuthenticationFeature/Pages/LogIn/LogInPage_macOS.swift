@@ -6,8 +6,6 @@ import CoreUI
 import SwiftUI
 
 public struct LoginPage: View {
-    @ObserveInjection private var iO
-
     @FocusState private var focusedField: FocusedField?
 
     enum FocusedField: Hashable {
@@ -54,12 +52,16 @@ public struct LoginPage: View {
             .background(Color.white)
             .cornerRadius(16)
             .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
-            .padding(.horizontal, 40)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
         .background(Color(hex: 0xB7F2C0))
-        .enableInjection()
+        .navigationDestination(
+            store: store.scope(
+                state: \.$destination.forgotPassword,
+                action: \._local.destination.forgotPassword
+            )
+        ) { ForgotPasswordPage(store: $0) }
     }
 
     @ViewBuilder private var brandLogo: some View {
@@ -119,12 +121,12 @@ public struct LoginPage: View {
                 error: viewStore.passwordValidationError
             )
 
-            Text("Quên mật khẩu?")
-                .typography(.bodyDefaultBold)
-                .foregroundColor(.coreui.forestGreen)
-                .onTapGesture {
-//                    store.send(.view(.forgotPasswordButtonTapped))
-                }
+            Button {
+                store.send(.view(.forgotPasswordButtonTapped))
+            } label: {
+                Text("Quên mật khẩu?")
+            }
+            .moukaButtonStyle(.tertiary)
         }
         .frame(maxWidth: .infinity)
     }

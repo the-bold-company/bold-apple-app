@@ -184,10 +184,14 @@ public typealias ForgotPasswordFailure = AuthenticationLogic.ForgotPassword.Fail
 public extension AuthenticationLogic {
     enum ForgotPassword {
         public struct Request {
-            let email: String
+            let email: Email
 
-            public init(email: String) {
+            public init(email: Email) {
                 self.email = email
+            }
+
+            public init(emailText: String) {
+                self.email = Email(emailText)
             }
         }
 
@@ -202,10 +206,11 @@ public extension AuthenticationLogic {
         public enum Failure: LocalizedError {
             case genericError(DomainError)
             case emailHasNotBeenRegistered
+            case emailInvalid(EmailValidationError)
 
             public init(domainError: DomainError) {
                 switch domainError.errorCode {
-                case .some(14001):
+                case .some(13002):
                     self = .emailHasNotBeenRegistered
                 default:
                     self = .genericError(domainError)
@@ -218,6 +223,8 @@ public extension AuthenticationLogic {
                     return "Email has not been registered"
                 case let .genericError(error):
                     return error.errorDescription
+                case let .emailInvalid(error):
+                    return error.errorDescription
                 }
             }
 
@@ -227,6 +234,8 @@ public extension AuthenticationLogic {
                     return "Email has not been registered"
                 case let .genericError(error):
                     return error.failureReason
+                case .emailInvalid:
+                    return "Invalid email"
                 }
             }
         }

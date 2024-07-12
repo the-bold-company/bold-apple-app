@@ -5,12 +5,15 @@ import DomainEntities
 import SwiftUI
 
 public struct ForgotPasswordPage: View {
-    @ObserveInjection private var iO
+    @FocusState private var focusedField: FocusedField?
+
+    enum FocusedField: Hashable {
+        case email
+    }
 
     struct ViewState: Equatable {
         @BindingViewState var email: String
         var isLoading: Bool
-        var emailValidationError: String?
         var userFriendlyError: String?
     }
 
@@ -23,52 +26,51 @@ public struct ForgotPasswordPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.isLoading) {
-            NavigationStack {
-                VStack(alignment: .center) {
-                    Spacing(height: .size24)
-                    Text("Đổi mật khẩu").typography(.titleScreen)
-                    Spacing(height: .size12)
-                    Text("Nhập tài khoản email bạn muốn đổi mật khẩu").typography(.bodyLarge)
-                    Spacing(height: .size24)
-                    serverErrorToast
-                    emailInputField
-                    Spacer()
-                    actionButtons
-                }
-                .padding(16)
-                .toolbar(.hidden)
-                .navigationDestination(
-                    store: store.scope(
-                        state: \.$destination.createNewPassword,
-                        action: \.destination.createNewPassword
-                    )
-                ) { CreateNewPasswordPage(store: $0) }
+        ZStack {
+            VStack(alignment: .center) {
+                Spacing(height: .size24)
+                Text("Đổi mật khẩu").typography(.titleScreen)
+                Spacing(height: .size12)
+                Text("Nhập tài khoản email bạn muốn đổi mật khẩu")
+                    .typography(.bodyDefault)
+                    .foregroundStyle(Color(hex: 0x6B7280))
+                Spacing(height: .size24)
+                serverErrorToast
+                emailInputField
+                Spacer()
+                actionButtons
             }
-            .hideNavigationBar()
-            .toolbar(.hidden)
+            .frame(width: 400)
+            .padding(.all, 40)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
         }
-        .enableInjection()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+        .background(Color(hex: 0xB7F2C0))
+        .hideNavigationBar()
+        .toolbar(.hidden)
+        .navigationDestination(
+            store: store.scope(
+                state: \.$destination.createNewPassword,
+                action: \._local.destination.createNewPassword
+            )
+        ) { CreateNewPasswordPage(store: $0) }
     }
 
     @ViewBuilder private var emailInputField: some View {
-        FireTextField(
+        MoukaTextField(
             title: "Email",
-            text: viewStore.$email
+            text: viewStore.$email,
+            focusedField: $focusedField,
+            fieldId: .email
         )
         #if os(iOS)
         .autocapitalization(.none)
         .keyboardType(.emailAddress)
         #endif
         .autocorrectionDisabled()
-        Group {
-            Spacing(size: .size12)
-            Text(viewStore.emailValidationError ?? "")
-                .typography(.bodyDefault)
-                .foregroundColor(.red)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .isHidden(hidden: viewStore.emailValidationError == nil)
     }
 
     @ViewBuilder private var serverErrorToast: some View {
@@ -101,14 +103,14 @@ public struct ForgotPasswordPage: View {
             } label: {
                 Text("Trở về").frame(maxWidth: .infinity)
             }
-            .fireButtonStyle(type: .secondary(shape: .roundedCorner))
+            .moukaButtonStyle(.secondary)
 
             Button {
                 store.send(.view(.nextButtonTapped))
             } label: {
                 Text("Tiếp theo").frame(maxWidth: .infinity)
             }
-            .fireButtonStyle()
+            .moukaButtonStyle(disabled: viewStore.email.isEmpty)
         }
     }
 }
@@ -119,7 +121,6 @@ extension BindingViewStore<ForgotPasswordReducer.State> {
         ForgotPasswordPage.ViewState(
             email: self.$emailText,
             isLoading: self.forgotPasswordConfirmProgress.is(\.loading),
-            emailValidationError: self.emailValidationError,
             userFriendlyError: self.forgotPasswordConfirmProgress[case: \.loaded.failure]?.userFriendlyError
         )
         // swiftformat:enable redundantSelf
@@ -137,5 +138,6 @@ extension BindingViewStore<ForgotPasswordReducer.State> {
                 }
             )
         )
+        .preferredColorScheme(.light)
     }
 }
