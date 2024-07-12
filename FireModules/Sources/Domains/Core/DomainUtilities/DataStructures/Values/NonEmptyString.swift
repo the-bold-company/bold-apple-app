@@ -2,7 +2,11 @@ import Foundation
 
 public struct NonEmptyString: Value, Equatable {
     public var value: Result<String, NonEmptyStringValidationError> {
-        validator.validate(string).asResult
+        validation.asResult
+    }
+
+    public var validation: Validated<String, NonEmptyStringValidationError> {
+        validator.validate(string)
     }
 
     public let validator = NotEmptyValidator()

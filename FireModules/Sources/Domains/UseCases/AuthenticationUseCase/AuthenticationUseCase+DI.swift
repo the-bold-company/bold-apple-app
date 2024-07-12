@@ -93,9 +93,7 @@ enum ForgotPasswordUseCaseKey: DependencyKey {
     public static let liveValue = ForgotPasswordUseCase.live()
 
     #if DEBUG
-    static let testValue = ForgotPasswordUseCase(
-        forgotPassword: unimplemented("\(Self.self).forgotPassword")
-    )
-    static let previewValue = ForgotPasswordUseCase.live()
+    static let testValue = ForgotPasswordUseCase.test()
+    static let previewValue = ForgotPasswordUseCase.preview()
     #endif
 }

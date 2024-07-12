@@ -28,7 +28,6 @@ public struct ForgotPasswordPage: View {
     public var body: some View {
         ZStack {
             VStack(alignment: .center) {
-                Spacing(height: .size24)
                 Text("Đổi mật khẩu").typography(.titleScreen)
                 Spacing(height: .size12)
                 Text("Nhập tài khoản email bạn muốn đổi mật khẩu")
@@ -37,7 +36,7 @@ public struct ForgotPasswordPage: View {
                 Spacing(height: .size24)
                 serverErrorToast
                 emailInputField
-                Spacer()
+                Spacing(height: .size24)
                 actionButtons
             }
             .frame(width: 400)
@@ -132,10 +131,21 @@ extension BindingViewStore<ForgotPasswordReducer.State> {
         ForgotPasswordPage(
             store: Store(
                 initialState: .init(email: Email("dev@mouka.com")),
-                reducer: { ForgotPasswordReducer() },
-                withDependencies: {
-                    $0.context = .live
-                }
+                reducer: { ForgotPasswordReducer() }
+//                withDependencies: {
+//                    $0.authAPIService = .directMock(forgotPasswordMock: """
+//                    {
+//                      "message": "Execute successfully"
+//                    }
+//                    """)
+
+//                    $0.authAPIService = .directMock(forgotPasswordMock: """
+//                    {
+//                      "message": "Username/client id combination not found.",
+//                      "code": 13002
+//                    }
+//                    """)
+//                }
             )
         )
         .preferredColorScheme(.light)

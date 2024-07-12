@@ -63,7 +63,7 @@ public extension AuthenticationLogic {
                 case let .invalidCredentials(error),
                      let .genericError(error):
                     return error.failureReason
-                case let .invalidInputs(emailValidationError, passwordValidationError):
+                case .invalidInputs:
                     return "Invalid credentials"
                 }
             }

@@ -1,5 +1,7 @@
+import CasePaths
 import Foundation
 
+@CasePathable
 public enum Validated<Value, Error> {
     case idle(Value)
     case valid(Value)

@@ -25,40 +25,8 @@ public struct LogInFeature {
 
         var email: Email = .init("")
         var password: NonEmptyString = .init("")
-        var formValidation: FormValidation = .pristine
-
-        @CasePathable
-        enum FormValidation: Equatable {
-            case pristine
-            case valid
-            case invalid(emailValidationError: String?, passwordValidationError: String?)
-
-            mutating func invalidEmail(_ reason: String?) {
-                let previousPasswordError = self[case: \.invalid]?.passwordValidationError
-
-                if reason == nil, previousPasswordError == nil {
-                    self = .valid
-                }
-
-                self = .invalid(
-                    emailValidationError: reason,
-                    passwordValidationError: previousPasswordError
-                )
-            }
-
-            mutating func invalidPassword(_ reason: String?) {
-                let previousEmailError = self[case: \.invalid]?.emailValidationError
-
-                if reason == nil, previousEmailError == nil {
-                    self = .valid
-                }
-
-                self = .invalid(
-                    emailValidationError: previousEmailError,
-                    passwordValidationError: reason
-                )
-            }
-        }
+        var emailValidated: Validated<String, EmailValidationError> = .idle("")
+        var passwordValidated: Validated<String, NonEmptyStringValidationError> = .idle("")
 
         public init(email: Email? = nil) {
             #if DEBUG // && os(iOS)
@@ -72,6 +40,11 @@ public struct LogInFeature {
 
             self.emailText = email?.emailString ?? ""
             self.email = Email(emailText)
+
+            if let email, email.emailString.isNotEmpty {
+                self.emailValidated = email.validation
+            }
+            self.passwordValidated = .idle("")
         }
     }
 
@@ -191,25 +164,44 @@ public struct LogInFeature {
         switch action {
         case .verifyEmail:
             state.email.update(state.emailText)
-            let emailError = state.email.getErrorOrNil()
-
-            switch emailError {
-            case .patternInvalid:
-                state.formValidation.invalidEmail("Email không hợp lệ.")
-            case .fieldEmpty:
-                state.formValidation.invalidEmail("Vui lòng điền thông tin.")
-            case .none:
-                state.formValidation.invalidEmail(nil)
-            }
+            state.emailValidated = state.email.validation
             return .none
         case .verifyPassword:
             state.password.update(state.passwordText)
-            let passwordError = state.password.getErrorOrNil()
-
-            state.formValidation.invalidPassword(passwordError != nil ? "Vui lòng điền thông tin." : nil)
+            state.passwordValidated = state.password.validation
             return .none
         case .destination:
             return .none
+        }
+    }
+}
+
+extension Validated<String, EmailValidationError> {
+    var userFriendlyError: String? {
+        switch self {
+        case .idle, .valid:
+            return nil
+        case let .invalid(_, error):
+            switch error {
+            case .patternInvalid:
+                return "Email không hợp lệ."
+            case .fieldEmpty:
+                return "Vui lòng điền thông tin."
+            }
+        }
+    }
+}
+
+extension Validated<String, NonEmptyStringValidationError> {
+    var userFriendlyError: String? {
+        switch self {
+        case .idle, .valid:
+            return nil
+        case let .invalid(_, error):
+            switch error {
+            case .empty:
+                return "Vui lòng điền thông tin."
+            }
         }
     }
 }

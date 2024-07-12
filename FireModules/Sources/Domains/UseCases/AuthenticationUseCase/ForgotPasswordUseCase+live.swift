@@ -3,6 +3,24 @@ import ComposableArchitecture
 
 public extension ForgotPasswordUseCase {
     static func live() -> Self {
+        ForgotPasswordUseCase(
+            forgotPassword: common.forgotPassword
+        )
+    }
+
+    static func preview() -> Self {
+        ForgotPasswordUseCase(
+            forgotPassword: common.forgotPassword
+        )
+    }
+
+    static func test() -> Self {
+        ForgotPasswordUseCase(
+            forgotPassword: unimplemented("\(Self.self).forgotPassword")
+        )
+    }
+
+    private static var common: Self {
         @Dependency(\.authAPIService) var authAPIService
         return ForgotPasswordUseCase(
             forgotPassword: { request in

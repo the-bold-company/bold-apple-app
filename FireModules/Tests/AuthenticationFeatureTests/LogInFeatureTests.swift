@@ -122,8 +122,8 @@ final class LogInFeatureTests: XCTestCase {
 
         // Assert
         await store.receive(\._local.verifyPassword) {
-            XCTAssertTrue($0.formValidation.is(\.invalid))
-            XCAssertNoDifference($0.formValidation[case: \.invalid]?.passwordValidationError, "Vui lòng điền thông tin.")
+            XCTAssertTrue($0.passwordValidated.is(\.invalid))
+            XCAssertNoDifference($0.passwordValidated.userFriendlyError, "Vui lòng điền thông tin.")
         }
     }
 
@@ -141,22 +141,22 @@ final class LogInFeatureTests: XCTestCase {
         await store.send(.set(\.$emailText, ""))
         await mainQueue.advance(by: .milliseconds(500))
         await store.receive(\._local.verifyEmail) {
-            XCTAssertTrue($0.formValidation.is(\.invalid))
-            XCAssertNoDifference($0.formValidation[case: \.invalid]?.emailValidationError, "Vui lòng điền thông tin.")
+            XCTAssertTrue($0.emailValidated.is(\.invalid))
+            XCAssertNoDifference($0.emailValidated.userFriendlyError, "Vui lòng điền thông tin.")
         }
 
         await store.send(.set(\.$emailText, "user"))
         await mainQueue.advance(by: .milliseconds(500))
         await store.receive(\._local.verifyEmail) {
-            XCTAssertTrue($0.formValidation.is(\.invalid))
-            XCAssertNoDifference($0.formValidation[case: \.invalid]?.emailValidationError, "Email không hợp lệ.")
+            XCTAssertTrue($0.emailValidated.is(\.invalid))
+            XCAssertNoDifference($0.emailValidated.userFriendlyError, "Email không hợp lệ.")
         }
 
         await store.send(.set(\.$emailText, "user"))
         await mainQueue.advance(by: .milliseconds(500))
         await store.receive(\._local.verifyEmail) {
-            XCTAssertTrue($0.formValidation.is(\.invalid))
-            XCAssertNoDifference($0.formValidation[case: \.invalid]?.emailValidationError, "Email không hợp lệ.")
+            XCTAssertTrue($0.emailValidated.is(\.invalid))
+            XCAssertNoDifference($0.emailValidated.userFriendlyError, "Email không hợp lệ.")
         }
     }
 }

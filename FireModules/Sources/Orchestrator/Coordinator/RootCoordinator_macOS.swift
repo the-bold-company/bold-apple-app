@@ -80,8 +80,6 @@ public struct RootCoordinator {
                 return .none
             case .logInFailed:
                 return .none
-            case .forgotPasswordInitiated:
-                return .none
             case .signUpInitiate:
                 return .none
             }

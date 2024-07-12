@@ -3,7 +3,11 @@ import Foundation
 
 public struct Email: Value, Equatable {
     public var value: Result<String, EmailValidationError> {
-        validators.validate(emailString).asResult
+        validation.asResult
+    }
+
+    public var validation: Validated<String, EmailValidationError> {
+        validators.validate(emailString)
     }
 
     public let validators = ValidatorCollection(

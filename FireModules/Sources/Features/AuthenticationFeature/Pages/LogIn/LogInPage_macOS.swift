@@ -188,9 +188,9 @@ extension BindingViewStore<LogInFeature.State> {
         LoginPage.ViewState(
             email: self.$emailText,
             password: self.$passwordText,
-            isFormValid: self.formValidation.is(\.valid),
-            emailValidationError: self.formValidation[case: \.invalid]?.emailValidationError,
-            passwordValidationError: self.formValidation[case: \.invalid]?.passwordValidationError,
+            isFormValid: self.emailValidated.is(\.valid) && self.passwordValidated.is(\.valid),
+            emailValidationError: self.emailValidated.userFriendlyError,
+            passwordValidationError: self.passwordValidated.userFriendlyError,
             serverError: self.serverError,
             isLoading: self.logInProgress.is(\.loading)
         )
@@ -198,3 +198,15 @@ extension BindingViewStore<LogInFeature.State> {
     }
 }
 #endif
+
+#Preview {
+    NavigationStack {
+        LoginPage(
+            store: Store(
+                initialState: .init(),
+                reducer: { LogInFeature() }
+            )
+        )
+        .preferredColorScheme(.light)
+    }
+}
