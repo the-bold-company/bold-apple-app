@@ -3,7 +3,7 @@ import Foundation
 
 @CasePathable
 @dynamicMemberLookup
-public enum LoadingProgress<Success, Failure>: Equatable where Success: Equatable, Failure: LocalizedError {
+public enum LoadingProgress<Success, Failure>: Equatable where Success: Equatable, Failure: LocalizedError, Failure: Equatable {
     case idle
     case loading
     case loaded(Result<Success, Failure>)
@@ -20,7 +20,7 @@ public enum LoadingProgress<Success, Failure>: Equatable where Success: Equatabl
             } else if let lhsFailure = lhsResult[case: \.failure],
                       let rhsFailure = rhsResult[case: \.failure]
             {
-                return lhsFailure.localizedDescription == rhsFailure.localizedDescription
+                return lhsFailure == rhsFailure
             }
 
             return false

@@ -3,6 +3,7 @@ import ComposableArchitecture
 import DomainUtilities
 import KeychainServiceInterface
 
+// TODO: Create a common instance to ensure consistent behavior among all dependency environment (see ForgotPasswordUseCase+impl)
 public extension LogInUseCase {
     static func live() -> Self {
         @Dependency(\.authAPIService) var authAPIService

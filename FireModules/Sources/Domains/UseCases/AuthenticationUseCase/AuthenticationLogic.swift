@@ -4,13 +4,20 @@ import Foundation
 
 public enum AuthenticationLogic {}
 
-// MARK: Log in use case logic
+// TODO: Move it to DomainEntities
+public protocol UseCaseRequirements {
+    associatedtype Request
+    associatedtype Response
+    associatedtype Failure: LocalizedError, Equatable
+}
+
+// MARK: - Log in use case logic
 
 public typealias LogInRequest = AuthenticationLogic.LogIn.Request
 public typealias LogInResponse = AuthenticationLogic.LogIn.Response
 public typealias LogInFailure = AuthenticationLogic.LogIn.Failure
 public extension AuthenticationLogic {
-    enum LogIn {
+    enum LogIn: UseCaseRequirements {
         public struct Request {
             public let email: Email
             public let password: NonEmptyString
@@ -31,7 +38,7 @@ public extension AuthenticationLogic {
         }
 
         @CasePathable
-        public enum Failure: LocalizedError {
+        public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
             case invalidCredentials(DomainError)
             case invalidInputs(EmailValidationError?, NonEmptyStringValidationError?)
@@ -71,13 +78,13 @@ public extension AuthenticationLogic {
     }
 }
 
-// MARK: Sign up use case logic
+// MARK: - Sign up use case logic
 
 public typealias SignUpRequest = AuthenticationLogic.SignUp.Request
 public typealias SignUpResponse = AuthenticationLogic.SignUp.Response
 public typealias SignUpFailure = AuthenticationLogic.SignUp.Failure
 public extension AuthenticationLogic {
-    enum SignUp {
+    enum SignUp: UseCaseRequirements {
         public struct Request {
             let email: String
             let password: String
@@ -92,19 +99,19 @@ public extension AuthenticationLogic {
             public init() {}
         }
 
-        public enum Failure: LocalizedError {
+        public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
         }
     }
 }
 
-// MARK: MFA use case logic
+// MARK: - MFA use case logic
 
 public typealias OTPRequest = AuthenticationLogic.OTP.Request
 public typealias OTPResponse = AuthenticationLogic.OTP.Response
 public typealias OTPFailure = AuthenticationLogic.OTP.Failure
 public extension AuthenticationLogic {
-    enum OTP {
+    enum OTP: UseCaseRequirements {
         public enum Request {
             case signUpOTP(email: String, code: String)
             case resetPasswordOTP(email: String, password: String, code: String)
@@ -114,7 +121,7 @@ public extension AuthenticationLogic {
             public init() {}
         }
 
-        public enum Failure: LocalizedError {
+        public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
             case codeMismatch(DomainError)
 
@@ -146,13 +153,13 @@ public extension AuthenticationLogic {
     }
 }
 
-// MARK: Verify email existence logic
+// MARK: - Verify email existence logic
 
 public typealias VerifyEmailRegistrationRequest = AuthenticationLogic.VerifyEmailRegistration.Request
 public typealias VerifyEmailRegistrationResponse = AuthenticationLogic.VerifyEmailRegistration.Response
 public typealias VerifyEmailRegistrationFailure = AuthenticationLogic.VerifyEmailRegistration.Failure
 public extension AuthenticationLogic {
-    enum VerifyEmailRegistration {
+    enum VerifyEmailRegistration: UseCaseRequirements {
         public struct Request {
             let email: String
 
@@ -169,20 +176,20 @@ public extension AuthenticationLogic {
             }
         }
 
-        public enum Failure: LocalizedError {
+        public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
             case emailAlreadyRegistered
         }
     }
 }
 
-// MARK: Reset password logic
+// MARK: - Reset password logic
 
 public typealias ForgotPasswordRequest = AuthenticationLogic.ForgotPassword.Request
 public typealias ForgotPasswordResponse = AuthenticationLogic.ForgotPassword.Response
 public typealias ForgotPasswordFailure = AuthenticationLogic.ForgotPassword.Failure
 public extension AuthenticationLogic {
-    enum ForgotPassword {
+    enum ForgotPassword: UseCaseRequirements {
         public struct Request {
             let email: Email
 
@@ -203,7 +210,8 @@ public extension AuthenticationLogic {
             }
         }
 
-        public enum Failure: LocalizedError {
+        @CasePathable
+        public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
             case emailHasNotBeenRegistered
             case emailInvalid(EmailValidationError)

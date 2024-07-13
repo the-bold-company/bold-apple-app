@@ -7,7 +7,6 @@ import TCAExtensions
 import DevSettingsUseCase
 #endif
 
-typealias PasswordValidated = [Validated<String, PasswordValidationError>]
 typealias SignUpProgress = LoadingProgress<Confirmed, AuthenticationLogic.SignUp.Failure>
 struct Confirmed: Equatable {}
 

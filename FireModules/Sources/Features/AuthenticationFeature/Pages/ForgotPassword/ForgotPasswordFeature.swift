@@ -36,9 +36,7 @@ public struct ForgotPasswordFeature {
         }
 
         @CasePathable
-        public enum DelegateAction {
-            case dismiss
-        }
+        public enum DelegateAction {}
 
         @CasePathable
         public enum LocalAction {
@@ -62,7 +60,7 @@ public struct ForgotPasswordFeature {
                 return handleViewAction(viewAction, state: &state)
             case let ._local(localAction):
                 return handleLocalAction(localAction, state: &state)
-            case .binding, .delegate:
+            case .binding:
                 return .none
             }
         }
@@ -83,13 +81,6 @@ public struct ForgotPasswordFeature {
             return .run { _ in await dismiss() }
         }
     }
-
-//    private func handleDelegateAction(_ action: Action.DelegateAction, state _: inout State) -> Effect<Action> {
-//        switch action {
-//        case .dismiss:
-//            return .none
-//        }
-//    }
 
     private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
         switch action {

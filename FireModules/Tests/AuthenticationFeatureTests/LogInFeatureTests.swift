@@ -20,7 +20,7 @@ final class LogInFeatureTests: XCTestCase {
         let store = TestStore(initialState: .init()) {
             LogInFeature()
         } withDependencies: {
-            $0.context = .live
+            $0.context = .live // TODO: Update LogInUseCase DI so that we can remove this line
             $0.mainQueue = mainQueue.eraseToAnyScheduler()
             $0.authAPIService = .directMock(logInResponseMock: """
             {

@@ -1,3 +1,4 @@
+#if os(macOS)
 import AuthenticationUseCase
 import ComposableArchitecture
 import CoreUI
@@ -151,3 +152,4 @@ extension BindingViewStore<ForgotPasswordFeature.State> {
         .preferredColorScheme(.light)
     }
 }
+#endif

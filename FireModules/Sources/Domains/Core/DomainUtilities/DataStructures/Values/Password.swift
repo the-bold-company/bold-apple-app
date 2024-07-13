@@ -1,5 +1,7 @@
 import Foundation
 
+public typealias PasswordValidated = [Validated<String, PasswordValidationError>]
+
 public struct Password: Value, Equatable {
     public var value: Result<String, PasswordValidationError> {
         return validators.validate(passwordString).asResult
@@ -19,7 +21,7 @@ public struct Password: Value, Equatable {
         self.passwordString = passwordString
     }
 
-    public func validateAll() -> [Validated<String, PasswordValidationError>] {
+    public func validateAll() -> PasswordValidated {
         validators.validateAll(passwordString)
     }
 

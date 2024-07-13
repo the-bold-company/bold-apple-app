@@ -16,7 +16,7 @@ public extension ForgotPasswordUseCase {
 
     static func test() -> Self {
         ForgotPasswordUseCase(
-            forgotPassword: unimplemented("\(Self.self).forgotPassword")
+            forgotPassword: common.forgotPassword
         )
     }
 
