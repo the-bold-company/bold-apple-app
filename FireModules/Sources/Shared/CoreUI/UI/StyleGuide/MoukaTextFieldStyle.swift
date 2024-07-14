@@ -11,7 +11,7 @@ struct MoukaTextFieldStyle: TextFieldStyle {
         isError: Bool,
         hidesSupplementary: Bool,
         supplementaryImage: (() -> Image)? = nil,
-        onSupplementaryButtonTapped: (() -> Void)?
+        onSupplementaryButtonTapped: (() -> Void)? = nil
     ) {
         self.isFocused = isFocused
         self.isError = isError
@@ -27,7 +27,7 @@ struct MoukaTextFieldStyle: TextFieldStyle {
                 .frame(height: 25)
                 .padding(.vertical(14))
                 .padding(.leading, 16)
-                .padding(.trailing, 40)
+                .padding(.trailing, onSupplementaryButtonTapped != nil ? 40 : 16)
                 .background(Color.white)
                 .cornerRadius(8)
                 .overlay(
@@ -55,18 +55,20 @@ struct MoukaTextFieldStyle: TextFieldStyle {
                 )
                 .onHover { isHovered = $0 }
 
-            HStack {
-                Spacer()
-                Button {
-                    onSupplementaryButtonTapped?()
-                } label: {
-                    (supplementaryImage?() ?? Image(systemName: "xmark.circle.fill"))
-                        .foregroundColor(Color(hex: 0x9CA3AF))
+            if let onSupplementaryButtonTapped {
+                HStack {
+                    Spacer()
+                    Button {
+                        onSupplementaryButtonTapped()
+                    } label: {
+                        (supplementaryImage?() ?? Image(systemName: "xmark.circle.fill"))
+                            .foregroundColor(Color(hex: 0x9CA3AF))
+                    }
+                    .buttonStyle(.plain)
+                    .frame(width: 16, height: 16)
+                    .isHidden(hidden: hidesSupplementary)
+                    Spacing(width: .size16)
                 }
-                .buttonStyle(.plain)
-                .frame(width: 16, height: 16)
-                .isHidden(hidden: hidesSupplementary)
-                Spacing(width: .size16)
             }
         }
     }

@@ -48,4 +48,48 @@ class AEOTPTextFieldSwiftUI: AEOTPTextField {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+#elseif os(macOS)
+import AppKit
+
+class AEOTPTextFieldSwiftUI: AEOTPTextField {
+    init(
+        slotsCount: Int,
+        otpDefaultCharacter: String,
+        otpBackgroundColor: NSColor,
+        otpFilledBackgroundColor: NSColor,
+        otpCornerRaduis: CGFloat,
+        otpDefaultBorderColor: NSColor,
+        otpFilledBorderColor: NSColor,
+        otpDefaultBorderWidth: CGFloat,
+        otpFilledBorderWidth: CGFloat,
+        otpTextColor: NSColor,
+        otpFontSize _: CGFloat,
+        otpFont: NSFont,
+        isSecureTextEntry _: Bool
+    ) {
+//        super.init(frame: .init(origin: .zero, size: .init(width: NSScreen.main!.frame.width * 0.8, height: 40)))
+        super.init(frame: .init(origin: .zero, size: .init(width: 360, height: 62)))
+
+        self.otpDefaultCharacter = otpDefaultCharacter
+        self.otpBackgroundColor = otpBackgroundColor
+        self.otpFilledBackgroundColor = otpFilledBackgroundColor
+        self.otpCornerRaduis = otpCornerRaduis
+        self.otpDefaultBorderColor = otpDefaultBorderColor
+        self.otpFilledBorderColor = otpFilledBorderColor
+        self.otpDefaultBorderWidth = otpDefaultBorderWidth
+        self.otpFilledBorderWidth = otpFilledBorderWidth
+        self.otpTextColor = otpTextColor
+//        self.otpFontSize = otpFontSize
+        self.otpFont = otpFont
+//        self.isSecureTextEntry = isSecureTextEntry
+
+        configure(with: slotsCount)
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
 #endif
