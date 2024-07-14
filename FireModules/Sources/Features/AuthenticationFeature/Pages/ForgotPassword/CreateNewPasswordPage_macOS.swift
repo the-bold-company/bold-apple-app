@@ -1,10 +1,4 @@
-//
-//  PasswordCreationPage.swift
-//
-//
-//  Created by Hien Tran on 02/12/2023.
-//
-
+#if os(macOS)
 import AuthenticationUseCase
 import Combine
 import ComposableArchitecture
@@ -17,45 +11,64 @@ import SwiftUI
 import DevSettingsUseCase
 #endif
 
-public struct PasswordCreationPage: View {
+public struct CreateNewPasswordPage: View {
     @ObserveInjection var iO
+    @FocusState private var focusedField: FocusedField?
+
+    enum FocusedField: Hashable {
+        case newPassword
+    }
 
     struct ViewState: Equatable {
         @BindingViewState var password: String
         var passwordValidated: PasswordValidated
-        var isLoading: Bool
         var isFormValid: Bool
     }
 
-    let store: StoreOf<PasswordSignUpReducer>
-    @ObservedObject var viewStore: ViewStore<ViewState, PasswordSignUpReducer.Action>
+    let store: StoreOf<CreateNewPasswordFeature>
+    @ObservedObject var viewStore: ViewStore<ViewState, CreateNewPasswordFeature.Action>
 
-    public init(store: StoreOf<PasswordSignUpReducer>) {
+    public init(store: StoreOf<CreateNewPasswordFeature>) {
         self.store = store
-        self.viewStore = ViewStore(self.store, observe: \.passwordCreationViewState)
+        self.viewStore = ViewStore(self.store, observe: \.viewState)
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.isLoading) {
+        ZStack {
             VStack(alignment: .center) {
-                Spacing(height: .size24)
-                Text("Tạo mật khẩu").typography(.titleScreen)
+                Text("Tạo mật khẩu mới").typography(.titleScreen)
                 Spacing(height: .size24)
                 passwordInputField
-                Spacer()
+                Spacing(height: .size40)
                 actionButtons
             }
-            .padding(16)
-            .hideNavigationBar()
+            .frame(width: 400)
+            .padding(.all, 40)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+        .background(Color(hex: 0xB7F2C0))
+        .hideNavigationBar()
+        .toolbar(.hidden)
+        .navigationDestination(
+            store: store.scope(
+                state: \.$destination.otp,
+                action: \._local.destination.otp
+            )
+        ) { ConfirmationCodePage(store: $0) }
         .enableInjection()
     }
 
     @ViewBuilder private var passwordInputField: some View {
-        FireSecureTextField(
+        MoukaSecureTextField(
             "Nhập mật khẩu ",
             title: "Mật khẩu",
-            text: viewStore.$password
+            text: viewStore.$password,
+            focusedField: $focusedField,
+            fieldId: .newPassword
         )
         #if os(iOS)
         .autocapitalization(.none)
@@ -103,25 +116,24 @@ public struct PasswordCreationPage: View {
             } label: {
                 Text("Trở về").frame(maxWidth: .infinity)
             }
-            .fireButtonStyle(type: .secondary(shape: .roundedCorner))
+            .moukaButtonStyle(.secondary)
 
             Button {
                 store.send(.view(.nextButtonTapped))
             } label: {
                 Text("Cập nhật").frame(maxWidth: .infinity)
             }
-            .fireButtonStyle(isActive: viewStore.isFormValid)
+            .moukaButtonStyle(disabled: !viewStore.isFormValid)
         }
     }
 }
 
-private extension BindingViewStore<PasswordSignUpReducer.State> {
-    var passwordCreationViewState: PasswordCreationPage.ViewState {
+private extension BindingViewStore<CreateNewPasswordFeature.State> {
+    var viewState: CreateNewPasswordPage.ViewState {
         // swiftformat:disable redundantSelf
-        PasswordCreationPage.ViewState(
+        CreateNewPasswordPage.ViewState(
             password: self.$passwordText,
-            passwordValidated: self.passwordValidated,
-            isLoading: self.signUpProgress.is(\.loading),
+            passwordValidated: self.password.validateAll(),
             isFormValid: self.password.isValid
         )
         // swiftformat:enable redundantSelf
@@ -130,28 +142,16 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
 
 #Preview {
     NavigationStack {
-        PasswordCreationPage(
+        CreateNewPasswordPage(
             store: Store(
                 initialState: .init(email: Email("dev@mouka.com")),
-                reducer: { PasswordSignUpReducer() },
+                reducer: { CreateNewPasswordFeature() },
                 withDependencies: {
-                    $0.signUpUseCase.signUp = { _ in
-                        let mockURL = URL.local(backward: 6).appendingPathComponent("mock/auth/sign-up/response.json")
-                        let mock = try! Data(contentsOf: mockURL)
-
-                        return Effect.publisher {
-                            Just(mock)
-                                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main) // simulate latency
-                                .map { try! $0.decoded() as API.v1.Response<EmptyDataResponse> }
-                                .map { _ in
-                                    Result<AuthenticationLogic.SignUp.Response, AuthenticationLogic.SignUp.Failure>.success(.init())
-                                }
-                        }
-                    }
-
-                    $0.devSettingsUseCase = mockDevSettingsUseCase()
+                    $0.context = .live
                 }
             )
         )
+        .preferredColorScheme(.light)
     }
 }
+#endif

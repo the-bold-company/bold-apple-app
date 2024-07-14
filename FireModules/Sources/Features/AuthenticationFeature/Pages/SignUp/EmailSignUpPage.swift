@@ -54,7 +54,7 @@ public struct EmailRegistrationPage: TCAView {
                     state: \.$destination.password,
                     action: \.destination.password
                 )
-            ) { PasswordCreationPage(store: $0) }
+            ) { PasswordSignUpPage(store: $0) }
         }
         .enableInjection()
     }

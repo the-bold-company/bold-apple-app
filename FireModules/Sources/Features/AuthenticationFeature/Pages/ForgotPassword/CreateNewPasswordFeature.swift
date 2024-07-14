@@ -4,7 +4,7 @@ import DomainEntities
 import TCAExtensions
 
 @Reducer
-public struct CreateNewPasswordReducer {
+public struct CreateNewPasswordFeature {
     @Reducer(state: .equatable)
     public enum Destination {
         case otp(ConfirmationCodeReducer)
