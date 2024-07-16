@@ -121,4 +121,5 @@ private struct Wrapper: View {
 
 #Preview {
     Wrapper()
+        .preferredColorScheme(.light)
 }
