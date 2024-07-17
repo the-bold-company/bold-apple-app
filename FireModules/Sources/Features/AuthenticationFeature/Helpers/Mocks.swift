@@ -8,19 +8,19 @@ import Utilities
 
 // MARK: Helpers
 
-func mockMFAUseCase() -> MFAUseCase {
-    var mock = MFAUseCase.noop
-    mock.verifyOTP = { _ in
-        return Effect.publisher {
-            Just("")
-                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main)
-                .map { _ in
-                    Result<OTPResponse, OTPFailure>.success(.init())
-                }
-        }
-    }
-    return mock
-}
+// func mockMFAUseCase() -> MFAUseCase {
+//    var mock = MFAUseCase.noop
+//    mock.verifyOTP = { _ in
+//        return Effect.publisher {
+//            Just("")
+//                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main)
+//                .map { _ in
+//                    Result<OTPResponse, OTPFailure>.success(.init())
+//                }
+//        }
+//    }
+//    return mock
+// }
 
 func mockSignUpUseCase() -> SignUpUseCase {
     var mock = SignUpUseCase.noop

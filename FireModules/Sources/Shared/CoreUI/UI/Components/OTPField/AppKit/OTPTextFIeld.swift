@@ -139,6 +139,7 @@ class OTPTextField: NSTextField {
 
         // Update the focused text field
         focusOnLabel(clickedTextField)
+        window?.makeFirstResponder(self)
     }
 
     // MARK: - Public helpers

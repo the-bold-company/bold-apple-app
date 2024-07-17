@@ -148,16 +148,10 @@ package.targets.append(contentsOf: [
     .feature(.onboardingFeature),
     .feature(
         .authenticationFeature,
-        useCases: [
-            .authenticationUseCase,
-        ],
-        infras: [
-            .networking,
-        ],
-        thirdParties: [
-            .codextended,
-            .tcaCoordinator,
-        ],
+        useCases: [.authenticationUseCase],
+        dataSources: [.authAPIService],
+        infras: [.networking],
+        thirdParties: [.codextended, .tcaCoordinator],
         enableDevDependenies: true
     ),
     .feature(
@@ -483,6 +477,7 @@ extension Target {
     static func feature(
         _ module: Module.Feature,
         useCases: [Module.Domain.UseCase]? = nil,
+        dataSources: [Module.DataSource]? = nil,
         infras: [Module.Infra]? = nil,
         thirdParties: [Dependency.ThirdParty]? = nil,
         features: [Module.Feature]? = nil,
@@ -502,6 +497,10 @@ extension Target {
 
         if let useCases {
             dependencies.append(contentsOf: useCases.map(\.asDependency))
+        }
+
+        if let dataSources {
+            dependencies.append(contentsOf: dataSources.map(\.implementation))
         }
 
         if let infras {

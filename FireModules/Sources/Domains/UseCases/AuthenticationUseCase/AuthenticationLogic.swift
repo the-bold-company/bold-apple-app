@@ -1,4 +1,5 @@
 import CasePaths
+import ComposableArchitecture
 import DomainEntities
 import Foundation
 
@@ -6,7 +7,7 @@ public enum AuthenticationLogic {}
 
 // TODO: Move it to DomainEntities
 public protocol UseCaseRequirements {
-    associatedtype Request
+    associatedtype Request // TODO: Rename this to Input
     associatedtype Response
     associatedtype Failure: LocalizedError, Equatable
 }
@@ -107,23 +108,27 @@ public extension AuthenticationLogic {
 
 // MARK: - MFA use case logic
 
-public typealias OTPRequest = AuthenticationLogic.OTP.Request
-public typealias OTPResponse = AuthenticationLogic.OTP.Response
-public typealias OTPFailure = AuthenticationLogic.OTP.Failure
+public typealias MFAInput = AuthenticationLogic.MFA.Request
+public typealias MFAResponse = AuthenticationLogic.MFA.Response
+public typealias MFAFailure = AuthenticationLogic.MFA.Failure
+public typealias MFAOutput = Effect<Result<MFAResponse, MFAFailure>>
 public extension AuthenticationLogic {
-    enum OTP: UseCaseRequirements {
-        public enum Request {
-            case signUpOTP(email: String, code: String)
-            case resetPasswordOTP(email: String, password: String, code: String)
+    enum MFA: UseCaseRequirements {
+        @CasePathable
+        public enum Request: Equatable {
+            case signUpOTP(email: Email, code: OTP)
+            case resetPasswordOTP(email: Email, password: Password, code: OTP)
         }
 
         public struct Response: Equatable {
             public init() {}
         }
 
+        @CasePathable
         public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
             case codeMismatch(DomainError)
+            case inputInvalid(MFAInput)
 
             public init(domainError: DomainError) {
                 switch domainError.errorCode {
@@ -139,6 +144,8 @@ public extension AuthenticationLogic {
                 case let .codeMismatch(error),
                      let .genericError(error):
                     return error.errorDescription
+                case let .inputInvalid(input):
+                    return "Input invalid: \(input)"
                 }
             }
 
@@ -147,6 +154,8 @@ public extension AuthenticationLogic {
                 case let .codeMismatch(error),
                      let .genericError(error):
                     return error.failureReason
+                case .inputInvalid:
+                    return "Invalid inputs"
                 }
             }
         }

@@ -61,18 +61,13 @@ enum LogInUseCaseKey: DependencyKey {
 // MARK: MFAUseCase dependency registration
 
 enum MFAUseCaseKey: DependencyKey {
-    public static let liveValue = MFAUseCase.live
-}
+    public static let liveValue = MFAUseCase.live()
 
-#if DEBUG
-extension MFAUseCaseKey {
-    static let testValue = MFAUseCase(
-        verifyOTP: unimplemented("\(Self.self).verifyOTP"),
-        confirmOTPResetPassword: unimplemented("\(Self.self).confirmOTPResetPassword")
-    )
-    static let previewValue = MFAUseCase.noop
+    #if DEBUG
+    static let testValue = MFAUseCase.test()
+    static let previewValue = MFAUseCase.preview()
+    #endif
 }
-#endif
 
 // MARK: VerifyEmail dependency registration
 

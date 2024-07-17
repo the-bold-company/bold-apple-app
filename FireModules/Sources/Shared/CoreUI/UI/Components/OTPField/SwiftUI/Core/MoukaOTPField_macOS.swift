@@ -2,28 +2,25 @@
 import AppKit
 import SwiftUI
 
-struct MoukaOTPField: View {
+public struct MoukaOTPField: View {
     @Binding private var text: String
     private let onCommit: (() -> Void)?
     private let onChange: ((String) -> Void)?
-    @Binding private var error: String?
-    private let autoClearErrorWhenNeeded: Bool
+    private let error: String?
 
-    init(
+    public init(
         text: Binding<String>,
-        error: Binding<String?>,
-        autoClearErrorWhenNeeded: Bool = true,
+        error: String?,
         onChange: ((String) -> Void)? = nil,
         onCommit: (() -> Void)? = nil
     ) {
         self._text = text
-        self._error = error
-        self.autoClearErrorWhenNeeded = autoClearErrorWhenNeeded
+        self.error = error
         self.onChange = onChange
         self.onCommit = onCommit
     }
 
-    var body: some View {
+    public var body: some View {
         VStack {
             OTPTextFieldRepresentable(
                 text: $text,
@@ -31,15 +28,6 @@ struct MoukaOTPField: View {
                 onChange: onChange,
                 onCommit: onCommit
             )
-            .onChange(of: text) { oldValue, newValue in
-                if oldValue == newValue { return }
-
-                guard autoClearErrorWhenNeeded else { return }
-                let otpDigits = 6
-                if newValue.count < otpDigits {
-                    error = nil
-                }
-            }
 
             Group {
                 Spacing(size: .size12)
@@ -49,7 +37,7 @@ struct MoukaOTPField: View {
             }
             .isHidden(hidden: error == nil)
         }
-        .padding()
+        .frame(minHeight: 62)
     }
 }
 
@@ -60,7 +48,7 @@ private typealias OTPState = (text: String, error: String?, submitted: Bool, suc
         VStack {
             MoukaOTPField(
                 text: $state.0,
-                error: $state.1,
+                error: state.1,
                 onChange: { _ in state.2 = false },
                 onCommit: {
                     state.2 = true
@@ -69,6 +57,14 @@ private typealias OTPState = (text: String, error: String?, submitted: Bool, suc
                     }
                 }
             )
+            .onChange(of: state.0) { oldValue, newValue in
+                if oldValue == newValue { return }
+
+                let otpDigits = 6
+                if oldValue.count == otpDigits, newValue.count == otpDigits - 1 {
+                    state.1 = nil
+                }
+            }
 
             Toggle("Successful response?", isOn: $state.3)
 

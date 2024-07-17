@@ -1,3 +1,4 @@
+#if os(macOS)
 import AuthenticationUseCase
 import Combine
 import ComposableArchitecture
@@ -11,8 +12,8 @@ public struct ConfirmationCodePage: View {
 
     struct ViewState: Equatable {
         @BindingViewState var otp: String
+        var email: String
         var isLoading: Bool
-        var isOTPValid: Bool
         var userFriendlyError: String?
     }
 
@@ -25,57 +26,54 @@ public struct ConfirmationCodePage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.isLoading) {
+        VStack {
             VStack(alignment: .center) {
-                Spacing(height: .size24)
                 Text("Xác nhận email").typography(.titleScreen)
                 Spacing(height: .size12)
-                Text("Điền vào ô sau dãy số Boldpanel vừa gửi bạn qua email ")
-                    .font(.system(size: 16))
-                    .foregroundColor(Color.coreui.forestGreen)
-                    +
-                    Text(verbatim: "nhiytran.ad@gmai.com")
-                    .font(.system(size: 16))
-                    .bold()
-                    + Text(". ").font(.system(size: 16))
-                    + Text("Thay đổi")
-                    .font(.system(size: 16))
-                    .foregroundColor(Color.coreui.brightGreen)
-                    .bold()
-                otpInput
-                errorMessage
+                instruction
                 Spacing(size: .size40)
-                resendCountdown()
-                Spacer()
+                otpInput
+                Spacing(size: .size40)
+                if viewStore.isLoading {
+                    ProgressView()
+                } else {
+                    resendCountdown
+                }
             }
-            .padding(16)
-            .hideNavigationBar()
+            .frame(width: 400)
+            .padding(.all, 40)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 0)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding()
+        .background(Color(hex: 0xB7F2C0))
         .enableInjection()
     }
 
+    @ViewBuilder private var instruction: some View {
+        Text("Điền vào ô sau dãy số Mouka vừa gửi bạn qua email ")
+            .typography(.bodyLarge)
+            .foregroundColor(Color.coreui.forestGreen)
+            + Text(viewStore.email)
+            .typography(.bodyLargeBold)
+            + Text(". ").font(.system(size: 16))
+            + Text("Thay đổi")
+            .typography(.bodyLargeBold)
+            .foregroundColor(Color.coreui.matureGreen)
+    }
+
     @ViewBuilder private var otpInput: some View {
-        #if os(macOS)
-        TextField("", text: viewStore.$otp)
-        #elseif os(iOS)
-        FireOTPField(
+        MoukaOTPField(
             text: viewStore.$otp,
-            slotsCount: 6
+            error: viewStore.userFriendlyError,
+            onCommit: { viewStore.send(.view(.verifyOTP)) }
         )
-        #endif
+        .disabled(viewStore.isLoading)
     }
 
-    @ViewBuilder private var errorMessage: some View {
-        Group {
-            Spacing(size: .size12)
-            Text(viewStore.userFriendlyError ?? "")
-                .typography(.bodyDefault)
-                .foregroundColor(.red)
-        }
-        .isHidden(hidden: viewStore.userFriendlyError == nil)
-    }
-
-    @ViewBuilder private func resendCountdown() -> some View {
+    @ViewBuilder private var resendCountdown: some View {
 //        Text("Gửi lại sau ")
 //            .font(.system(size: 16))
 //            .foregroundColor(Color(uiColor: .lightGray))
@@ -86,14 +84,9 @@ public struct ConfirmationCodePage: View {
 
         Text("Bạn không nhận được? ")
             .font(.system(size: 16))
-        #if os(macOS)
-            .foregroundColor(Color(.lightGray))
-        #elseif os(iOS)
-            .foregroundColor(Color(uiColor: .lightGray))
-        #endif
-        + Text("Gửi lại")
+            + Text("Gửi lại")
             .font(.system(size: 16))
-            .foregroundColor(Color.coreui.brightGreen)
+            .foregroundColor(Color.coreui.matureGreen)
             .bold()
     }
 }
@@ -103,65 +96,50 @@ extension BindingViewStore<ConfirmationCodeReducer.State> {
         // swiftformat:disable redundantSelf
         ConfirmationCodePage.ViewState(
             otp: self.$otpText,
+            email: self.challenge[case: \.signUpOTP]?.getOrNil()
+                ?? self.challenge[case: \.resetPasswordOTP]?.0.getOrNil()
+                ?? "",
             isLoading: self.otpVerifying.is(\.loading),
-            isOTPValid: self.otp.isValid,
             userFriendlyError: self.otpVerifying[case: \.loaded.failure]?.userFriendlyError
         )
         // swiftformat:enable redundantSelf
     }
 }
 
-#Preview("OTP Confirmed") {
+import AuthAPIService
+
+#Preview("Sign up") {
     ConfirmationCodePage(
         store: .init(
             initialState: .init(challenge: .signUpOTP(Email("dev@mouka.ai"))),
             reducer: { ConfirmationCodeReducer() },
             withDependencies: {
-                $0.devSettingsUseCase = mockDevSettingsUseCase()
-                $0.mfaUseCase.verifyOTP = { _ in
-                    return Effect.publisher {
-                        Just("")
-                            .delay(for: .seconds(1), scheduler: DispatchQueue.main)
-                            .map { _ in
-                                Result<OTPResponse, OTPFailure>.success(.init())
-                            }
-                    }
+                $0.authAPIService = .directMock(confirmSignUpOTPMock: """
+                {
+                  "message": "Invalid confirmation code",
+                  "code": 14001
                 }
+                """)
             }
         )
     )
+    .preferredColorScheme(.light)
 }
 
-#Preview("OTP invalid") {
-    ConfirmationCodePage(
-        store: .init(
-            initialState: .init(challenge: .signUpOTP(Email("dev@mouka.ai"))),
-            reducer: { ConfirmationCodeReducer() },
-            withDependencies: {
-                $0.devSettingsUseCase = mockDevSettingsUseCase()
-                $0.mfaUseCase.verifyOTP = { _ in
-                    return Effect.publisher {
-                        Just("")
-                            .delay(for: .seconds(1), scheduler: DispatchQueue.main)
-                            .map { _ in
-                                Result<OTPResponse, OTPFailure>.failure(.codeMismatch(DomainError.custom(description: "OTP mismatch")))
-                            }
-                    }
-                }
-            }
-        )
-    )
-}
-
-#Preview("Custom mock") {
+#Preview("Reset password") {
     ConfirmationCodePage(
         store: .init(
             initialState: .init(challenge: .resetPasswordOTP(Email("dev@mouka.ai"), Password("Qwerty@123"))),
             reducer: { ConfirmationCodeReducer() },
             withDependencies: {
-                $0.context = .live
-                $0.devSettingsUseCase = mockDevSettingsUseCase()
+                $0.authAPIService = .directMock(confirmForgotPasswordOTPMock: """
+                {
+                  "message": "Execute successfully"
+                }
+                """)
             }
         )
     )
+    .preferredColorScheme(.light)
 }
+#endif

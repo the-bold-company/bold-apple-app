@@ -1,36 +1,21 @@
 import AuthenticationUseCase
+import CasePaths
 import ComposableArchitecture
 import TCAExtensions
 
-typealias OTPVerifyingProgress = LoadingProgress<Confirmed, OTPFailure>
-
+@CasePathable
 public enum OTPChallenge: Equatable {
     case signUpOTP(Email)
     case resetPasswordOTP(Email, Password)
 
-    func validate() -> Self? {
-        switch self {
-        case let .signUpOTP(email):
-            return email.isValid ? self : nil
-        case let .resetPasswordOTP(email, password):
-            return email.isValid && password.isValid
-                ? self
-                : nil
-        }
-    }
-
-    func challenge(withCode code: String) -> OTPUseCaseOutput {
-        @Dependency(\.mfaUseCase) var mfaUseCase
+    public func challenge(withCode code: OTP) -> MFAOutput {
+        @Dependency(\.mfaUseCase.validateMFA) var validateMFA
 
         switch self {
         case let .signUpOTP(email):
-            return mfaUseCase.verifyOTP(.signUpOTP(email: email.getOrCrash(), code: code))
+            return validateMFA(.signUpOTP(email: email, code: code))
         case let .resetPasswordOTP(email, password):
-            return mfaUseCase.confirmOTPResetPassword(.resetPasswordOTP(
-                email: email.getOrCrash(),
-                password: password.getOrCrash(),
-                code: code
-            ))
+            return validateMFA(.resetPasswordOTP(email: email, password: password, code: code))
         }
     }
 }
@@ -41,7 +26,7 @@ public struct ConfirmationCodeReducer {
         @BindingState var otpText: String = ""
 
         var otp = OTP.empty
-        var otpVerifying: OTPVerifyingProgress = .idle
+        var otpVerifying: LoadingProgress<Confirmed, MFAFailure> = .idle
         let challenge: OTPChallenge
 
         public init(challenge: OTPChallenge) {
@@ -57,19 +42,21 @@ public struct ConfirmationCodeReducer {
         case binding(BindingAction<State>)
 
         @CasePathable
-        public enum ViewAction {}
+        public enum ViewAction {
+            case verifyOTP
+        }
 
         @CasePathable
         public enum DelegateAction {
             case otpVerified(OTPChallenge)
-            case otpFailed(OTPFailure)
+            case otpFailed(MFAFailure)
         }
 
         @CasePathable
-        public enum LocalAction {
-            case verifyOTP(OTPChallenge, OTP)
-        }
+        public enum LocalAction {}
     }
+
+    @Dependency(\.mainQueue) var mainQueue
 
     public init() {}
 
@@ -80,14 +67,12 @@ public struct ConfirmationCodeReducer {
             case .binding(\.$otpText):
                 state.otp.update(state.otpText)
 
-                if let otp = state.otp.getSelfOrNil(), let challenge = state.challenge.validate() {
-                    return .send(._local(.verifyOTP(challenge, otp)))
+                if state.otpVerifying.is(\.loaded.failure) {
+                    state.otpVerifying = .idle
                 }
                 return .none
             case let .view(viewAction):
                 return handleViewAction(viewAction, state: &state)
-            case let ._local(localAction):
-                return handleLocalAction(localAction, state: &state)
             case let .delegate(delegateAction):
                 return handleDelegateAction(delegateAction, state: &state)
             case .binding:
@@ -96,15 +81,14 @@ public struct ConfirmationCodeReducer {
         }
     }
 
-    private func handleViewAction(_: Action.ViewAction, state _: inout State) -> Effect<Action> {
-        return .none
-    }
-
-    private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
+    private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
-        case let .verifyOTP(challenge, code):
+        case .verifyOTP:
             state.otpVerifying = .loading
-            return challenge.challenge(withCode: code.otpString)
+            enum CancelId { case validateOTP }
+            let challenge = state.challenge
+            return challenge.challenge(withCode: state.otp)
+                .debounce(id: CancelId.validateOTP, for: .milliseconds(300), scheduler: mainQueue)
                 .map(
                     success: { _ in Action.delegate(.otpVerified(challenge)) },
                     failure: { Action.delegate(.otpFailed($0)) }
@@ -116,19 +100,19 @@ public struct ConfirmationCodeReducer {
         switch action {
         case .otpVerified:
             state.otpVerifying = .loaded(.success(Confirmed()))
+            state.otpText = ""
             return .none
         case let .otpFailed(reason):
             state.otpVerifying = .loaded(.failure(reason))
-            state.otpText = ""
             return .none
         }
     }
 }
 
-extension OTPFailure {
+extension MFAFailure {
     var userFriendlyError: String? {
         switch self {
-        case .genericError:
+        case .genericError, .inputInvalid:
             return "Có lỗi xảy ra. Vui lòng thử lại."
         case .codeMismatch:
             return "Dãy số bạn điền không đúng. Bạn hãy thử lại nhé!"
