@@ -7,14 +7,28 @@
 
 import SwiftUI
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, macOS 13.0, *)
 public extension View {
     @_disfavoredOverload
-    @ViewBuilder func onChange<V>(of value: V, perform action: @escaping (V) -> Void) -> some View where V: Equatable {
-        if #available(iOS 14, *) {
-            onChange(of: value, perform: action)
+    func onChange<V>(of value: V, perform action: @escaping (V) -> Void) -> some View where V: Equatable {
+        if #available(iOS 14, macOS 14.0, *) {
+            return onChange(of: value) { action($0) }
         } else {
-            modifier(ChangeObserver(newValue: value, action: action))
+            return modifier(ChangeObserver(newValue: value, action: { _, newValue in
+                action(newValue)
+            }))
+        }
+    }
+
+    @_disfavoredOverload
+    func onChange<V>(
+        of value: V,
+        perform action: @escaping (_ oldValue: V, _ newValue: V) -> Void
+    ) -> some View where V: Equatable {
+        if #available(iOS 14.0, macOS 14.0, *) {
+            return onChange(of: value, action)
+        } else {
+            return modifier(ChangeObserver(newValue: value, action: action))
         }
     }
 }

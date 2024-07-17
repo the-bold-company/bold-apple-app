@@ -8,15 +8,15 @@
 import Combine
 import SwiftUI
 
-@available(iOS 13.0, *)
+@available(iOS 13.0, macOS 13.0, *)
 struct ChangeObserver<V: Equatable>: ViewModifier {
-    private typealias Action = (V) -> Void
+    private typealias Action = (_ oldValue: V, _ newValue: V) -> Void
     private let newValue: V
     private let newAction: Action
 
     @State private var state: (V, Action)?
 
-    init(newValue: V, action: @escaping (V) -> Void) {
+    init(newValue: V, action: @escaping (_ oldValue: V, _ newValue: V) -> Void) {
         self.newValue = newValue
         self.newAction = action
     }
@@ -29,7 +29,7 @@ struct ChangeObserver<V: Equatable>: ViewModifier {
             .onAppear()
             .onReceive(Just(newValue)) { newValue in
                 if let (currentValue, action) = state, newValue != currentValue {
-                    action(newValue)
+                    action(currentValue, newValue)
                 }
                 state = (newValue, newAction)
             }
