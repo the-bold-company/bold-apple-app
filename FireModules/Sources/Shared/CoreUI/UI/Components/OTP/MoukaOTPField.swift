@@ -2,41 +2,61 @@ import AppKit
 import SwiftUI
 
 class LimitedTextField: NSTextField {
-    private let characterLimit = 6
+    let characterLimit = 6
 
     private var digitLabels = [NSTextField]()
     private var labelsStackView: NSStackView!
     private var focusedTextField: NSTextField?
 
+    var isError: Bool = false
+
     private func forcusOuterBorder(_ label: NSTextField) {
         focusedTextField = label
 
+        highlightLabel(label)
+    }
+
+    func highlightLabel(_ label: NSTextField) {
         label.layer?.borderWidth = 1
-        label.layer?.borderColor = NSColor.coreui.matureGreen.cgColor
+        label.layer?.borderColor = isError
+            ? Color(hex: 0xEF4444).cgColor
+            : NSColor.coreui.matureGreen.cgColor
+
+        label.layer?.sublayers?.removeAll(where: { $0.name == "OuterBorder" })
 
         let outerBorderLayer = CALayer()
         outerBorderLayer.name = "OuterBorder"
-        outerBorderLayer.borderColor = Color(hex: 0x9FE870).opacity(0.5).cgColor
+        outerBorderLayer.borderColor = isError
+            ? Color(hex: 0xEF4444).opacity(0.25).cgColor
+            : Color(hex: 0x9FE870).opacity(0.5).cgColor
         outerBorderLayer.borderWidth = 4
-        outerBorderLayer.frame = label.bounds.insetBy(dx: -4, dy: -4)
         outerBorderLayer.cornerRadius = 10 + (4 - 1)
+        outerBorderLayer.frame = label.bounds.insetBy(dx: -4, dy: -4)
         label.layer?.addSublayer(outerBorderLayer)
 
         label.layoutSubtreeIfNeeded()
     }
 
     func applyDefaultBorderStyleToLabel(_ label: NSTextField) {
-        label.layer?.sublayers?.removeAll(where: { $0.name == "OuterBorder" || $0.name == "OuterBorderError" })
-        label.layer?.borderWidth = 1
-        label.layer?.borderColor = Color(hex: 0xE5E7EB).cgColor
-        label.layoutSubtreeIfNeeded()
+        if isError {
+            highlightLabel(label)
+        } else {
+            label.layer?.sublayers?.removeAll(where: { $0.name == "OuterBorder" })
+            label.layer?.borderWidth = 1
+            label.layer?.borderColor = Color(hex: 0xE5E7EB).cgColor
+            label.layoutSubtreeIfNeeded()
+        }
     }
 
     func applyHoverBorderStyleToLabel(_ label: NSTextField) {
-        label.layer?.sublayers?.removeAll(where: { $0.name == "OuterBorder" || $0.name == "OuterBorderError" })
-        label.layer?.borderWidth = 1
-        label.layer?.borderColor = NSColor.coreui.matureGreen.cgColor
-        label.layoutSubtreeIfNeeded()
+        if isError {
+            highlightLabel(label)
+        } else {
+            label.layer?.sublayers?.removeAll(where: { $0.name == "OuterBorder" })
+            label.layer?.borderWidth = 1
+            label.layer?.borderColor = NSColor.coreui.matureGreen.cgColor
+            label.layoutSubtreeIfNeeded()
+        }
     }
 
     override init(frame frameRect: NSRect) {
@@ -95,7 +115,7 @@ class LimitedTextField: NSTextField {
         }
     }
 
-    func updateHighligheIfNeeded() {
+    func updateHighlightIfNeeded() {
         if let text = stringValue as NSString? {
             if text.length > characterLimit {
                 stringValue = text.substring(to: characterLimit)
@@ -122,12 +142,6 @@ class LimitedTextField: NSTextField {
         }
     }
 
-//    func updateError() {
-//        for (idx, lbl) in digitLabels.enumerated() {
-//           applyErrorBorderStyleToLabel(lbl)
-//        }
-//    }
-
     func createLabelsStackView() -> NSStackView {
         let stackView = NSStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -135,8 +149,6 @@ class LimitedTextField: NSTextField {
         stackView.alignment = .centerY
         stackView.distribution = .fillEqually
         stackView.spacing = 16
-//        stackView.layer?.borderWidth = 2
-//        stackView.layer?.borderColor = NSColor.blue.cgColor
         for _ in 1 ... 6 {
             let label = createLabel()
             stackView.addArrangedSubview(label)
@@ -263,37 +275,16 @@ class LimitedTextField: NSTextField {
     }
 }
 
-class NonSelectableTextView: NSTextView {
-    override func setSelectedRange(_ charRange: NSRange) {
-        // Prevent text selection by setting an empty range
-        super.setSelectedRange(NSRange(location: charRange.location, length: 0))
-    }
-
-    override func mouseDown(with event: NSEvent) {
-        // Prevent text selection on mouse down
-        super.mouseDown(with: event)
-        setSelectedRange(NSRange(location: 0, length: 0))
-    }
-
-    override func mouseDragged(with event: NSEvent) {
-        // Prevent text selection on mouse drag
-        super.mouseDragged(with: event)
-        setSelectedRange(NSRange(location: 0, length: 0))
-    }
-
-    override func mouseUp(with event: NSEvent) {
-        // Prevent text selection on mouse up
-        super.mouseUp(with: event)
-        setSelectedRange(NSRange(location: 0, length: 0))
-    }
-}
-
 struct LimitedTextFieldRepresentable: NSViewRepresentable {
     @Binding private var text: String
     private let onCommit: (() -> Void)?
+    private let onChange: ((String) -> Void)?
+    private var isError: Bool
 
-    init(text: Binding<String>, onCommit: (() -> Void)? = nil) {
+    init(text: Binding<String>, isError: Bool = false, onChange: ((String) -> Void)? = nil, onCommit: (() -> Void)? = nil) {
         self._text = text
+        self.isError = isError
+        self.onChange = onChange
         self.onCommit = onCommit
     }
 
@@ -301,29 +292,29 @@ struct LimitedTextFieldRepresentable: NSViewRepresentable {
         let textField = LimitedTextField()
         textField.delegate = context.coordinator
         textField.stringValue = text
-        textField.updateHighligheIfNeeded()
-        textField.becomeFirstResponder()
+        textField.isError = isError
+        textField.updateHighlightIfNeeded()
         return textField
     }
 
     func updateNSView(_ nsView: LimitedTextField, context _: Context) {
         nsView.stringValue = text
-//        nsView.state = isError ? .error : .active
+        nsView.isError = isError
+        nsView.updateHighlightIfNeeded()
     }
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, onCommit: onCommit)
+        Coordinator(text: $text, onChange: onChange, onCommit: onCommit)
     }
 
     class Coordinator: NSObject, NSTextFieldDelegate {
         @Binding private var text: String
-//        private var parent: LimitedTextFieldRepresentable
+        private let onChange: ((String) -> Void)?
         private let onCommit: (() -> Void)?
 
-//        init(_ parent: LimitedTextFieldRepresentable, onCommit: (() -> Void)? = nil) {
-        init(text: Binding<String>, onCommit: (() -> Void)? = nil) {
-//            self.parent = parent
+        init(text: Binding<String>, onChange: ((String) -> Void)? = nil, onCommit: (() -> Void)? = nil) {
             self._text = text
+            self.onChange = onChange
             self.onCommit = onCommit
         }
 
@@ -333,8 +324,9 @@ struct LimitedTextFieldRepresentable: NSViewRepresentable {
         }
 
         func controlTextDidChange(_ obj: Notification) {
-//            text = "hehe"
             if let textField = obj.object as? NSTextField {
+                onChange?(textField.stringValue)
+
                 let stringValue = textField.stringValue as NSString
                 if stringValue.length > 6 {
                     text = stringValue.substring(to: 6)
@@ -353,17 +345,24 @@ struct LimitedTextFieldRepresentable: NSViewRepresentable {
 struct MoukaOTPField: View {
     @Binding private var text: String
     private let onCommit: (() -> Void)?
+    private let onChange: ((String) -> Void)?
     let error: String?
 
-    init(text: Binding<String>, error: String? = nil, onCommit: (() -> Void)? = nil) {
+    init(text: Binding<String>, error: String? = nil, onChange: ((String) -> Void)? = nil, onCommit: (() -> Void)? = nil) {
         self._text = text
         self.error = error
+        self.onChange = onChange
         self.onCommit = onCommit
     }
 
     var body: some View {
         VStack {
-            LimitedTextFieldRepresentable(text: $text, onCommit: onCommit)
+            LimitedTextFieldRepresentable(
+                text: $text,
+                isError: error != nil,
+                onChange: onChange,
+                onCommit: onCommit
+            )
 
             Group {
                 Spacing(size: .size12)
@@ -377,15 +376,21 @@ struct MoukaOTPField: View {
     }
 }
 
-#Preview {
-    WithState(initialValue: "123") { $text in
-        VStack {
-            MoukaOTPField(text: $text, onCommit: {
-                text = "Submit"
-            })
-//                .padding()
+typealias OTPState = (text: String, error: String?, submited: Bool)
 
-            Text("You typed: \(text)")
+#Preview {
+    WithState(initialValue: ("", nil, false) as OTPState) { $state in
+        VStack {
+            MoukaOTPField(
+                text: $state.0,
+                onChange: { _ in state.2 = false },
+                onCommit: { state.2 = true }
+            )
+
+            Text(state.2
+                ? "OTP \(state.0) has been submitted"
+                : "You typed: \(state.0)"
+            )
         }
         .padding()
         .background(Color.white)
@@ -394,14 +399,21 @@ struct MoukaOTPField: View {
 }
 
 #Preview {
-    WithState(initialValue: "123456") { $text in
+    WithState(initialValue: ("", nil, false) as OTPState) { $state in
         VStack {
-            MoukaOTPField(text: $text, error: "Dãy số bạn điền không đúng. Bạn hãy kiểm tra lại nhé!", onCommit: {
-                text = "Submit"
-            })
-//                .padding()
+            MoukaOTPField(
+                text: $state.0,
+                error: state.1,
+                onCommit: {
+                    state.1 = "Dãy số bạn điền không đúng. Bạn hãy kiểm tra lại nhé!"
+                }
+            )
 
-            Text("You typed: \(text)")
+            Button(action: { state.1 = nil }, label: {
+                Text("Clear error")
+            })
+
+            Text("You typed: \(state.0)")
         }
         .padding()
         .background(Color.white)
