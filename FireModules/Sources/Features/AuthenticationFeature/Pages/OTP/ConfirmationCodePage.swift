@@ -8,8 +8,6 @@ import Foundation
 import SwiftUI
 
 public struct ConfirmationCodePage: View {
-    @ObserveInjection var iO
-
     struct ViewState: Equatable {
         @BindingViewState var otp: String
         var email: String
@@ -49,7 +47,6 @@ public struct ConfirmationCodePage: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
         .background(Color(hex: 0xB7F2C0))
-        .enableInjection()
     }
 
     @ViewBuilder private var instruction: some View {

@@ -85,6 +85,8 @@ public struct RootCoordinator {
             }
         case .binding, .view, ._local:
             return .none
+        case .destination:
+            return .none
         }
     }
 }

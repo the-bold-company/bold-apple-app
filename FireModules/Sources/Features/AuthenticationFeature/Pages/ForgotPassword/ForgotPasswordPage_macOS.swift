@@ -54,7 +54,7 @@ public struct ForgotPasswordPage: View {
         .navigationDestination(
             store: store.scope(
                 state: \.$destination.createNewPassword,
-                action: \._local.destination.createNewPassword
+                action: \.destination.createNewPassword
             )
         ) { CreateNewPasswordPage(store: $0) }
     }

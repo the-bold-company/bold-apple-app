@@ -26,6 +26,7 @@ public struct CreateNewPasswordFeature {
         case delegate(DelegateAction)
         case _local(LocalAction)
         case binding(BindingAction<State>)
+        case destination(PresentationAction<Destination.Action>)
 
         @CasePathable
         public enum ViewAction {
@@ -39,7 +40,6 @@ public struct CreateNewPasswordFeature {
         @CasePathable
         public enum LocalAction {
             case updateAndValidatePassword(password: String)
-            case destination(PresentationAction<Destination.Action>)
         }
     }
 
@@ -63,10 +63,11 @@ public struct CreateNewPasswordFeature {
                     await send(._local(.updateAndValidatePassword(password: passwordText)))
                 }
                 .debounce(id: CancelId.verifyPassword, for: .milliseconds(300), scheduler: mainQueue)
-            case .binding:
+            case .binding, .destination:
                 return .none
             }
         }
+        .ifLet(\.$destination, action: \.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
@@ -84,8 +85,6 @@ public struct CreateNewPasswordFeature {
         switch action {
         case let .updateAndValidatePassword(passwordText):
             state.password.update(passwordText)
-            return .none
-        case .destination:
             return .none
         }
     }

@@ -61,7 +61,7 @@ public struct LoginPage: View {
         .navigationDestination(
             store: store.scope(
                 state: \.$destination.forgotPassword,
-                action: \._local.destination.forgotPassword
+                action: \.destination.forgotPassword
             )
         ) { ForgotPasswordPage(store: $0) }
     }

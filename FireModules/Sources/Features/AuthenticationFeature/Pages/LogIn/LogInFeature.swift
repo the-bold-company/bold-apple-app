@@ -53,6 +53,7 @@ public struct LogInFeature {
         case view(ViewAction)
         case delegate(DelegateAction)
         case _local(LocalAction)
+        case destination(PresentationAction<Destination.Action>)
 
         @CasePathable
         public enum DelegateAction {
@@ -72,7 +73,6 @@ public struct LogInFeature {
         public enum LocalAction {
             case verifyEmail
             case verifyPassword
-            case destination(PresentationAction<Destination.Action>)
         }
     }
 
@@ -93,6 +93,8 @@ public struct LogInFeature {
             case let ._local(localAction):
                 return handleLocalAction(localAction, state: &state)
             case .binding(\.$emailText):
+                state.email.update(state.emailText)
+
                 enum CancelId { case verifyEmail }
 
                 return .run { send in
@@ -100,18 +102,21 @@ public struct LogInFeature {
                 }
                 .debounce(id: CancelId.verifyEmail, for: .milliseconds(300), scheduler: mainQueue)
             case .binding(\.$passwordText):
+                state.password.update(state.passwordText)
+
                 enum CancelId { case verifyPassword }
 
                 return .run { send in
                     await send(._local(.verifyPassword))
                 }
                 .debounce(id: CancelId.verifyPassword, for: .milliseconds(300), scheduler: mainQueue)
-
+            case let .destination(destinationAction):
+                return handleDestinationDelegate(destinationAction, state: &state)
             case .binding:
                 return .none
             }
         }
-        .ifLet(\.$destination, action: \._local.destination)
+        .ifLet(\.$destination, action: \.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
@@ -163,14 +168,22 @@ public struct LogInFeature {
     private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
         switch action {
         case .verifyEmail:
-            state.email.update(state.emailText)
             state.emailValidated = state.email.validation
             return .none
         case .verifyPassword:
-            state.password.update(state.passwordText)
             state.passwordValidated = state.password.validation
             return .none
-        case .destination:
+        }
+    }
+
+    private func handleDestinationDelegate(_ action: PresentationAction<LogInFeature.Destination.Action>, state: inout State) -> Effect<Action> {
+        switch action {
+        case .dismiss:
+            return .none
+        case let .presented(.forgotPassword(.delegate(.resetPasswordSuccessfully(email)))):
+            state.destination = nil
+            return .send(.binding(BindingAction<State>.set(\.$emailText, email.emailString)))
+        default:
             return .none
         }
     }

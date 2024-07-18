@@ -12,7 +12,6 @@ import DevSettingsUseCase
 #endif
 
 public struct CreateNewPasswordPage: View {
-    @ObserveInjection var iO
     @FocusState private var focusedField: FocusedField?
 
     enum FocusedField: Hashable {
@@ -56,10 +55,9 @@ public struct CreateNewPasswordPage: View {
         .navigationDestination(
             store: store.scope(
                 state: \.$destination.otp,
-                action: \._local.destination.otp
+                action: \.destination.otp
             )
         ) { ConfirmationCodePage(store: $0) }
-        .enableInjection()
     }
 
     @ViewBuilder private var passwordInputField: some View {

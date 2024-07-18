@@ -36,10 +36,11 @@
 		0E1FF2652B01F66E00A77369 /* Fire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fire.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E1FF2682B01F66E00A77369 /* FireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireApp.swift; sourceTree = "<group>"; };
 		0E1FF26C2B01F67000A77369 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0E1FF26E2B01F67000A77369 /* Fire.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Fire.entitlements; sourceTree = "<group>"; };
+		0E1FF26E2B01F67000A77369 /* Mouka-Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Mouka-Release.entitlements"; sourceTree = "<group>"; };
 		0E1FF2702B01F67000A77369 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0E1FF27A2B01F67000A77369 /* FireTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireTests.swift; sourceTree = "<group>"; };
 		393409F02B48688900611270 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		393CB2C22C48D8AF00A74BDF /* Mouka-Debug.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Mouka-Debug.entitlements"; sourceTree = "<group>"; };
 		395A5D052B74897D008D53BB /* TransactionRecordingIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecordingIntent.swift; sourceTree = "<group>"; };
 		396F57CD2B835318000674A6 /* TransactionOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionOverview.swift; sourceTree = "<group>"; };
 		3981A9C22BC2F00D00335C00 /* MiniFireApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MiniFireApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,10 +126,10 @@
 		0E1FF2672B01F66E00A77369 /* Fire */ = {
 			isa = PBXGroup;
 			children = (
+				393CB2C02C48D75C00A74BDF /* Resources */,
 				39B35D1B2B83153D00CC00AB /* Source */,
 				393409F02B48688900611270 /* Info.plist */,
 				0E1FF26C2B01F67000A77369 /* Assets.xcassets */,
-				0E1FF26E2B01F67000A77369 /* Fire.entitlements */,
 				0E1FF26F2B01F67000A77369 /* Preview Content */,
 			);
 			path = Fire;
@@ -155,6 +156,15 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		393CB2C02C48D75C00A74BDF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				393CB2C22C48D8AF00A74BDF /* Mouka-Debug.entitlements */,
+				0E1FF26E2B01F67000A77369 /* Mouka-Release.entitlements */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		396F57CC2B8352ED000674A6 /* UI */ = {
@@ -571,7 +581,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Fire/Fire.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Fire/Resources/Mouka-Debug.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -616,7 +626,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Fire/Fire.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Fire/Resources/Mouka-Release.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

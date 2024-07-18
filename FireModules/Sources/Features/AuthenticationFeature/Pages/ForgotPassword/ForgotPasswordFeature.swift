@@ -28,6 +28,7 @@ public struct ForgotPasswordFeature {
         case delegate(DelegateAction)
         case view(ViewAction)
         case _local(LocalAction)
+        case destination(PresentationAction<Destination.Action>)
 
         @CasePathable
         public enum ViewAction {
@@ -36,13 +37,14 @@ public struct ForgotPasswordFeature {
         }
 
         @CasePathable
-        public enum DelegateAction {}
+        public enum DelegateAction {
+            case resetPasswordSuccessfully(Email)
+        }
 
         @CasePathable
         public enum LocalAction {
             case forgotPasswordConfirmed(Email)
             case forgotPasswordFailure(ForgotPasswordFailure)
-            case destination(PresentationAction<Destination.Action>)
         }
     }
 
@@ -60,11 +62,15 @@ public struct ForgotPasswordFeature {
                 return handleViewAction(viewAction, state: &state)
             case let ._local(localAction):
                 return handleLocalAction(localAction, state: &state)
+            case let .delegate(delegateAction):
+                return handleDelegateAction(delegateAction, state: &state)
+            case let .destination(destinationAction):
+                return handleDestinationDelegate(destinationAction, state: &state)
             case .binding:
                 return .none
             }
         }
-        .ifLet(\.$destination, action: \._local.destination)
+        .ifLet(\.$destination, action: \.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
@@ -91,8 +97,22 @@ public struct ForgotPasswordFeature {
             state.forgotPasswordConfirmProgress = .loaded(.success(Confirmed()))
             state.destination = .createNewPassword(.init(email: Email(state.emailText)))
             return .none
-        case .destination:
-            return .none
+        }
+    }
+
+    private func handleDelegateAction(_ action: Action.DelegateAction, state _: inout State) -> Effect<Action> {
+        switch action {
+        case .resetPasswordSuccessfully: return .none
+        }
+    }
+
+    private func handleDestinationDelegate(_ action: PresentationAction<Self.Destination.Action>, state _: inout State) -> Effect<Action> {
+        switch action {
+        case .dismiss: return .none
+        case let .presented(.createNewPassword(.destination(.presented(.otp(.delegate(.otpVerified(challenge))))))):
+            guard let (email, _) = challenge[case: \.resetPasswordOTP] else { return .none }
+            return .send(.delegate(.resetPasswordSuccessfully(email)))
+        default: return .none
         }
     }
 }
