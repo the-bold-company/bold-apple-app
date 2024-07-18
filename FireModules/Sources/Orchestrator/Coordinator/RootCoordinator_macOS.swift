@@ -12,16 +12,22 @@ public struct RootCoordinator {
         public enum State: Equatable {
             case homeRoute(HomeReducer.State)
             case logIn(LogInFeature.State)
+            case signUp(EmailSignUpFeature.State)
         }
 
         public enum Action {
             case homeRoute(HomeReducer.Action)
             case logIn(LogInFeature.Action)
+            case signUp(EmailSignUpFeature.Action)
         }
 
         public var body: some Reducer<State, Action> {
             Scope(state: \.logIn, action: \.logIn) {
                 LogInFeature()
+            }
+
+            Scope(state: \.signUp, action: \.signUp) {
+                EmailSignUpFeature()
             }
 
             Scope(state: \.homeRoute, action: \.homeRoute) {
@@ -55,6 +61,8 @@ public struct RootCoordinator {
                     break
                 case let .logIn(logInAction):
                     return handleLogInAction(logInAction, id: id, state: &state)
+                case let .signUp(signUpAction):
+                    return .none
                 }
             case let .routes(.popFrom(id: id)):
                 break
@@ -81,6 +89,8 @@ public struct RootCoordinator {
             case .logInFailed:
                 return .none
             case .signUpInitiate:
+                state.routes.removeAll()
+                state.routes.append(.signUp(.init()))
                 return .none
             }
         case .binding, .view, ._local:

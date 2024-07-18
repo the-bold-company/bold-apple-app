@@ -168,18 +168,17 @@ public struct LoginPage: View {
     }
 
     @ViewBuilder private var signUpPrompt: some View {
-        Group {
-            Text("Chưa có tài khoản? ")
+        HStack {
+            Text("Chưa có tài khoản?")
                 .foregroundColor(Color.coreui.forestGreen)
                 .font(.system(size: 16))
-                +
+
+            Button {
+                store.send(.view(.signUpButtonTapped))
+            } label: {
                 Text("Đăng ký miễn phí")
-                .foregroundColor(Color.coreui.forestGreen)
-                .font(.system(size: 16))
-                .bold()
-        }
-        .onTapGesture {
-//            store.send(.view(.signUpButtonTapped))
+            }
+            .moukaButtonStyle(.tertiary)
         }
     }
 }

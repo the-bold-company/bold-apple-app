@@ -14,14 +14,14 @@ public struct SignUpFeatureCoordinator {
             case signUp(EmailSignUpFeature.State)
             case logIn(LogInFeature.State)
             case forgotPassword(ForgotPasswordFeature.State)
-            case otp(ConfirmationCodeReducer.State)
+            case otp(ConfirmationCodeFeature.State)
         }
 
         public enum Action {
             case signUp(EmailSignUpFeature.Action)
             case logIn(LogInFeature.Action)
             case forgotPassword(ForgotPasswordFeature.Action)
-            case otp(ConfirmationCodeReducer.Action)
+            case otp(ConfirmationCodeFeature.Action)
         }
 
         public var body: some ReducerOf<Self> {
@@ -34,7 +34,7 @@ public struct SignUpFeatureCoordinator {
             }
 
             Scope(state: \.otp, action: \.otp) {
-                ConfirmationCodeReducer()
+                ConfirmationCodeFeature()
             }
 
             Scope(state: \.forgotPassword, action: \.forgotPassword) {
@@ -123,7 +123,7 @@ public struct SignUpFeatureCoordinator {
         }
     }
 
-    private func handleOTPDelegate(_ action: ConfirmationCodeReducer.Action, state: inout State) -> Effect<Action> {
+    private func handleOTPDelegate(_ action: ConfirmationCodeFeature.Action, state: inout State) -> Effect<Action> {
         switch action {
         case let .delegate(delegateAction):
             switch delegateAction {

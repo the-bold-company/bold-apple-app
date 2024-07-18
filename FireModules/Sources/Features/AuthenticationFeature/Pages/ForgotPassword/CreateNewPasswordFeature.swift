@@ -7,7 +7,7 @@ import TCAExtensions
 public struct CreateNewPasswordFeature {
     @Reducer(state: .equatable)
     public enum Destination {
-        case otp(ConfirmationCodeReducer)
+        case otp(ConfirmationCodeFeature)
     }
 
     public struct State: Equatable {

@@ -25,6 +25,12 @@ public struct RootCoordinatorView: View {
                     action: RootCoordinator.Destination.Action.logIn,
                     then: LoginPage.init(store:)
                 )
+            case .signUp:
+                CaseLet(
+                    \RootCoordinator.Destination.State.signUp,
+                    action: RootCoordinator.Destination.Action.signUp,
+                    then: EmailRegistrationPage.init(store:)
+                )
             case .homeRoute:
                 CaseLet(
                     \RootCoordinator.Destination.State.homeRoute,

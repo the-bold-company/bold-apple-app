@@ -21,7 +21,7 @@ public enum OTPChallenge: Equatable {
 }
 
 @Reducer
-public struct ConfirmationCodeReducer {
+public struct ConfirmationCodeFeature {
     public struct State: Equatable {
         @BindingState var otpText: String = ""
 

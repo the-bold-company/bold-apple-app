@@ -15,10 +15,10 @@ public struct ConfirmationCodePage: View {
         var userFriendlyError: String?
     }
 
-    private let store: StoreOf<ConfirmationCodeReducer>
-    @ObservedObject var viewStore: ViewStore<ViewState, ConfirmationCodeReducer.Action>
+    private let store: StoreOf<ConfirmationCodeFeature>
+    @ObservedObject var viewStore: ViewStore<ViewState, ConfirmationCodeFeature.Action>
 
-    public init(store: StoreOf<ConfirmationCodeReducer>) {
+    public init(store: StoreOf<ConfirmationCodeFeature>) {
         self.store = store
         self.viewStore = ViewStore(self.store, observe: \.viewState)
     }
@@ -88,7 +88,7 @@ public struct ConfirmationCodePage: View {
     }
 }
 
-extension BindingViewStore<ConfirmationCodeReducer.State> {
+extension BindingViewStore<ConfirmationCodeFeature.State> {
     var viewState: ConfirmationCodePage.ViewState {
         // swiftformat:disable redundantSelf
         ConfirmationCodePage.ViewState(
@@ -109,7 +109,7 @@ import AuthAPIService
     ConfirmationCodePage(
         store: .init(
             initialState: .init(challenge: .signUpOTP(Email("dev@mouka.ai"))),
-            reducer: { ConfirmationCodeReducer() },
+            reducer: { ConfirmationCodeFeature() },
             withDependencies: {
                 $0.authAPIService = .directMock(confirmSignUpOTPMock: """
                 {
@@ -127,7 +127,7 @@ import AuthAPIService
     ConfirmationCodePage(
         store: .init(
             initialState: .init(challenge: .resetPasswordOTP(Email("dev@mouka.ai"), Password("Qwerty@123"))),
-            reducer: { ConfirmationCodeReducer() },
+            reducer: { ConfirmationCodeFeature() },
             withDependencies: {
                 $0.authAPIService = .directMock(confirmForgotPasswordOTPMock: """
                 {
