@@ -7,7 +7,7 @@ import TCAExtensions
 import DevSettingsUseCase
 #endif
 
-typealias SignUpProgress = LoadingProgress<Confirmed, AuthenticationLogic.SignUp.Failure>
+typealias SignUpProgress = LoadingProgress<Confirmed, SignUpFailure>
 struct Confirmed: Equatable {}
 
 @Reducer
@@ -15,12 +15,7 @@ public struct PasswordSignUpReducer {
     public struct State: Equatable {
         @BindingState var passwordText: String = ""
         let email: Email
-        var password = Password.empty
-
-        var passwordValidated: PasswordValidated {
-            password.validateAll()
-        }
-
+        var password: Password { .init(passwordText) }
         var signUpProgress: SignUpProgress = .idle
 
         public init(email: Email) {
@@ -29,7 +24,6 @@ public struct PasswordSignUpReducer {
             #if DEBUG
             @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
             self.passwordText = devSettings.credentials.password
-            self.password = Password(passwordText)
             #endif
         }
     }
@@ -42,7 +36,6 @@ public struct PasswordSignUpReducer {
 
         @CasePathable
         public enum ViewAction {
-            case onAppear
             case nextButtonTapped
             case backButtonTapped
         }
@@ -50,7 +43,7 @@ public struct PasswordSignUpReducer {
         @CasePathable
         public enum DelegateAction {
             case signUpConfirmed(Email, Password)
-            case signUpFailed(AuthenticationLogic.SignUp.Failure)
+            case signUpFailed(SignUpFailure)
         }
 
         @CasePathable
@@ -71,7 +64,6 @@ public struct PasswordSignUpReducer {
             case let .delegate(delegateAction):
                 return handleDelegateAction(delegateAction, state: &state)
             case .binding(\.$passwordText):
-                state.password.update(state.passwordText)
                 return .none
             case .binding:
                 return .none
@@ -81,16 +73,12 @@ public struct PasswordSignUpReducer {
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
-        case .onAppear:
-            return .none
         case .nextButtonTapped:
-            let email = state.email
-            let password = state.password
-            guard let emailString = email.getOrNil(), let passwordString = password.getOrNil() else { return .none }
+            guard let email = state.email.getSelfOrNil(), let password = state.password.getSelfOrNil() else { return .none }
 
             state.signUpProgress = .loading
 
-            return signUpUseCase.signUp(.init(email: emailString, password: passwordString))
+            return signUpUseCase.signUp(.init(email: email, password: password))
                 .map(
                     success: { _ in Action.delegate(.signUpConfirmed(email, password)) },
                     failure: { Action.delegate(.signUpFailed($0)) }
@@ -108,6 +96,17 @@ public struct PasswordSignUpReducer {
         case let .signUpFailed(error):
             state.signUpProgress = .loaded(.failure(error))
             return .none
+        }
+    }
+}
+
+extension SignUpFailure {
+    var userFriendlyError: String? {
+        switch self {
+        case .genericError:
+            return "Something went wrong, please try again later"
+        case .invalidInputs:
+            return "Invalid inputs"
         }
     }
 }

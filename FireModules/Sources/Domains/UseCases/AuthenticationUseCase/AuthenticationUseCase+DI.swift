@@ -31,17 +31,12 @@ public extension DependencyValues {
 
 enum SignUpUseCaseKey: DependencyKey {
     public static let liveValue = SignUpUseCase.live()
-}
 
-#if DEBUG
-extension SignUpUseCaseKey {
-    static let testValue = SignUpUseCase(
-        signUp: unimplemented("\(Self.self).signUp")
-    )
-
-    static let previewValue = SignUpUseCase.live()
+    #if DEBUG
+    static let testValue = SignUpUseCase.test()
+    static let previewValue = SignUpUseCase.preview()
+    #endif
 }
-#endif
 
 // MARK: LogInUseCase dependency registration
 

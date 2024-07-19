@@ -68,24 +68,7 @@ public struct EmailSignUpPage: TCAView {
 
     @ViewBuilder private var errorMessage: some View {
         Group {
-            HStack(alignment: .top) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.red)
-                Text(viewStore.emailVerificationError ?? "")
-                    .typography(.bodyDefault)
-                    .frame(maxWidth: .infinity)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(16)
-            .background {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(.red.opacity(0.1))
-            }
-            .background {
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(.red, lineWidth: 1)
-            }
-
+            ErrorBadge(errorMessage: viewStore.emailVerificationError)
             Spacing(height: .size12)
         }
         .isHidden(hidden: viewStore.emailVerificationError == nil)

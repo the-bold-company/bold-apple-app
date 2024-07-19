@@ -81,16 +81,22 @@ public extension AuthenticationLogic {
 
 // MARK: - Sign up use case logic
 
-public typealias SignUpRequest = AuthenticationLogic.SignUp.Request
+public typealias SignUpInput = AuthenticationLogic.SignUp.Request
 public typealias SignUpResponse = AuthenticationLogic.SignUp.Response
 public typealias SignUpFailure = AuthenticationLogic.SignUp.Failure
+public typealias SignUpOutput = Result<SignUpResponse, SignUpFailure>
 public extension AuthenticationLogic {
     enum SignUp: UseCaseRequirements {
-        public struct Request {
-            let email: String
-            let password: String
+        public struct Request: Equatable {
+            let email: Email
+            let password: Password
 
-            public init(email: String, password: String) {
+            public init(emailText: String, passwordText: String) {
+                self.email = Email(emailText)
+                self.password = Password(passwordText)
+            }
+
+            public init(email: Email, password: Password) {
                 self.email = email
                 self.password = password
             }
@@ -100,8 +106,10 @@ public extension AuthenticationLogic {
             public init() {}
         }
 
+        @CasePathable
         public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
+            case invalidInputs(Request)
         }
     }
 }

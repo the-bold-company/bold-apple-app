@@ -1,5 +1,5 @@
 //
-//  PasswordSignUpPage.swift
+//  PasswordSignUpPage_macOS.swift
 //
 //
 //  Created by Hien Tran on 02/12/2023.
@@ -18,13 +18,18 @@ import DevSettingsUseCase
 #endif
 
 public struct PasswordSignUpPage: View {
-    @ObserveInjection var iO
+    @FocusState private var focusedField: FocusedField?
+
+    enum FocusedField: Hashable {
+        case password
+    }
 
     struct ViewState: Equatable {
-        @BindingViewState var password: String
+        @BindingViewState var passwordText: String
         var passwordValidated: PasswordValidated
-        var isLoading: Bool
         var isFormValid: Bool
+        var serverError: String?
+        var isLoading: Bool
     }
 
     let store: StoreOf<PasswordSignUpReducer>
@@ -36,26 +41,32 @@ public struct PasswordSignUpPage: View {
     }
 
     public var body: some View {
-        LoadingOverlay(loading: viewStore.isLoading) {
-            VStack(alignment: .center) {
-                Spacing(height: .size24)
-                Text("Tạo mật khẩu").typography(.titleScreen)
-                Spacing(height: .size24)
-                passwordInputField
-                Spacer()
-                actionButtons
-            }
-            .padding(16)
-            .hideNavigationBar()
+        FloatingPanel {
+            Text("Tạo mật khẩu").typography(.titleScreen)
+            Spacing(height: .size24)
+            errorBadge
+            passwordInputField
+            Spacing(height: .size40)
+            actionButtons
         }
-        .enableInjection()
+        .toolbar(.hidden)
+    }
+
+    @ViewBuilder private var errorBadge: some View {
+        Group {
+            ErrorBadge(errorMessage: viewStore.serverError)
+            Spacing(height: .size12)
+        }
+        .isHidden(hidden: viewStore.serverError == nil)
     }
 
     @ViewBuilder private var passwordInputField: some View {
-        FireSecureTextField(
+        MoukaSecureTextField(
             "Nhập mật khẩu ",
             title: "Mật khẩu",
-            text: viewStore.$password
+            text: viewStore.$passwordText,
+            focusedField: $focusedField,
+            fieldId: .password
         )
         #if os(iOS)
         .autocapitalization(.none)
@@ -98,19 +109,17 @@ public struct PasswordSignUpPage: View {
 
     @ViewBuilder private var actionButtons: some View {
         HStack(spacing: 16) {
-            Button {
-                store.send(.view(.backButtonTapped))
-            } label: {
-                Text("Trở về").frame(maxWidth: .infinity)
-            }
-            .fireButtonStyle(type: .secondary(shape: .roundedCorner))
+            MoukaButton.secondary(
+                action: { store.send(.view(.backButtonTapped)) },
+                label: { Text("Trở về") }
+            )
 
-            Button {
-                store.send(.view(.nextButtonTapped))
-            } label: {
-                Text("Cập nhật").frame(maxWidth: .infinity)
-            }
-            .fireButtonStyle(isActive: viewStore.isFormValid)
+            MoukaButton.primary(
+                disabled: !viewStore.isFormValid,
+                loading: viewStore.isLoading,
+                action: { store.send(.view(.nextButtonTapped)) },
+                label: { Text("Cập nhật") }
+            )
         }
     }
 }
@@ -119,10 +128,11 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
     var passwordCreationViewState: PasswordSignUpPage.ViewState {
         // swiftformat:disable redundantSelf
         PasswordSignUpPage.ViewState(
-            password: self.$passwordText,
-            passwordValidated: self.passwordValidated,
-            isLoading: self.signUpProgress.is(\.loading),
-            isFormValid: self.password.isValid
+            passwordText: self.$passwordText,
+            passwordValidated: self.password.validateAll(),
+            isFormValid: self.password.isValid,
+            serverError: self.signUpProgress[case: \.loaded.failure]?.userFriendlyError,
+            isLoading: self.signUpProgress.is(\.loading)
         )
         // swiftformat:enable redundantSelf
     }
@@ -135,23 +145,18 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
                 initialState: .init(email: Email("dev@mouka.com")),
                 reducer: { PasswordSignUpReducer() },
                 withDependencies: {
-                    $0.signUpUseCase.signUp = { _ in
-                        let mockURL = URL.local(backward: 6).appendingPathComponent("mock/auth/sign-up/response.json")
-                        let mock = try! Data(contentsOf: mockURL)
-
-                        return Effect.publisher {
-                            Just(mock)
-                                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main) // simulate latency
-                                .map { try! $0.decoded() as API.v1.Response<EmptyDataResponse> }
-                                .map { _ in
-                                    Result<AuthenticationLogic.SignUp.Response, AuthenticationLogic.SignUp.Failure>.success(.init())
-                                }
-                        }
+                    $0.authAPIService = .directMock(signUpResponseMock: """
+                    {
+                      "message": "PreSignUp failed with error Error: Cannot find module 'pre-sign-up'\nRequire stack:\n- /var/runtime/index.mjs.",
+                      "code": 14000
                     }
+                    """)
 
                     $0.devSettingsUseCase = mockDevSettingsUseCase()
                 }
             )
         )
     }
+    .frame(minWidth: 500, minHeight: 800)
+    .preferredColorScheme(.light)
 }
