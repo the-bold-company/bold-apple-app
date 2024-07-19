@@ -164,9 +164,10 @@ public extension AuthenticationLogic {
 
 // MARK: - Verify email existence logic
 
-public typealias VerifyEmailRegistrationRequest = AuthenticationLogic.VerifyEmailRegistration.Request
-public typealias VerifyEmailRegistrationResponse = AuthenticationLogic.VerifyEmailRegistration.Response
-public typealias VerifyEmailRegistrationFailure = AuthenticationLogic.VerifyEmailRegistration.Failure
+public typealias VerifyEmailInput = AuthenticationLogic.VerifyEmailRegistration.Request
+public typealias VerifyEmailResponse = AuthenticationLogic.VerifyEmailRegistration.Response
+public typealias VerifyEmailFailure = AuthenticationLogic.VerifyEmailRegistration.Failure
+public typealias VerifyEmailOutput = Result<VerifyEmailResponse, VerifyEmailFailure>
 public extension AuthenticationLogic {
     enum VerifyEmailRegistration: UseCaseRequirements {
         public struct Request {
@@ -177,14 +178,9 @@ public extension AuthenticationLogic {
             }
         }
 
-        public struct Response: Equatable {
-            public let message: String
+        public struct Response: Equatable {}
 
-            public init(message: String) {
-                self.message = message
-            }
-        }
-
+        @CasePathable
         public enum Failure: LocalizedError, Equatable {
             case genericError(DomainError)
             case emailAlreadyRegistered

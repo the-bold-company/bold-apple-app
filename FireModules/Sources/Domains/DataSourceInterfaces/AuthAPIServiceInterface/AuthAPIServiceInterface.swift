@@ -8,7 +8,7 @@ import Foundation
 public typealias LogInAPIResult = Result<(AuthenticatedUserEntity, CredentialsEntity), DomainError>
 public typealias SignUpAPIResult = Result<EmptyDataResponse, DomainError>
 public typealias ConfirmOTPResult = Result<MessageOnlyResponse, DomainError>
-public typealias VerifyEmailExistenceResult = Result<String, DomainError>
+public typealias VerifyEmailExistenceResult = Result<VerifyEmailResponse, DomainError>
 public typealias ForgotPasswordResult = Result<MessageOnlyResponse, DomainError>
 
 public struct AuthAPIService {

@@ -62,7 +62,7 @@ public struct RootCoordinator {
                 case let .logIn(logInAction):
                     return handleLogInAction(logInAction, id: id, state: &state)
                 case let .signUp(signUpAction):
-                    return .none
+                    return handleSignUpAction(signUpAction, id: id, state: &state)
                 }
             case let .routes(.popFrom(id: id)):
                 break
@@ -91,6 +91,24 @@ public struct RootCoordinator {
             case .signUpInitiate:
                 state.routes.removeAll()
                 state.routes.append(.signUp(.init()))
+                return .none
+            }
+        case .binding, .view, ._local:
+            return .none
+        case .destination:
+            return .none
+        }
+    }
+
+    private func handleSignUpAction(_ action: EmailSignUpFeature.Action, id _: StackElementID, state: inout State) -> Effect<Action> {
+        switch action {
+        case let .delegate(delegateAction):
+            switch delegateAction {
+            case let .logInFlowInitiated(email):
+                state.routes.removeAll()
+                state.routes.append(.logIn(.init(email: email)))
+                return .none
+            case .emailIsAvailable, .failedToConfirmEmailExistence:
                 return .none
             }
         case .binding, .view, ._local:

@@ -309,7 +309,7 @@ package.targets.append(contentsOf: [
 // MARK: Domains/Data Source Interfaces
 
 package.targets.append(contentsOf: [
-    .dataSourceInterface(.authAPIService),
+    .dataSourceInterface(.authAPIService, thirdParties: [.codextended]),
     .dataSourceInterface(.fundsAPIService),
     .dataSourceInterface(.transactionsAPIService),
     .dataSourceInterface(.keychainService),
@@ -570,9 +570,16 @@ extension Target {
         )
     }
 
-    static func dataSourceInterface(_ module: Module.DataSource) -> Target {
+    static func dataSourceInterface(
+        _ module: Module.DataSource,
+        thirdParties: [Dependency.ThirdParty]? = nil
+    ) -> Target {
         var dependencies = [Dependency]()
         dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
+
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
 
         return Target.target(
             name: module.interfaceId,

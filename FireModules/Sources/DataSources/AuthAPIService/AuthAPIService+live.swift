@@ -44,7 +44,7 @@ public extension AuthAPIService {
                 Effect.publisher {
                     networkClient
                         .requestPublisher(.verifyEmailExistence(email: email))
-                        .mapToResponse(String.self, apiVersion: .v1)
+                        .mapToResponse(VerifyEmailResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }

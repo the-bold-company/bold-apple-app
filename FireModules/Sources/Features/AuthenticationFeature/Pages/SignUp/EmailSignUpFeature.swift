@@ -10,21 +10,34 @@ import DevSettingsUseCase
 
 @Reducer
 public struct EmailSignUpFeature {
-    public init() {}
+    @Reducer(state: .equatable)
+    public enum Destination {
+        case password(PasswordSignUpReducer)
+    }
 
     public struct State: Equatable {
         @BindingState var emailText: String = ""
-        @PresentationState public var destination: Destination.State?
-        var email = Email.empty
-        var emailValidationError: String?
-        var emailVerificationProgress: LoadingProgress<Confirmed, VerifyEmailRegistrationFailure> = .idle
+        @PresentationState var destination: Destination.State?
+        var email: Email { .init(emailText) }
+        var emailVerificationProgress: LoadingProgress<Confirmed, VerifyEmailFailure> = .idle
+        var emailValidated: EmailValidated = .idle("")
+        var emailValidationError: String? {
+            switch emailValidated {
+            case .idle, .valid: return nil
+            case let .invalid(_, err):
+                switch err {
+                case .patternInvalid: return "Email không hợp lệ. Bạn hãy thử lại nhé."
+                case .fieldEmpty: return "Vui lòng điền thông tin."
+                }
+            }
+        }
 
         public init() {
-            #if DEBUG
-            @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
-            self.emailText = devSettings.credentials.username
-            self.email = Email(emailText)
-            #endif
+//            #if DEBUG
+//            @Dependency(\.devSettingsUseCase) var devSettings: DevSettingsUseCase
+//            self.emailText = devSettings.credentials.username
+//            self.email = Email(emailText)
+//            #endif
         }
     }
 
@@ -38,20 +51,26 @@ public struct EmailSignUpFeature {
         @CasePathable
         public enum ViewAction {
             case nextButtonTapped
-            case signInButtonTapped
+            case logInButtonTapped
         }
 
         @CasePathable
-        public enum DelegateAction {}
+        public enum DelegateAction {
+            case logInFlowInitiated(Email?)
+            case emailIsAvailable
+            case failedToConfirmEmailExistence(VerifyEmailFailure)
+        }
 
         @CasePathable
         public enum LocalAction {
-            case emailHasNotBeenRegistered
-            case emailVerificationFailed(VerifyEmailRegistrationFailure)
+            case verifyEmail
         }
     }
 
     @Dependency(\.verifyEmailUseCase.verifyExistence) var verifyEmailExistence
+    @Dependency(\.mainQueue) var mainQueue
+
+    public init() {}
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -64,77 +83,63 @@ public struct EmailSignUpFeature {
             case let ._local(localAction):
                 return handleLocalAction(localAction, state: &state)
             case .binding(\.$emailText):
-                state.email.update(state.emailText)
-                return .none
+                enum CancelId { case verifyEmail }
+
+                return .run { send in
+                    await send(._local(.verifyEmail))
+                }
+                .debounce(id: CancelId.verifyEmail, for: .milliseconds(200), scheduler: mainQueue)
             case .binding, .destination:
                 return .none
             }
         }
-        .ifLet(\.$destination, action: \.destination) {
-            Destination()
-        }
+        .ifLet(\.$destination, action: \.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
         case .nextButtonTapped:
-            switch state.email.value {
-            case .success:
-                state.emailValidationError = nil
-            case let .failure(error):
-                state.emailValidationError = error.errorDescription
-            }
+            enum CancelId { case verifyEmailExistence }
 
-            guard let email = state.email.getOrNil() else { return .none }
+            guard let email = state.email.getOrNil() else { return .none } // TODO: Move this check to use case
 
             state.emailVerificationProgress = .loading
 
             return verifyEmailExistence(.init(email: email))
+                .debounce(id: CancelId.verifyEmailExistence, for: .milliseconds(200), scheduler: mainQueue)
                 .map(
-                    success: { _ in Action._local(.emailHasNotBeenRegistered) },
-                    failure: { Action._local(.emailVerificationFailed($0)) }
+                    success: { _ in Action.delegate(.emailIsAvailable) },
+                    failure: { Action.delegate(.failedToConfirmEmailExistence($0)) }
                 )
-        case .signInButtonTapped:
-            return .none
+        case .logInButtonTapped:
+            return .send(.delegate(.logInFlowInitiated(state.email.isValid ? state.email : nil)))
         }
     }
 
     private func handleLocalAction(_ action: Action.LocalAction, state: inout State) -> Effect<Action> {
         switch action {
-        case .emailHasNotBeenRegistered:
+        case .verifyEmail:
+            state.emailValidated = state.email.validation
+            return .none
+        }
+    }
+
+    private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case .logInFlowInitiated:
+            return .none
+        case .emailIsAvailable:
             state.emailVerificationProgress = .loaded(.success(Confirmed()))
             state.destination = .password(.init(email: state.email))
-        case let .emailVerificationFailed(reason):
-            state.emailVerificationProgress = .loaded(.failure(reason))
-        }
-        return .none
-    }
-
-    private func handleDelegateAction(_: Action.DelegateAction, state _: inout State) -> Effect<Action> {
-        return .none
-    }
-}
-
-public extension EmailSignUpFeature {
-    @Reducer
-    struct Destination {
-        public enum State: Equatable {
-            case password(PasswordSignUpReducer.State)
-        }
-
-        public enum Action {
-            case password(PasswordSignUpReducer.Action)
-        }
-
-        public var body: some ReducerOf<Self> {
-            Scope(state: \.password, action: \.password) {
-                PasswordSignUpReducer()
-            }
+            return .none
+        case let .failedToConfirmEmailExistence(error):
+            state.emailVerificationProgress = .loaded(.failure(error))
+            return .none
         }
     }
 }
 
-extension VerifyEmailRegistrationFailure {
+extension VerifyEmailFailure {
     var userFriendlyError: String {
         switch self {
         case .genericError:

@@ -95,7 +95,7 @@ extension AuthAPIService {
                 guard let verifyEmailExistenceMock else { fatalError() }
                 return Effect.publisher {
                     Just(verifyEmailExistenceMock)
-                        .mapToResponse(String.self, apiVersion: .v1)
+                        .mapToResponse(VerifyEmailResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }

@@ -40,23 +40,23 @@ func mockSignUpUseCase() -> SignUpUseCase {
     return mock
 }
 
-func mockVerifyingEmailUseCase() -> VerifyEmailUseCase {
-    var mock = VerifyEmailUseCase.noop
-    mock.verifyExistence = { _ in
-        let mockURL = URL.local(backward: 6).appendingPathComponent("mock/auth/check-email/response.json")
-        let mock = try! Data(contentsOf: mockURL)
-
-        return Effect.publisher {
-            Just(mock)
-                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main) // simulate latency
-                .map { try! $0.decoded() as API.v1.Response<String> }
-                .map { res in
-                    Result<VerifyEmailRegistrationResponse, VerifyEmailRegistrationFailure>.success(.init(message: res.message))
-                }
-        }
-    }
-    return mock
-}
+// func mockVerifyingEmailUseCase() -> VerifyEmailUseCase {
+//    var mock = VerifyEmailUseCase.noop
+//    mock.verifyExistence = { _ in
+//        let mockURL = URL.local(backward: 6).appendingPathComponent("mock/auth/check-email/response.json")
+//        let mock = try! Data(contentsOf: mockURL)
+//
+//        return Effect.publisher {
+//            Just(mock)
+//                .delay(for: .milliseconds(200), scheduler: DispatchQueue.main) // simulate latency
+//                .map { try! $0.decoded() as API.v1.Response<String> }
+//                .map { res in
+//                    Result<VerifyEmailRegistrationResponse, VerifyEmailRegistrationFailure>.success(.init(message: res.message))
+//                }
+//        }
+//    }
+//    return mock
+// }
 
 func mockDevSettingsUseCase() -> DevSettingsUseCase {
     var mockSettings = DevSettings()

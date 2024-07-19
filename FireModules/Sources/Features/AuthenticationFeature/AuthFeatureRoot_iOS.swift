@@ -18,7 +18,7 @@ public struct SignUpFeatureRoot: View {
                     CaseLet(
                         /Destination.State.signUp,
                         action: Destination.Action.signUp,
-                        then: EmailRegistrationPage.init(store:)
+                        then: EmailSignUpPage.init(store:)
                     )
                 case .otp:
                     CaseLet(

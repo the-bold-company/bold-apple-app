@@ -1,6 +1,8 @@
 import CasePaths
 import Foundation
 
+public typealias EmailValidated = Validated<String, EmailValidationError>
+
 public struct Email: Value, Equatable {
     public var value: Result<String, EmailValidationError> {
         validation.asResult

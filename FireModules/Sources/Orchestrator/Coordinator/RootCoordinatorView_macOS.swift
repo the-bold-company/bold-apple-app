@@ -29,7 +29,7 @@ public struct RootCoordinatorView: View {
                 CaseLet(
                     \RootCoordinator.Destination.State.signUp,
                     action: RootCoordinator.Destination.Action.signUp,
-                    then: EmailRegistrationPage.init(store:)
+                    then: EmailSignUpPage.init(store:)
                 )
             case .homeRoute:
                 CaseLet(

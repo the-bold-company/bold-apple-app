@@ -72,13 +72,11 @@ enum MFAUseCaseKey: DependencyKey {
 // MARK: VerifyEmail dependency registration
 
 enum VerifyEmailUseCaseKey: DependencyKey {
-    public static let liveValue = VerifyEmailUseCase.live
+    public static let liveValue = VerifyEmailUseCase.live()
 
     #if DEBUG
-    static let testValue = VerifyEmailUseCase(
-        verifyExistence: unimplemented("\(Self.self).verifyExistence")
-    )
-    static let previewValue = VerifyEmailUseCase.live
+    static let testValue = VerifyEmailUseCase.test()
+    static let previewValue = VerifyEmailUseCase.preview()
     #endif
 }
 
