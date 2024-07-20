@@ -50,6 +50,12 @@ public struct PasswordSignUpPage: View {
             actionButtons
         }
         .toolbar(.hidden)
+        .navigationDestination(
+            store: store.scope(
+                state: \.$destination.otp,
+                action: \.destination.otp
+            )
+        ) { ConfirmationCodePage(store: $0) }
     }
 
     @ViewBuilder private var errorBadge: some View {
@@ -147,8 +153,7 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
                 withDependencies: {
                     $0.authAPIService = .directMock(signUpResponseMock: """
                     {
-                      "message": "PreSignUp failed with error Error: Cannot find module 'pre-sign-up'\nRequire stack:\n- /var/runtime/index.mjs.",
-                      "code": 14000
+                      "message": "Execute successfully"
                     }
                     """)
 

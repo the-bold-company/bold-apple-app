@@ -26,7 +26,7 @@ public extension AuthAPIService {
                 Effect.publisher {
                     networkClient
                         .requestPublisher(.signUp(email: email, password: password))
-                        .mapToResponse(EmptyDataResponse.self, apiVersion: .v1)
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }

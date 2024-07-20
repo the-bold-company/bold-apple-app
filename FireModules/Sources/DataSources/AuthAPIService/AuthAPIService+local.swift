@@ -77,7 +77,7 @@ extension AuthAPIService {
                 guard let signUpResponseMock else { fatalError() }
                 return Effect.publisher {
                     Just(signUpResponseMock)
-                        .mapToResponse(EmptyDataResponse.self, apiVersion: .v1)
+                        .mapToResponse(MessageOnlyResponse.self, apiVersion: .v1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }

@@ -12,7 +12,7 @@ import DevSettingsUseCase
 public struct EmailSignUpFeature {
     @Reducer(state: .equatable)
     public enum Destination {
-        case password(PasswordSignUpReducer)
+        case passwordSignUp(PasswordSignUpReducer)
     }
 
     public struct State: Equatable {
@@ -57,13 +57,14 @@ public struct EmailSignUpFeature {
         @CasePathable
         public enum DelegateAction {
             case logInFlowInitiated(Email?)
-            case emailIsAvailable
-            case failedToConfirmEmailExistence(VerifyEmailFailure)
+            case signUpSuccessfully(Email)
         }
 
         @CasePathable
         public enum LocalAction {
             case verifyEmail
+            case emailIsAvailable
+            case failedToConfirmEmailExistence(VerifyEmailFailure)
         }
     }
 
@@ -89,7 +90,9 @@ public struct EmailSignUpFeature {
                     await send(._local(.verifyEmail))
                 }
                 .debounce(id: CancelId.verifyEmail, for: .milliseconds(200), scheduler: mainQueue)
-            case .binding, .destination:
+            case let .destination(destinationAction):
+                return handleDestinationDelegate(destinationAction, state: &state)
+            case .binding:
                 return .none
             }
         }
@@ -108,8 +111,8 @@ public struct EmailSignUpFeature {
             return verifyEmailExistence(.init(email: email))
                 .debounce(id: CancelId.verifyEmailExistence, for: .milliseconds(200), scheduler: mainQueue)
                 .map(
-                    success: { _ in Action.delegate(.emailIsAvailable) },
-                    failure: { Action.delegate(.failedToConfirmEmailExistence($0)) }
+                    success: { _ in Action._local(.emailIsAvailable) },
+                    failure: { Action._local(.failedToConfirmEmailExistence($0)) }
                 )
         case .logInButtonTapped:
             return .send(.delegate(.logInFlowInitiated(state.email.isValid ? state.email : nil)))
@@ -121,20 +124,32 @@ public struct EmailSignUpFeature {
         case .verifyEmail:
             state.emailValidated = state.email.validation
             return .none
-        }
-    }
-
-    private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
-        switch action {
-        case .logInFlowInitiated:
-            return .none
         case .emailIsAvailable:
             state.emailVerificationProgress = .loaded(.success(Confirmed()))
-            state.destination = .password(.init(email: state.email))
+            state.destination = .passwordSignUp(.init(email: state.email))
             return .none
         case let .failedToConfirmEmailExistence(error):
             state.emailVerificationProgress = .loaded(.failure(error))
             return .none
+        }
+    }
+
+    private func handleDelegateAction(_ action: Action.DelegateAction, state _: inout State) -> Effect<Action> {
+        switch action {
+        case .logInFlowInitiated:
+            return .none
+        case .signUpSuccessfully:
+            return .none
+        }
+    }
+
+    private func handleDestinationDelegate(_ action: PresentationAction<Self.Destination.Action>, state _: inout State) -> Effect<Action> {
+        switch action {
+        case .dismiss: return .none
+        case let .presented(.passwordSignUp(.destination(.presented(.otp(.delegate(.otpVerified(challenge))))))):
+            guard let email = challenge[case: \.signUpOTP] else { return .none }
+            return .send(.delegate(.signUpSuccessfully(email)))
+        default: return .none
         }
     }
 }

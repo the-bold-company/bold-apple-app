@@ -108,7 +108,9 @@ public struct RootCoordinator {
                 state.routes.removeAll()
                 state.routes.append(.logIn(.init(email: email)))
                 return .none
-            case .emailIsAvailable, .failedToConfirmEmailExistence:
+            case let .signUpSuccessfully(email):
+                state.routes.removeAll()
+                state.routes.append(.logIn(.init(email: email)))
                 return .none
             }
         case .binding, .view, ._local:

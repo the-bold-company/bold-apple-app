@@ -54,8 +54,8 @@ public struct EmailSignUpPage: TCAView {
         .toolbar(.hidden)
         .navigationDestination(
             store: store.scope(
-                state: \.$destination.password,
-                action: \.destination.password
+                state: \.$destination.passwordSignUp,
+                action: \.destination.passwordSignUp
             )
         ) { PasswordSignUpPage(store: $0) }
     }
@@ -168,7 +168,7 @@ extension BindingViewStore<EmailSignUpFeature.State> {
                     {
                       "message": "Execute successfully",
                       "data": {
-                        "isExisted": true,
+                        "isExisted": false,
                         "isExternalEmail": false
                       }
                     }

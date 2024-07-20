@@ -12,8 +12,14 @@ struct Confirmed: Equatable {}
 
 @Reducer
 public struct PasswordSignUpReducer {
+    @Reducer(state: .equatable)
+    public enum Destination {
+        case otp(ConfirmationCodeFeature)
+    }
+
     public struct State: Equatable {
         @BindingState var passwordText: String = ""
+        @PresentationState var destination: Destination.State?
         let email: Email
         var password: Password { .init(passwordText) }
         var signUpProgress: SignUpProgress = .idle
@@ -33,6 +39,7 @@ public struct PasswordSignUpReducer {
         case delegate(DelegateAction)
         case _local(LocalAction)
         case binding(BindingAction<State>)
+        case destination(PresentationAction<Destination.Action>)
 
         @CasePathable
         public enum ViewAction {
@@ -65,10 +72,11 @@ public struct PasswordSignUpReducer {
                 return handleDelegateAction(delegateAction, state: &state)
             case .binding(\.$passwordText):
                 return .none
-            case .binding:
+            case .binding, .destination:
                 return .none
             }
         }
+        .ifLet(\.$destination, action: \.destination)
     }
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
@@ -90,8 +98,9 @@ public struct PasswordSignUpReducer {
 
     private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
         switch action {
-        case .signUpConfirmed:
+        case let .signUpConfirmed(email, _):
             state.signUpProgress = .loaded(.success(Confirmed()))
+            state.destination = .otp(.init(challenge: .signUpOTP(email)))
             return .none
         case let .signUpFailed(error):
             state.signUpProgress = .loaded(.failure(error))
