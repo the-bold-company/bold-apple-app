@@ -12,7 +12,7 @@ import DevSettingsUseCase
 public struct EmailSignUpFeature {
     @Reducer(state: .equatable)
     public enum Destination {
-        case passwordSignUp(PasswordSignUpReducer)
+        case passwordSignUp(PasswordSignUpFeature)
     }
 
     public struct State: Equatable {

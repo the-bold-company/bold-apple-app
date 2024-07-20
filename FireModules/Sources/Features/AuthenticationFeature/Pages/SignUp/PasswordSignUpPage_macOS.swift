@@ -32,10 +32,10 @@ public struct PasswordSignUpPage: View {
         var isLoading: Bool
     }
 
-    let store: StoreOf<PasswordSignUpReducer>
-    @ObservedObject var viewStore: ViewStore<ViewState, PasswordSignUpReducer.Action>
+    let store: StoreOf<PasswordSignUpFeature>
+    @ObservedObject var viewStore: ViewStore<ViewState, PasswordSignUpFeature.Action>
 
-    public init(store: StoreOf<PasswordSignUpReducer>) {
+    public init(store: StoreOf<PasswordSignUpFeature>) {
         self.store = store
         self.viewStore = ViewStore(self.store, observe: \.passwordCreationViewState)
     }
@@ -130,7 +130,7 @@ public struct PasswordSignUpPage: View {
     }
 }
 
-private extension BindingViewStore<PasswordSignUpReducer.State> {
+private extension BindingViewStore<PasswordSignUpFeature.State> {
     var passwordCreationViewState: PasswordSignUpPage.ViewState {
         // swiftformat:disable redundantSelf
         PasswordSignUpPage.ViewState(
@@ -149,7 +149,7 @@ private extension BindingViewStore<PasswordSignUpReducer.State> {
         PasswordSignUpPage(
             store: Store(
                 initialState: .init(email: Email("dev@mouka.com")),
-                reducer: { PasswordSignUpReducer() },
+                reducer: { PasswordSignUpFeature() },
                 withDependencies: {
                     $0.authAPIService = .directMock(signUpResponseMock: """
                     {

@@ -11,7 +11,7 @@ typealias SignUpProgress = LoadingProgress<Confirmed, SignUpFailure>
 struct Confirmed: Equatable {}
 
 @Reducer
-public struct PasswordSignUpReducer {
+public struct PasswordSignUpFeature {
     @Reducer(state: .equatable)
     public enum Destination {
         case otp(ConfirmationCodeFeature)
