@@ -3,6 +3,8 @@
 
 import PackageDescription
 
+// MARK: - Package dependencies
+
 var package = Package(
     name: "FireModules",
     platforms: [
@@ -14,6 +16,8 @@ var package = Package(
         .singleTargetLibrary("MiniApp"),
         .singleTargetLibrary("Intents"),
         .singleTargetLibrary("AppPlaybook"),
+        .singleTargetLibrary("AuthenticationFeature"),
+        .singleTargetLibrary("CoreUI"),
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
@@ -22,17 +26,19 @@ var package = Package(
         .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
-        .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.0.0"),
+        .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.2.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.10.4"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
-        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.1.0"),
+//        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.2.0"),
+        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings.git", revision: "a01e983b566626a810deb9ecae193ff23cda1947"),
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
         .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
         .package(url: "https://github.com/pointfreeco/swift-overture", exact: "0.5.0"),
         .package(url: "https://github.com/krzysztofzablocki/KZFileWatchers.git", from: "1.2.0"),
+        .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.3.0"),
     ],
     targets: [
         .app(
@@ -57,7 +63,7 @@ var package = Package(
                 Module.Infra.coreUI.asDependency,
                 Module.Feature.homeFeature.asDependency,
                 Module.Feature.logInFeature.asDependency,
-                Module.Feature.signUpFeature.asDependency,
+                Module.Feature.authenticationFeature.asDependency,
                 Module.Feature.onboardingFeature.asDependency,
                 .ThirdParty.playbook.asDependency,
                 .ThirdParty.playbookUI.asDependency,
@@ -75,17 +81,16 @@ var package = Package(
     ]
 )
 
-// MARK: - Orchestrator - knows everything about everyone
+// MARK: Orchestrator dependencies - knows everything about everyone
 
 package.targets.append(contentsOf: [
     .orchestrator(
         .di,
         features: [
-            .logInFeature,
             .fundFeature,
             .homeFeature,
             .recordTransactionFeature,
-            .signUpFeature,
+            .authenticationFeature,
             .onboardingFeature,
             .settingsFeature,
             .investmentFeature,
@@ -94,11 +99,9 @@ package.targets.append(contentsOf: [
             .authenticationUseCase,
             .fundDetailsUseCase,
             .fundCreationUseCase,
-            // "LogInUseCase", // TODO: Replace this with `AuthenticationUseCase`
             .fundListUseCase,
             .transactionRecordUseCase,
             .transactionListUseCase,
-            // .accountRegisterUseCase, // TODO: Replace this with `AuthenticationUseCase`
             .portfolioUseCase,
             .devSettingsUseCase,
             .investmentUseCase,
@@ -132,7 +135,7 @@ package.targets.append(contentsOf: [
     ),
 ])
 
-// MARK: - Features
+// MARK: Features
 
 package.targets.append(contentsOf: [
     .feature(
@@ -144,10 +147,12 @@ package.targets.append(contentsOf: [
     ),
     .feature(.onboardingFeature),
     .feature(
-        .signUpFeature,
-        useCases: [
-            .authenticationUseCase,
-        ]
+        .authenticationFeature,
+        useCases: [.authenticationUseCase],
+        dataSources: [.authAPIService],
+        infras: [.networking],
+        thirdParties: [.codextended, .tcaCoordinator],
+        enableDevDependenies: true
     ),
     .feature(
         .homeFeature,
@@ -195,8 +200,7 @@ package.targets.append(contentsOf: [
         ],
         thirdParties: [
             .automaticSettings,
-        ],
-        enableDevDependenies: true
+        ]
     ),
     .feature(
         .investmentFeature,
@@ -276,9 +280,10 @@ package.targets.append(contentsOf: [
     .target(
         name: "DevSettingsUseCase",
         dependencies: [
-            "DomainEntities",
-            .product(name: "Codextended", package: "codextended"),
-            .product(name: "AutomaticSettings", package: "automaticsettings"),
+            Module.Domain.Core.domainEntities.asDependency,
+            .ThirdParty.swiftDependencies.asDependency,
+            .ThirdParty.automaticSettings.asDependency,
+            .ThirdParty.codextended.asDependency,
         ],
         path: "Sources/Domains/UseCases/DevSettingsUseCase"
     ),
@@ -304,7 +309,7 @@ package.targets.append(contentsOf: [
 // MARK: Domains/Data Source Interfaces
 
 package.targets.append(contentsOf: [
-    .dataSourceInterface(.authAPIService),
+    .dataSourceInterface(.authAPIService, thirdParties: [.codextended]),
     .dataSourceInterface(.fundsAPIService),
     .dataSourceInterface(.transactionsAPIService),
     .dataSourceInterface(.keychainService),
@@ -330,7 +335,7 @@ package.targets.append(contentsOf: [
     .dataSource(.marketAPIService, infras: [.networking]),
 ])
 
-// MARK: - Infrastructure
+// MARK: Infrastructure
 
 package.targets.append(contentsOf: [
     .infra(.utilities),
@@ -347,7 +352,13 @@ package.targets.append(contentsOf: [
         ]
     ),
     .infra(.currencyKit),
-    .infra(.tcaExtensions, thirdParties: [.composableArchitecture]),
+    .infra(
+        .tcaExtensions,
+        thirdParties: [
+            .composableArchitecture,
+            .tcaCoordinator,
+        ]
+    ),
     .infra(
         .testHelpers,
         thirdParties: [
@@ -365,7 +376,7 @@ package.targets.append(contentsOf: [
     ),
 ])
 
-// MARK: - CoreUI
+// MARK: CoreUI
 
 package.targets.append(
     .designSystem(
@@ -388,14 +399,19 @@ package.targets.append(contentsOf: [
     .testFeature(.homeFeature),
     .testFeature(.fundFeature),
     .testFeature(.recordTransactionFeature),
-    .testFeature(.signUpFeature),
+    .testFeature(
+        .authenticationFeature,
+        dataSources: [
+            .authAPIService,
+        ]
+    ),
     .testFeature(.investmentFeature),
 ])
 package.targets.append(contentsOf: [
     .testApp(.app),
 ])
 
-// MARK: Helpers
+// MARK: - Helpers
 
 extension Product {
     static func singleTargetLibrary(_ name: String) -> Product {
@@ -461,9 +477,11 @@ extension Target {
     static func feature(
         _ module: Module.Feature,
         useCases: [Module.Domain.UseCase]? = nil,
+        dataSources: [Module.DataSource]? = nil,
         infras: [Module.Infra]? = nil,
         thirdParties: [Dependency.ThirdParty]? = nil,
         features: [Module.Feature]? = nil,
+        others: [Dependency]? = nil,
         enableDevDependenies: Bool = false
     ) -> Target {
         var dependencies = [Dependency]()
@@ -474,10 +492,15 @@ extension Target {
             Module.Domain.Core.domainEntities.asDependency,
             Dependency.ThirdParty.composableArchitecture.asDependency,
             Dependency.ThirdParty.factory.asDependency,
+            Dependency.ThirdParty.swiftDependencies.asDependency,
         ])
 
         if let useCases {
             dependencies.append(contentsOf: useCases.map(\.asDependency))
+        }
+
+        if let dataSources {
+            dependencies.append(contentsOf: dataSources.map(\.implementation))
         }
 
         if let infras {
@@ -496,6 +519,10 @@ extension Target {
             dependencies.append(contentsOf: thirdParties.map(\.asDependency))
         }
 
+        if let others {
+            dependencies.append(contentsOf: others)
+        }
+
         return Target.target(
             name: module.id,
             dependencies: dependencies,
@@ -508,6 +535,9 @@ extension Target {
         dataSourceInterfaces: [Module.DataSource] = []
     ) -> Target {
         var dependencies = [Dependency]()
+        dependencies.append(contentsOf: [
+            .ThirdParty.swiftDependencies.asDependency,
+        ])
         dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
         dependencies.append(contentsOf: dataSourceInterfaces.map(\.interface))
 
@@ -524,6 +554,7 @@ extension Target {
         domainEntities: [Module.Domain.Core]? = nil
     ) -> Target {
         var dependencies = [Dependency]()
+
         if let thirdParties {
             dependencies.append(contentsOf: thirdParties.map(\.asDependency))
         }
@@ -539,9 +570,16 @@ extension Target {
         )
     }
 
-    static func dataSourceInterface(_ module: Module.DataSource) -> Target {
+    static func dataSourceInterface(
+        _ module: Module.DataSource,
+        thirdParties: [Dependency.ThirdParty]? = nil
+    ) -> Target {
         var dependencies = [Dependency]()
         dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
+
+        if let thirdParties {
+            dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
 
         return Target.target(
             name: module.interfaceId,
@@ -558,6 +596,9 @@ extension Target {
         var dependencies = [Dependency]()
         dependencies.append(contentsOf: Module.Domain.Core.allCases.map(\.asDependency))
         dependencies.append(module.interface)
+        dependencies.append(contentsOf: [
+            .ThirdParty.swiftDependencies.asDependency,
+        ])
 
         if let infras {
             dependencies.append(contentsOf: infras.map(\.asDependency))
@@ -628,10 +669,11 @@ extension Target {
         )
     }
 
-    static func testFeature(_ feature: Module.Feature) -> Target {
+    static func testFeature(_ feature: Module.Feature, dataSources: [Module.DataSource] = []) -> Target {
         var dependencies = [Dependency]()
         dependencies.append(Module.Infra.testHelpers.asDependency)
         dependencies.append(feature.asDependency)
+        dependencies.append(contentsOf: dataSources.map(\.implementation))
         return Target.testTarget(
             name: "\(feature.id)Tests",
             dependencies: dependencies
@@ -667,6 +709,7 @@ extension Target.Dependency {
         case automaticSettings
         case playbook
         case playbookUI
+        case swiftDependencies
 
         var asDependency: Target.Dependency {
             switch self {
@@ -700,6 +743,8 @@ extension Target.Dependency {
                 return Target.Dependency.product(name: "Playbook", package: "playbook-ios")
             case .playbookUI:
                 return Target.Dependency.product(name: "PlaybookUI", package: "playbook-ios")
+            case .swiftDependencies:
+                return Target.Dependency.product(name: "Dependencies", package: "swift-dependencies")
             }
         }
     }
@@ -753,7 +798,7 @@ enum Module {
     enum Feature: String, DependencyRepresentable {
         case onboardingFeature = "OnboardingFeature"
         case logInFeature = "LogInFeature"
-        case signUpFeature = "SignUpFeature"
+        case authenticationFeature = "AuthenticationFeature"
         case homeFeature = "HomeFeature"
         case fundFeature = "FundFeature"
         case investmentFeature = "InvestmentFeature"

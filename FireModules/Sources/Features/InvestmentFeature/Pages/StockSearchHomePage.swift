@@ -30,15 +30,17 @@ public struct StockSearchHomePage: View {
             trendingStocks
             Spacer()
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .padding()
-        .fullScreenCover(
-            store: store.scope(
-                state: \.$destination.stockSearchRoute,
-                action: \.destination.stockSearchRoute
-            )
-        ) { StockSearchPage(store: $0) }
-        .enableInjection()
+        #if os(iOS)
+            .fullScreenCover(
+                store: store.scope(
+                    state: \.$destination.stockSearchRoute,
+                    action: \.destination.stockSearchRoute
+                )
+            ) { StockSearchPage(store: $0) }
+        #endif
+            .enableInjection()
     }
 
     @ViewBuilder
@@ -59,7 +61,9 @@ public struct StockSearchHomePage: View {
             .padding(.vertical, 10)
             .padding(.leading, 40)
             .padding(.trailing, 8)
+        #if os(iOS)
             .background(Color(.systemGray6))
+        #endif
             .cornerRadius(10)
             .overlay(
                 HStack {
@@ -79,10 +83,14 @@ public struct StockSearchHomePage: View {
         List {
             Text("Trending")
                 .typography(.bodyDefaultBold)
+            #if os(iOS)
                 .foregroundColor(Color(uiColor: .systemGray))
+            #endif
                 .listRowInsets(.zero)
                 .listRowSeparator(.hidden)
+            #if os(iOS)
                 .listRowSpacing(0)
+            #endif
             Section {
                 ForEach(1 ..< 11) {
                     Text("\($0)")

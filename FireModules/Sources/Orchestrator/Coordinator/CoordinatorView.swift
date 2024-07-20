@@ -1,17 +1,11 @@
-//
-//  CoordinatorView.swift
-//
-//
-//  Created by Hien Tran on 10/12/2023.
-//
-
+#if os(iOS)
+import AuthenticationFeature
 import FundFeature
 import HomeFeature
 import LogInFeature
 import OnboardingFeature
 import RecordTransactionFeature
 import SettingsFeature
-import SignUpFeature
 import SwiftUI
 import TCACoordinators
 
@@ -35,47 +29,45 @@ public struct CoordinatorView: View {
                 switch screen {
                 case .landingRoute:
                     CaseLet(
-                        /Destination.State.landingRoute,
-                        action: Destination.Action.landingRoute
+                        /Coordinator.Destination.State.landingRoute,
+                        action: Coordinator.Destination.Action.landingRoute
                     ) { LandingPage(store: $0) }
-                case .signUpRoute:
+//                case .authentication:
+//                    CaseLet(
+//                        /Coordinator.Destination.State.authentication,
+//                        action: Coordinator.Destination.Action.authentication,
+//                        then: SignUpFeatureRoot.init(store:)
+//                    )
+                case .logIn:
                     CaseLet(
-                        /Destination.State.signUpRoute,
-                        action: Destination.Action.signUpRoute
-                    ) {
-                        EmailRegistrationPage(
-                            store: $0.scope(
-                                state: \.emailSignUp,
-                                action: /RegisterReducer.Action.LocalAction.emailSignUp
-                            )
-                        )
-                    }
-                case .loginRoute:
-                    CaseLet(
-                        /Destination.State.loginRoute,
-                        action: Destination.Action.loginRoute
-                    ) { LoginPage(store: $0) }
+                        /Coordinator.Destination.State.logIn,
+                        action: Coordinator.Destination.Action.logIn,
+                        then: LoginPage.init(store:)
+                    )
                 case .homeRoute:
                     CaseLet(
-                        /Destination.State.homeRoute,
-                        action: Destination.Action.homeRoute
+                        /Coordinator.Destination.State.homeRoute,
+                        action: Coordinator.Destination.Action.homeRoute
                     ) { HomePage(store: $0) }
                 case .secretDevSettingsRoute:
                     fatalError("This is use to invoke the dev settings using a secret gesture. It isn't a valid route, and it shouldn't go here")
                 case .devSettingsRoute:
                     CaseLet(
-                        /Destination.State.devSettingsRoute,
-                        action: Destination.Action.devSettingsRoute
+                        /Coordinator.Destination.State.devSettingsRoute,
+                        action: Coordinator.Destination.Action.devSettingsRoute
                     ) { DevSettingsPage(store: $0) }
                 }
             }
+            .toolbar(.hidden)
         }
         .task {
             store.send(.onLaunch)
         }
+        #if os(iOS)
         .onShake {
             store.send(.routeAction(viewStore.navigationStackCount - 1, action: .secretDevSettingsRoute))
         }
+        #endif
         .enableInjection()
     }
 }
@@ -89,3 +81,4 @@ extension BindingViewStore<Coordinator.State> {
         // swiftformat:enable redundantSelf
     }
 }
+#endif

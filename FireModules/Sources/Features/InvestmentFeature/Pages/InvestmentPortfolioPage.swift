@@ -36,30 +36,32 @@ public struct InvestmentPortfolioPage: View {
             content
         }
         .frame(maxWidth: .infinity)
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .padding(.vertical)
         .task {
             viewStore.send(.forward(.onAppear))
         }
+        #if os(iOS)
         .fullScreenCover(
             store: store.scope(
                 state: \.$destination.investmentTradeImportOptionsRoute,
                 action: \.destination.investmentTradeImportOptionsRoute
             )
         ) { InvestmentTradeImportOptionsPage(store: $0) }
-        .navigationDestination(
-            store: store.scope(
-                state: \.$destination.investmentCashBalanceRoute,
-                action: \.destination.investmentCashBalanceRoute
-            )
-        ) { InvestmentCashBalancePage(store: $0) }
-        .navigationDestination(
-            store: store.scope(
-                state: \.$destination.recordTransactionRoute,
-                action: \.destination.recordTransactionRoute
-            )
-        ) { RecordPortfolioTransactionPage(store: $0) }
-        .enableInjection()
+        #endif
+            .navigationDestination(
+                store: store.scope(
+                    state: \.$destination.investmentCashBalanceRoute,
+                    action: \.destination.investmentCashBalanceRoute
+                )
+            ) { InvestmentCashBalancePage(store: $0) }
+            .navigationDestination(
+                store: store.scope(
+                    state: \.$destination.recordTransactionRoute,
+                    action: \.destination.recordTransactionRoute
+                )
+            ) { RecordPortfolioTransactionPage(store: $0) }
+            .enableInjection()
     }
 
     @ViewBuilder
@@ -68,12 +70,14 @@ public struct InvestmentPortfolioPage: View {
             availableCash
             emptyState
         }
+        #if os(iOS)
         .introspect(.list, on: .iOS(.v13, .v14, .v15)) {
             $0.backgroundColor = .white
         }
         .introspect(.list, on: .iOS(.v16, .v17)) {
             $0.backgroundColor = .white
         }
+        #endif
     }
 
     @ViewBuilder

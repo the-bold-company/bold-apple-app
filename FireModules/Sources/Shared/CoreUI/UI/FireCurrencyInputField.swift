@@ -4,7 +4,7 @@
 //
 //  Created by Hien Tran on 13/01/2024.
 //
-
+#if os(iOS)
 import SwiftUI
 
 public struct CurrencyField: View {
@@ -203,3 +203,4 @@ private struct Demo: View {
         Demo()
     }
 }
+#endif

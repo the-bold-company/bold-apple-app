@@ -12,28 +12,53 @@ import Foundation
 import Moya
 
 public extension AnyPublisher where Output == Response, Failure == MoyaError {
-    func mapToResponse<D: Decodable>(_: D.Type) -> AnyPublisher<D, NetworkError> {
-        // swiftformat:disable:next redundantSelf
-        return self
-            .map(ApiResponse<D>.self)
-            .tryMap { res -> D in
-                switch res.asResult {
-                case let .success(data):
-                    return data
-                case let .failure(error):
-                    throw NetworkError.serverError(error)
+    func mapToResponse<D: Decodable>(_: D.Type, apiVersion: APIVersion) -> AnyPublisher<D, NetworkError> {
+        switch apiVersion {
+        case .v0:
+            // swiftformat:disable:next redundantSelf
+            return self
+                .map(API.v0.Response<D>.self)
+                .tryMap { res -> D in
+                    switch res.asResult {
+                    case let .success(data):
+                        return data
+                    case let .failure(error):
+                        throw NetworkError.serverError(error)
+                    }
                 }
-            }
-            .mapError { err in
-                if let moyaError = err as? MoyaError {
-                    return NetworkError.moyaError(moyaError)
-                } else if let networkError = err as? NetworkError {
-                    return networkError
-                } else {
-                    return NetworkError.unknown(err)
+                .mapError { err in
+                    if let moyaError = err as? MoyaError {
+                        return NetworkError.moyaError(moyaError)
+                    } else if let networkError = err as? NetworkError {
+                        return networkError
+                    } else {
+                        return NetworkError.unknown(err)
+                    }
                 }
-            }
-            .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
+        case .v1:
+            // swiftformat:disable:next redundantSelf
+            return self
+                .map(API.v1.Response<D>.self)
+                .tryMap { res -> D in
+                    switch res.asResult {
+                    case let .success(data):
+                        return data
+                    case let .failure(error):
+                        throw NetworkError.serverError(error)
+                    }
+                }
+                .mapError { err in
+                    if let moyaError = err as? MoyaError {
+                        return NetworkError.moyaError(moyaError)
+                    } else if let networkError = err as? NetworkError {
+                        return networkError
+                    } else {
+                        return NetworkError.unknown(err)
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
     }
 }
 
@@ -44,26 +69,49 @@ public extension AnyPublisher where Failure == NetworkError {
 }
 
 public extension Just where Output == Data {
-    func mapToResponse<D: Decodable>(_: D.Type) -> AnyPublisher<D, NetworkError> {
-        // swiftformat:disable:next redundantSelf
-        return self
-            .tryMap { try $0.decoded() as ApiResponse<D> }
-            .tryMap { res -> D in
-                switch res.asResult {
-                case let .success(data):
-                    return data
-                case let .failure(error):
-                    throw NetworkError.serverError(error)
+    func mapToResponse<D: Decodable>(_: D.Type, apiVersion: APIVersion) -> AnyPublisher<D, NetworkError> {
+        switch apiVersion {
+        case .v0:
+            // swiftformat:disable:next redundantSelf
+            return self
+                .tryMap { try $0.decoded() as API.v0.Response<D> }
+                .tryMap { res -> D in
+                    switch res.asResult {
+                    case let .success(data):
+                        return data
+                    case let .failure(error):
+                        throw NetworkError.serverError(error)
+                    }
                 }
-            }
-            .mapError { err in
-                if let networkError = err as? NetworkError {
-                    return networkError
-                } else {
-                    return NetworkError.unknown(err)
+                .mapError { err in
+                    if let networkError = err as? NetworkError {
+                        return networkError
+                    } else {
+                        return NetworkError.unknown(err)
+                    }
                 }
-            }
-            .eraseToAnyPublisher()
+                .eraseToAnyPublisher()
+        case .v1:
+            // swiftformat:disable:next redundantSelf
+            return self
+                .tryMap { try $0.decoded() as API.v1.Response<D> }
+                .tryMap { res -> D in
+                    switch res.asResult {
+                    case let .success(data):
+                        return data
+                    case let .failure(error):
+                        throw NetworkError.serverError(error)
+                    }
+                }
+                .mapError { err in
+                    if let networkError = err as? NetworkError {
+                        return networkError
+                    } else {
+                        return NetworkError.unknown(err)
+                    }
+                }
+                .eraseToAnyPublisher()
+        }
     }
 }
 

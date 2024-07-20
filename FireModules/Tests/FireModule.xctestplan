@@ -43,15 +43,15 @@
     {
       "target" : {
         "containerPath" : "container:..\/FireModules",
-        "identifier" : "SignUpFeatureTests",
-        "name" : "SignUpFeatureTests"
+        "identifier" : "InvestmentFeatureTests",
+        "name" : "InvestmentFeatureTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:..\/FireModules",
-        "identifier" : "InvestmentFeatureTests",
-        "name" : "InvestmentFeatureTests"
+        "identifier" : "AuthenticationFeatureTests",
+        "name" : "AuthenticationFeatureTests"
       }
     }
   ],

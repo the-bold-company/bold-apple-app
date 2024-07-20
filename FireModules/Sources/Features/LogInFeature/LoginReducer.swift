@@ -16,11 +16,12 @@ public struct LoginReducer {
 
     public struct State: Equatable {
         public init() {
-            // TODO: Add if DEBUG handler for dev setting
+            #if DEBUG
             @Injected(\LogInFeatureContainer.devSettingsUseCase) var devSettings: DevSettingsUseCase!
 
             self.email = devSettings.credentials.username
             self.password = devSettings.credentials.password
+            #endif
         }
 
         @BindingState var email: String = ""
@@ -88,7 +89,7 @@ public struct LoginReducer {
             state.logInInProgress = true
 
             return logInUseCase.logIn(.init(email: state.email, password: state.password))
-                .mapResult(
+                .map(
                     success: { Action.delegate(.userLoggedIn($0.user)) },
                     failure: { Action.delegate(.logInFailed($0)) }
                 )

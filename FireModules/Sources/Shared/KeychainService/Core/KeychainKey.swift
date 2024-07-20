@@ -10,6 +10,7 @@ private let prefix = "[FIRE]"
 public enum KeychainKey: String {
     case accessToken
     case refreshToken
+    case idToken
 
     var keyedValue: String {
         return "\(prefix)\(rawValue)"
@@ -21,6 +22,8 @@ public enum KeychainKey: String {
             return "Access Token"
         case .refreshToken:
             return "Refresh Token"
+        case .idToken:
+            return "ID Token"
         }
     }
 }

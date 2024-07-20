@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct DomainError: LocalizedError {
+public struct DomainError: LocalizedError, Equatable {
     public let error: Error
     public let errorCode: Int?
 
@@ -19,6 +19,12 @@ public struct DomainError: LocalizedError {
     public init(error: Error, errorCode: Int? = nil) {
         self.error = error
         self.errorCode = errorCode
+    }
+
+    public static func == (lhs: DomainError, rhs: DomainError) -> Bool {
+        return lhs.errorCode == rhs.errorCode
+            && lhs.errorDescription == rhs.errorDescription
+            && lhs.failureReason == rhs.failureReason
     }
 
     /// Localized message for debuggin purposes. Don't show this to user

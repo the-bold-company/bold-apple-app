@@ -35,7 +35,7 @@ struct CurrencyPickerPage: View {
                 }
                 .listStyle(.plain)
             }
-            .navigationBarHidden(true)
+            .hideNavigationBar()
             .padding()
         }
         .enableInjection()

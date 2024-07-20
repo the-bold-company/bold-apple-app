@@ -2,7 +2,7 @@ import Foundation
 
 public protocol Value<Object, Err>: CustomStringConvertible {
     associatedtype Object
-    associatedtype Err: LocalizedError
+    associatedtype Err: Swift.Error
 
     var value: Result<Object, Err> { get }
 
@@ -12,16 +12,22 @@ public protocol Value<Object, Err>: CustomStringConvertible {
     func getOrThrow() throws -> Object
     func getOrNil() -> Object?
 
+    func getErrorOrNil() -> Err?
+    func getErrorOrCrash() -> Err
+
+    func getSelfOrNil() -> Self?
+
     var errorOnly: EitherThisOrNothing<Err> { get }
 }
 
-public extension Value where Object: Equatable {
+public extension Value where Object: Equatable, Err: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
-        do {
-            let leftValue = try lhs.value.get()
-            let rightValue = try rhs.value.get()
-            return leftValue == rightValue
-        } catch {
+        switch (lhs.value, rhs.value) {
+        case let (.success(lhsValue), .success(rhsValue)):
+            return lhsValue == rhsValue
+        case let (.failure(lhsErr), .failure(rhsErr)):
+            return lhsErr == rhsErr
+        default:
             return false
         }
     }
@@ -29,12 +35,7 @@ public extension Value where Object: Equatable {
 
 public extension Value {
     var isValid: Bool {
-        do {
-            _ = try value.get()
-            return true
-        } catch {
-            return false
-        }
+        value.is(\.success)
     }
 
     func getOrCrash() -> Object {
@@ -46,12 +47,19 @@ public extension Value {
     }
 
     func getOrNil() -> Object? {
-        do {
-            let validValue = try value.get()
-            return validValue
-        } catch {
-            return nil
-        }
+        value[case: \.success]
+    }
+
+    func getErrorOrNil() -> Err? {
+        value[case: \.failure]
+    }
+
+    func getErrorOrCrash() -> Err {
+        value[case: \.failure]!
+    }
+
+    func getSelfOrNil() -> Self? {
+        isValid ? self : nil
     }
 
     var errorOnly: EitherThisOrNothing<Err> {
@@ -64,4 +72,4 @@ public extension Value {
     }
 }
 
-public enum NeverFail: LocalizedError {}
+public enum NeverFail: Error, Equatable {}

@@ -63,7 +63,7 @@ public struct LandingPage: View {
             }
             .padding()
         }
-        .navigationBarHidden(true)
+        .hideNavigationBar()
         .enableInjection()
     }
 }

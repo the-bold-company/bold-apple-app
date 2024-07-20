@@ -35,20 +35,22 @@ public struct InvestmentTradeImportOptionsPage: View {
                     }
                     .listStyle(.inset)
                 }
-                .navigationBarHidden(true)
+                .hideNavigationBar()
                 .padding()
-                .fullScreenCover(
-                    store: store.scope(
-                        state: \.$destination.underConstructionRoute,
-                        action: \.destination.underConstructionRoute
-                    )
-                ) { _ in return UnderConstructionPage() }
-                .navigationDestination(
-                    store: store.scope(
-                        state: \.$destination.assetPickerRoute,
-                        action: \.destination.assetPickerRoute
-                    )
-                ) { InvestmentTradeAssetPickerPage(store: $0) }
+                #if os(iOS)
+                    .fullScreenCover(
+                        store: store.scope(
+                            state: \.$destination.underConstructionRoute,
+                            action: \.destination.underConstructionRoute
+                        )
+                    ) { _ in return UnderConstructionPage() }
+                #endif
+                    .navigationDestination(
+                        store: store.scope(
+                            state: \.$destination.assetPickerRoute,
+                            action: \.destination.assetPickerRoute
+                        )
+                    ) { InvestmentTradeAssetPickerPage(store: $0) }
             }
         }
         .enableInjection()

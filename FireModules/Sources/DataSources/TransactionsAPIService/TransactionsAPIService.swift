@@ -23,7 +23,7 @@ public struct TransactionsAPIService: TransactionsAPIServiceProtocol {
                 description: description,
                 type: type.rawValue
             ))
-            .mapToResponse(TransactionRecordResponse.self)
+            .mapToResponse(TransactionRecordResponse.self, apiVersion: .v0)
             .mapError { DomainError(error: $0) }
             .map { $0.asTransactionEntity() }
             .eraseToAnyPublisher()
@@ -33,7 +33,7 @@ public struct TransactionsAPIService: TransactionsAPIServiceProtocol {
     public func getTransactionLists() async throws -> [TransactionEntity] {
         return try await client
             .requestPublisher(.transactionList)
-            .mapToResponse(TransactionListResponse.self)
+            .mapToResponse(TransactionListResponse.self, apiVersion: .v0)
             .map(\.transactions)
             .mapError { DomainError(error: $0) }
             .map { transactions in

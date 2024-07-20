@@ -1,14 +1,18 @@
+import AuthenticationFeature
+import AuthenticationUseCase
 import ComposableArchitecture
 import CoreUI
+import DI
 import DomainEntities
-import InvestmentFeature
+import Factory
+import KeychainService
 import SwiftUI
 
 public struct MiniApp: View {
     @ObserveInjection private var iO
 
     struct ViewState: Equatable {
-        var logInState: LoadingState<AuthenticatedUserEntity>
+        var logInState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure>
     }
 
     let store: StoreOf<MiniAppReducer>
@@ -35,19 +39,19 @@ public struct MiniApp: View {
                     Spacer()
                 }
                 .padding()
-                .navigationBarHidden(true)
+                .hideNavigationBar()
                 .navigationDestination(
                     store: store.scope(
                         state: \.$destination.miniAppEntryRoute,
                         action: \.destination.miniAppEntryRoute
                     )
-                ) { InvestmentHomePage(store: $0) }
-//                ) { StockSearchHomePage(store: $0) }
+                ) { LoginPage(store: $0) }
             }
         }
         .task {
             viewStore.send(.forward(.logIn))
         }
+        .preferredColorScheme(.light)
         .enableInjection()
     }
 }

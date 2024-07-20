@@ -21,4 +21,8 @@ public extension View {
     ) -> some View {
         buttonStyle(SecondaryCustomBorderStyle(shape: shape, borderColor: borderColor, backgroundColor: backgroundColor, textColor: textColor, isActive: isActive))
     }
+
+    func moukaButtonStyle(_ type: MoukaButtonType = .primary, disabled: Bool = false) -> some View {
+        buttonStyle(MoukaButtonStyle(type, disabled: disabled))
+    }
 }

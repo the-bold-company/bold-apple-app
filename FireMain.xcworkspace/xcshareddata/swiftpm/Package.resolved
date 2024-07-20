@@ -12,10 +12,9 @@
     {
       "identity" : "automaticsettings",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/krzysztofzablocki/AutomaticSettings",
+      "location" : "https://github.com/krzysztofzablocki/AutomaticSettings.git",
       "state" : {
-        "revision" : "1e9fbd197e5343a25187c6c22ba69be4ffbb6360",
-        "version" : "1.1.0"
+        "revision" : "a01e983b566626a810deb9ecae193ff23cda1947"
       }
     },
     {
@@ -266,8 +265,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/siteline/swiftui-introspect",
       "state" : {
-        "revision" : "3ba734dd20faada0e3234b68e78db97005315f0e",
-        "version" : "1.0.0"
+        "revision" : "668a65735751432b640260c56dfa621cec568368",
+        "version" : "1.2.0"
       }
     },
     {

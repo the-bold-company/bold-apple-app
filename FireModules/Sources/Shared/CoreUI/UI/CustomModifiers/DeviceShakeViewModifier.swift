@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+
+#if os(iOS)
 import UIKit
 
 extension UIDevice {
@@ -42,3 +44,5 @@ public extension View {
         modifier(DeviceShakeViewModifier(action: action))
     }
 }
+
+#endif

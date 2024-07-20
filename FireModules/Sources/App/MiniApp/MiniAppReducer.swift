@@ -13,9 +13,13 @@ public struct MiniAppReducer {
         fileprivate let email = "hien.tran@fire.com"
         fileprivate let password = "Qwerty@123"
 
-        var logInState: Progress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure> = .idle
+        var logInState: LoadingProgress<AuthenticatedUserEntity, AuthenticationLogic.LogIn.Failure> = .idle
 
-        public init() {}
+        let logInRequired: Bool
+
+        public init(logInRequired: Bool) {
+            self.logInRequired = logInRequired
+        }
     }
 
     public enum Action: BindableAction {
@@ -42,7 +46,7 @@ public struct MiniAppReducer {
     enum CancelId { case logIn }
 
     public init() {
-        self.logInUseCase = resolve(\.authenticationUseCase)
+        self.logInUseCase = resolve(\.logInUseCase)
     }
 
     public var body: some ReducerOf<Self> {
@@ -51,6 +55,11 @@ public struct MiniAppReducer {
         Reduce { state, action in
             switch action {
             case .forward(.logIn):
+                guard state.logInRequired else {
+                    state.destination = .miniAppEntryRoute(.init())
+                    return .none
+                }
+
                 guard state.logInState != .loading else {
                     return .none
                 }
@@ -70,11 +79,11 @@ public struct MiniAppReducer {
                 .debounce(id: CancelId.logIn, for: .milliseconds(300), scheduler: mainQueue)
                 .cancellable(id: CancelId.logIn, cancelInFlight: true)
             case let .delegate(.logInSuccesfully(response)):
-                state.logInState = .loaded(response.user)
+                state.logInState = .loaded(.success(response.user))
                 state.destination = .miniAppEntryRoute(.init())
                 return .none
             case let .delegate(.logInFailure(error)):
-                state.logInState = .failure(error)
+                state.logInState = .loaded(.failure(error))
                 return .none
             case .binding, .destination:
                 return .none
@@ -108,21 +117,21 @@ public extension MiniAppReducer {
     @Reducer
     struct Destination: Equatable {
         public enum State: Equatable {
-            // case miniAppEntryRoute(StockSearchHomeReducer.State)
-            case miniAppEntryRoute(InvestmentHomeReducer.State)
+            case miniAppEntryRoute(LogInFeature.State)
         }
 
         public enum Action {
             // case miniAppEntryRoute(StockSearchHomeReducer.Action)
-            case miniAppEntryRoute(InvestmentHomeReducer.Action)
+            case miniAppEntryRoute(LogInFeature.Action)
         }
 
         public var body: some ReducerOf<Self> {
             Scope(
                 state: \.miniAppEntryRoute,
                 action: \.miniAppEntryRoute
-            ) { resolve(\InvestmentFeatureContainer.investmentHomeReducer) }
-            // { resolve(\InvestmentFeatureContainer.stockSearchHomeReducer) }
+            ) {
+                LogInFeature()
+            }
         }
     }
 }

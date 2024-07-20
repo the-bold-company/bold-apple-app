@@ -46,4 +46,11 @@ public extension View {
             IsHidden(hidden: hidden, reserveLayout: reserveLayout)
         )
     }
+
+    func hideNavigationBar() -> some View {
+        #if os(iOS)
+        return AnyView(navigationBarHidden(true))
+        #endif
+        return AnyView(self)
+    }
 }

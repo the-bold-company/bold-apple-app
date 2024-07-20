@@ -1,5 +1,7 @@
+import CasePaths
 import Foundation
 
+@CasePathable
 public enum Validated<Value, Error> {
     case idle(Value)
     case valid(Value)
@@ -10,6 +12,13 @@ public enum Validated<Value, Error> {
         case let .idle(value): return value
         case let .invalid(value, _): return value
         case let .valid(value): return value
+        }
+    }
+
+    public var isIdle: Bool {
+        switch self {
+        case .valid, .invalid: return false
+        case .idle: return true
         }
     }
 

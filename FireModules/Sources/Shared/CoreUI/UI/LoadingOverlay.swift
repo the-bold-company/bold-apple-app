@@ -34,10 +34,22 @@ public struct LoadingOverlay<Content: View>: View {
     }
 }
 
-private struct BlurView: UIViewRepresentable {
+private struct BlurView: PlatformViewRepresentable {
+    #if os(macOS)
+    func makeNSView(context _: Context) -> NSVisualEffectView {
+        let view = NSVisualEffectView()
+        view.material = .light
+        view.blendingMode = .withinWindow
+        view.state = .active
+        return view
+    }
+
+    func updateNSView(_: NSVisualEffectView, context _: Context) {}
+    #elseif os(iOS)
     func makeUIView(context _: Context) -> UIVisualEffectView {
         return UIVisualEffectView(effect: UIBlurEffect(style: .systemUltraThinMaterialLight))
     }
 
     func updateUIView(_: UIVisualEffectView, context _: Context) {}
+    #endif
 }

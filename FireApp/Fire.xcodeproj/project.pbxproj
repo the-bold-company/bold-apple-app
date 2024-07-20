@@ -21,6 +21,7 @@
 		3981A9C92BC2F00F00335C00 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3981A9C82BC2F00F00335C00 /* Assets.xcassets */; };
 		3981A9CC2BC2F00F00335C00 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3981A9CB2BC2F00F00335C00 /* Preview Assets.xcassets */; };
 		3981A9D12BC2F08F00335C00 /* MiniApp in Frameworks */ = {isa = PBXBuildFile; productRef = 3981A9D02BC2F08F00335C00 /* MiniApp */; };
+		399C6C842C12F17700FE604E /* FireModules in Resources */ = {isa = PBXBuildFile; fileRef = 399C6C832C12F17700FE604E /* FireModules */; };
 		39B35D182B7D04A200CC00AB /* FireShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D172B7D04A200CC00AB /* FireShortcuts.swift */; };
 		39B35D1A2B7DC20600CC00AB /* Intents in Frameworks */ = {isa = PBXBuildFile; productRef = 39B35D192B7DC20600CC00AB /* Intents */; };
 		39B35D1F2B83161900CC00AB /* SourceFundIntentEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */; };
@@ -35,16 +36,18 @@
 		0E1FF2652B01F66E00A77369 /* Fire.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fire.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0E1FF2682B01F66E00A77369 /* FireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireApp.swift; sourceTree = "<group>"; };
 		0E1FF26C2B01F67000A77369 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0E1FF26E2B01F67000A77369 /* Fire.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Fire.entitlements; sourceTree = "<group>"; };
+		0E1FF26E2B01F67000A77369 /* Mouka-Release.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Mouka-Release.entitlements"; sourceTree = "<group>"; };
 		0E1FF2702B01F67000A77369 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0E1FF27A2B01F67000A77369 /* FireTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireTests.swift; sourceTree = "<group>"; };
 		393409F02B48688900611270 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		393CB2C22C48D8AF00A74BDF /* Mouka-Debug.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "Mouka-Debug.entitlements"; sourceTree = "<group>"; };
 		395A5D052B74897D008D53BB /* TransactionRecordingIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionRecordingIntent.swift; sourceTree = "<group>"; };
 		396F57CD2B835318000674A6 /* TransactionOverview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionOverview.swift; sourceTree = "<group>"; };
 		3981A9C22BC2F00D00335C00 /* MiniFireApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MiniFireApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3981A9C42BC2F00D00335C00 /* MiniFireApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniFireApp.swift; sourceTree = "<group>"; };
 		3981A9C82BC2F00F00335C00 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3981A9CB2BC2F00F00335C00 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		399C6C832C12F17700FE604E /* FireModules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = FireModules; path = ../FireModules; sourceTree = "<group>"; };
 		39B35D172B7D04A200CC00AB /* FireShortcuts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireShortcuts.swift; sourceTree = "<group>"; };
 		39B35D1E2B83161800CC00AB /* SourceFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceFundIntentEntity.swift; sourceTree = "<group>"; };
 		39B35D202B83167C00CC00AB /* DestinationFundIntentEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DestinationFundIntentEntity.swift; sourceTree = "<group>"; };
@@ -100,6 +103,7 @@
 		0E1FF25C2B01F66E00A77369 = {
 			isa = PBXGroup;
 			children = (
+				399C6C832C12F17700FE604E /* FireModules */,
 				0E1FF2672B01F66E00A77369 /* Fire */,
 				0E1FF2792B01F67000A77369 /* FireTests */,
 				0E0447282B02FD17005CE582 /* FirePlaybook */,
@@ -122,10 +126,10 @@
 		0E1FF2672B01F66E00A77369 /* Fire */ = {
 			isa = PBXGroup;
 			children = (
+				393CB2C02C48D75C00A74BDF /* Resources */,
 				39B35D1B2B83153D00CC00AB /* Source */,
 				393409F02B48688900611270 /* Info.plist */,
 				0E1FF26C2B01F67000A77369 /* Assets.xcassets */,
-				0E1FF26E2B01F67000A77369 /* Fire.entitlements */,
 				0E1FF26F2B01F67000A77369 /* Preview Content */,
 			);
 			path = Fire;
@@ -152,6 +156,15 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		393CB2C02C48D75C00A74BDF /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				393CB2C22C48D8AF00A74BDF /* Mouka-Debug.entitlements */,
+				0E1FF26E2B01F67000A77369 /* Mouka-Release.entitlements */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		396F57CC2B8352ED000674A6 /* UI */ = {
@@ -338,6 +351,7 @@
 			files = (
 				0E1FF2712B01F67000A77369 /* Preview Assets.xcassets in Resources */,
 				0E1FF26D2B01F67000A77369 /* Assets.xcassets in Resources */,
+				399C6C842C12F17700FE604E /* FireModules in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -567,14 +581,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Fire/Fire.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Fire/Resources/Mouka-Debug.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Fire/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Fire/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Fire;
+				INFOPLIST_KEY_CFBundleDisplayName = mouka;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -583,8 +598,8 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
@@ -594,7 +609,9 @@
 					"-Xlinker",
 					"-interposable",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.app.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.mouka.app;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.mouka.app.ios;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.mouka.app.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -609,14 +626,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Fire/Fire.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "Fire/Resources/Mouka-Release.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Fire/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Fire/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Fire;
+				INFOPLIST_KEY_CFBundleDisplayName = mouka;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -625,15 +643,17 @@
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				OTHER_LDFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.app.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.mouka.app;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.mouka.app.ios;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.mouka.app.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
@@ -657,7 +677,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MiniFireApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Mini Fire";
+				INFOPLIST_KEY_CFBundleDisplayName = "Mini Mouka";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -667,12 +687,16 @@
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.mini.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.mouka.mini.app;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.mouka.mini.app.ios;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.mouka.mini.app.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -695,7 +719,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MiniFireApp/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Mini Fire";
+				INFOPLIST_KEY_CFBundleDisplayName = "Mini Mouka";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -705,12 +729,16 @@
 					"@executable_path/Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fire.mini.ios;
+				PRODUCT_BUNDLE_IDENTIFIER = ai.mouka.mini.app;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = ai.mouka.mini.app.ios;
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=macosx*]" = ai.mouka.mini.app.macos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
 				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

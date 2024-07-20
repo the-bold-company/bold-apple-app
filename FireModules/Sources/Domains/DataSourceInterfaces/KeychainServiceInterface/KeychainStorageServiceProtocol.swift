@@ -9,11 +9,13 @@ import DomainEntities
 
 public protocol KeychainServiceProtocol {
     @discardableResult
-    func setCredentials(accessToken: String, refreshToken: String) throws -> CredentialsEntity
+    func setCredentials(accessToken: String, refreshToken: String, idToken: String) throws -> CredentialsEntity
 
     func getAccessToken() throws -> String
 
     func getRefreshToken() throws -> String
+
+    func getIDToken() throws -> String
 
     func removeCredentials() throws
 

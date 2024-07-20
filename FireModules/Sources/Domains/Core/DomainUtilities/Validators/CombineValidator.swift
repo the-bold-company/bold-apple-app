@@ -9,9 +9,7 @@ public struct CombineValidator<Input, Error>: Validator {
         self.init(internal: build())
     }
 
-    init(
-        internal validators: some Validator<Input, Error>
-    ) {
+    init(internal validators: some Validator<Input, Error>) {
         self.validators = validators
     }
 

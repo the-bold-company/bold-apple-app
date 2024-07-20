@@ -76,8 +76,19 @@ public extension Container {
         self { DevSettingsUseCase.live }.singleton
     }
 
-    var authenticationUseCase: Factory<AuthenticationUseCase> {
-        self { AuthenticationUseCase(authService: self.authAPIService.callAsFunction(), keychainService: self.keychainService.callAsFunction()) }
+    var logInUseCase: Factory<LogInUseCase> {
+        self {
+            .live(
+                //                authService: self.authAPIService.callAsFunction(),
+//                keychainService: self.keychainService.callAsFunction()
+            )
+        }
+    }
+
+    var signUpUseCase: Factory<SignUpUseCase> {
+        self {
+            SignUpUseCase.live()
+        }
     }
 
     var fundDetailsUseCase: Factory<FundDetailsUseCaseProtocol> {

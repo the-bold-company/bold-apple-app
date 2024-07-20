@@ -3,26 +3,24 @@ import Coordinator
 import SwiftUI
 import TCACoordinators
 
-public struct AppView: View {
-    let store: StoreOf<AppReducer>
-
-    public init(store: StoreOf<AppReducer>) {
-        self.store = store
+public struct MoukaApp: View {
+    let store = Store(initialState: .init(initialRoute: .logIn(.init()))) {
+        RootCoordinator()
     }
 
+    public init() {}
+
     public var body: some View {
-        WithViewStore(store, observe: \.isAuthenticated) { authenticated in
-            CoordinatorView(
-                store: Store(
-                    initialState: authenticated.state
-                        ? Coordinator.State.authenticatedInitialState
-                        : Coordinator.State.unAuthenticatedInitialState,
-                    reducer: { Coordinator() }
-                )
+        #if os(macOS)
+        RootCoordinatorView(store: store)
+            .frame(minWidth: 500, minHeight: 500) // Add this on the host app to constraint the minimum size of the app window on desktop
+        #elseif os(iOS)
+        CoordinatorView(
+            store: Store(
+                initialState: Coordinator.State.unAuthenticatedInitialState,
+                reducer: { Coordinator() }
             )
-            .task {
-                store.send(.onLaunch)
-            }
-        }
+        )
+        #endif
     }
 }
