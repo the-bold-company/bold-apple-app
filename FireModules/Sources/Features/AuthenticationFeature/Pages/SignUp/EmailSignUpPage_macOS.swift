@@ -157,6 +157,8 @@ extension BindingViewStore<EmailSignUpFeature.State> {
 
 // MARK: Previews
 
+import AuthAPIService
+
 #Preview("Already registered email") {
     NavigationStack {
         EmailSignUpPage(

@@ -25,7 +25,7 @@ public extension View {
         of value: V,
         perform action: @escaping (_ oldValue: V, _ newValue: V) -> Void
     ) -> some View where V: Equatable {
-        if #available(iOS 14.0, macOS 14.0, *) {
+        if #available(iOS 17.0, macOS 14.0, *) {
             return onChange(of: value, action)
         } else {
             return modifier(ChangeObserver(newValue: value, action: action))

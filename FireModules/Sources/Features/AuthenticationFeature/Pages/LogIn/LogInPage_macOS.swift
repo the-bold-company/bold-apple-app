@@ -198,7 +198,6 @@ extension BindingViewStore<LogInFeature.State> {
         // swiftformat:enable redundantSelf
     }
 }
-#endif
 
 #Preview {
     NavigationStack {
@@ -211,3 +210,4 @@ extension BindingViewStore<LogInFeature.State> {
         .preferredColorScheme(.light)
     }
 }
+#endif

@@ -15,41 +15,6 @@
     {
       "target" : {
         "containerPath" : "container:..\/FireModules",
-        "identifier" : "LogInFeatureTests",
-        "name" : "LogInFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/FireModules",
-        "identifier" : "HomeFeatureTests",
-        "name" : "HomeFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/FireModules",
-        "identifier" : "FundFeatureTests",
-        "name" : "FundFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/FireModules",
-        "identifier" : "RecordTransactionFeatureTests",
-        "name" : "RecordTransactionFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/FireModules",
-        "identifier" : "InvestmentFeatureTests",
-        "name" : "InvestmentFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:..\/FireModules",
         "identifier" : "AuthenticationFeatureTests",
         "name" : "AuthenticationFeatureTests"
       }

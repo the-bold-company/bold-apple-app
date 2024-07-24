@@ -18,34 +18,35 @@ var package = Package(
         .singleTargetLibrary("AppPlaybook"),
         .singleTargetLibrary("AuthenticationFeature"),
         .singleTargetLibrary("CoreUI"),
+        .singleTargetLibrary("Coordinator"),
     ],
     dependencies: [
         .package(url: "https://github.com/Moya/Moya.git", exact: "15.0.3"),
 //        .package(url: "https://github.com/realm/SwiftLint.git", exact: "0.53.0"),
         .package(url: "https://github.com/CombineCommunity/CombineExt.git", exact: "1.8.1"),
-        .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
         .package(url: "https://github.com/playbook-ui/playbook-ios", exact: "0.3.4"),
         .package(url: "https://github.com/nicklockwood/SwiftFormat.git", exact: "0.52.10"),
         .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.2.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
-        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.10.4"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
         .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
 //        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.2.0"),
-        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings.git", revision: "a01e983b566626a810deb9ecae193ff23cda1947"),
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
-        .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
-        .package(url: "https://github.com/pointfreeco/swift-overture", exact: "0.5.0"),
+        .package(url: "https://github.com/krzysztofzablocki/Inject.git", exact: "1.2.3"),
+        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings.git", revision: "a01e983b566626a810deb9ecae193ff23cda1947"),
+        .package(url: "https://github.com/krzysztofzablocki/Difference.git", exact: "1.0.2"),
         .package(url: "https://github.com/krzysztofzablocki/KZFileWatchers.git", from: "1.2.0"),
+        .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", exact: "1.10.4"),
         .package(url: "https://github.com/pointfreeco/swift-dependencies", exact: "1.3.0"),
+        .package(url: "https://github.com/pointfreeco/swift-overture", exact: "0.5.0"),
+        .package(url: "https://github.com/pointfreeco/swiftui-navigation", from: "1.5.0"),
     ],
     targets: [
         .app(
             .app,
             dependencies: [
                 Module.Orchestrator.coordinator.asDependency,
-                Module.Orchestrator.di.asDependency,
                 .ThirdParty.tcaCoordinator.asDependency,
                 .ThirdParty.composableArchitecture.asDependency,
             ]
@@ -53,7 +54,6 @@ var package = Package(
         .app(
             .miniApp,
             dependencies: [
-                Module.Orchestrator.di.asDependency,
                 .ThirdParty.composableArchitecture.asDependency,
             ]
         ),
@@ -61,10 +61,7 @@ var package = Package(
             .appPlaybook,
             dependencies: [
                 Module.Infra.coreUI.asDependency,
-                Module.Feature.homeFeature.asDependency,
-                Module.Feature.logInFeature.asDependency,
                 Module.Feature.authenticationFeature.asDependency,
-                Module.Feature.onboardingFeature.asDependency,
                 .ThirdParty.playbook.asDependency,
                 .ThirdParty.playbookUI.asDependency,
                 .ThirdParty.composableArchitecture.asDependency,
@@ -85,52 +82,14 @@ var package = Package(
 
 package.targets.append(contentsOf: [
     .orchestrator(
-        .di,
-        features: [
-            .fundFeature,
-            .homeFeature,
-            .recordTransactionFeature,
-            .authenticationFeature,
-            .onboardingFeature,
-            .settingsFeature,
-            .investmentFeature,
-        ],
-        useCases: [
-            .authenticationUseCase,
-            .fundDetailsUseCase,
-            .fundCreationUseCase,
-            .fundListUseCase,
-            .transactionRecordUseCase,
-            .transactionListUseCase,
-            .portfolioUseCase,
-            .devSettingsUseCase,
-            .investmentUseCase,
-            .liveMarketUseCase,
-        ],
-        dataSources: [
-            .authAPIService,
-            .keychainService,
-            .fundsAPIService,
-            .transactionsAPIService,
-            .portfolioAPIService,
-            .temporaryPersistenceService,
-            .persistenceService,
-            .investmentAPIService,
-            .marketAPIService,
-        ],
-        thirdParties: [
-            .factory,
-        ]
-    ),
-    .orchestrator(
         .coordinator,
-        dataSources: [
-            .keychainService,
+        features: [
+            .authenticationFeature,
+            .accountFeature,
         ],
-        otherOrchestrators: [.di],
         thirdParties: [
+            .composableArchitecture,
             .tcaCoordinator,
-//            .codextended
         ]
     ),
 ])
@@ -138,14 +97,6 @@ package.targets.append(contentsOf: [
 // MARK: Features
 
 package.targets.append(contentsOf: [
-    .feature(
-        .logInFeature,
-        useCases: [
-            .authenticationUseCase,
-        ],
-        enableDevDependenies: true
-    ),
-    .feature(.onboardingFeature),
     .feature(
         .authenticationFeature,
         useCases: [.authenticationUseCase],
@@ -155,43 +106,9 @@ package.targets.append(contentsOf: [
         enableDevDependenies: true
     ),
     .feature(
-        .homeFeature,
-        useCases: [
-            .transactionListUseCase,
-            .fundListUseCase,
-            .fundDetailsUseCase,
-            .portfolioUseCase,
-        ],
-        infras: [
-            .currencyKit,
-        ],
-        features: [
-            .fundFeature,
-            .investmentFeature,
-        ]
-    ),
-    .feature(
-        .fundFeature,
-        useCases: [
-            .fundDetailsUseCase,
-            .fundCreationUseCase,
-        ],
-        infras: [
-            .currencyKit,
-        ],
-        features: [
-            .recordTransactionFeature,
-        ]
-    ),
-    .feature(
-        .recordTransactionFeature,
-        useCases: [
-            .fundListUseCase,
-            .transactionRecordUseCase,
-        ],
-        infras: [
-            .currencyKit,
-        ]
+        .accountFeature,
+        infras: [.networking],
+        thirdParties: [.codextended]
     ),
     .feature(
         .settingsFeature,
@@ -200,16 +117,6 @@ package.targets.append(contentsOf: [
         ],
         thirdParties: [
             .automaticSettings,
-        ]
-    ),
-    .feature(
-        .investmentFeature,
-        useCases: [
-            .investmentUseCase,
-            .liveMarketUseCase,
-        ],
-        infras: [
-            .currencyKit,
         ]
     ),
 ])
@@ -222,56 +129,6 @@ package.targets.append(contentsOf: [
         dataSourceInterfaces: [
             .authAPIService,
             .keychainService,
-        ]
-    ),
-    .useCase(
-        .fundDetailsUseCase,
-        dataSourceInterfaces: [
-            .fundsAPIService,
-        ]
-    ),
-    .useCase(
-        .fundCreationUseCase,
-        dataSourceInterfaces: [
-            .fundsAPIService,
-        ]
-    ),
-    .useCase(
-        .fundListUseCase,
-        dataSourceInterfaces: [
-            .fundsAPIService,
-            .temporaryPersistenceService,
-            .persistenceService,
-        ]
-    ),
-    .useCase(
-        .transactionListUseCase,
-        dataSourceInterfaces: [
-            .transactionsAPIService,
-        ]
-    ),
-    .useCase(
-        .transactionRecordUseCase,
-        dataSourceInterfaces: [
-            .transactionsAPIService,
-        ]
-    ),
-    .useCase(
-        .portfolioUseCase,
-        dataSourceInterfaces: [
-            .portfolioAPIService,
-        ]
-    ),
-    .useCase(
-        .investmentUseCase,
-        dataSourceInterfaces: [
-            .investmentAPIService,
-        ]
-    ),
-    .useCase(
-        .liveMarketUseCase,
-        dataSourceInterfaces: [
-            .marketAPIService,
         ]
     ),
 ])
@@ -363,10 +220,8 @@ package.targets.append(contentsOf: [
         .testHelpers,
         thirdParties: [
             .overture,
-            .factory,
             .difference,
-        ],
-        otherDependencies: ["DI"]
+        ]
     ),
     .infra(
         .keychainService,
@@ -395,17 +250,12 @@ package.targets.append(
 // MARK: Test targets
 
 package.targets.append(contentsOf: [
-    .testFeature(.logInFeature),
-    .testFeature(.homeFeature),
-    .testFeature(.fundFeature),
-    .testFeature(.recordTransactionFeature),
     .testFeature(
         .authenticationFeature,
         dataSources: [
             .authAPIService,
         ]
     ),
-    .testFeature(.investmentFeature),
 ])
 package.targets.append(contentsOf: [
     .testApp(.app),
@@ -491,7 +341,6 @@ extension Target {
             Module.Infra.tcaExtensions.asDependency,
             Module.Domain.Core.domainEntities.asDependency,
             Dependency.ThirdParty.composableArchitecture.asDependency,
-            Dependency.ThirdParty.factory.asDependency,
             Dependency.ThirdParty.swiftDependencies.asDependency,
         ])
 
@@ -710,6 +559,7 @@ extension Target.Dependency {
         case playbook
         case playbookUI
         case swiftDependencies
+        case swiftuiNavigation
 
         var asDependency: Target.Dependency {
             switch self {
@@ -745,6 +595,8 @@ extension Target.Dependency {
                 return Target.Dependency.product(name: "PlaybookUI", package: "playbook-ios")
             case .swiftDependencies:
                 return Target.Dependency.product(name: "Dependencies", package: "swift-dependencies")
+            case .swiftuiNavigation:
+                return Target.Dependency.product(name: "SwiftUINavigation", package: "swiftui-navigation")
             }
         }
     }
@@ -799,6 +651,7 @@ enum Module {
         case onboardingFeature = "OnboardingFeature"
         case logInFeature = "LogInFeature"
         case authenticationFeature = "AuthenticationFeature"
+        case accountFeature = "AccountFeature"
         case homeFeature = "HomeFeature"
         case fundFeature = "FundFeature"
         case investmentFeature = "InvestmentFeature"

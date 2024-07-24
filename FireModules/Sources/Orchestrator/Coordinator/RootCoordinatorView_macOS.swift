@@ -1,9 +1,8 @@
 #if os(macOS)
-
 import AuthenticationFeature
 import ComposableArchitecture
-import HomeFeature
 import SwiftUI
+import TCAExtensions
 
 public struct RootCoordinatorView: View {
     let store: StoreOf<RootCoordinator>
@@ -31,14 +30,23 @@ public struct RootCoordinatorView: View {
                     action: RootCoordinator.Destination.Action.signUp,
                     then: EmailSignUpPage.init(store:)
                 )
-            case .homeRoute:
+            case .home:
                 CaseLet(
-                    \RootCoordinator.Destination.State.homeRoute,
-                    action: RootCoordinator.Destination.Action.homeRoute,
+                    \RootCoordinator.Destination.State.home,
+                    action: RootCoordinator.Destination.Action.home,
                     then: HomePage.init(store:)
                 )
             }
         }
     }
 }
+
+#Preview {
+    RootCoordinatorView(
+        store: Store(
+            initialState: .init()
+        ) { RootCoordinator() }
+    )
+}
+
 #endif

@@ -13,7 +13,7 @@ public struct Coordinator {
     public struct Destination {
         public enum State: Equatable {
             case landingRoute(LandingFeature.State)
-            case homeRoute(HomeReducer.State)
+            case homeRoute(HomeFeature.State)
             case secretDevSettingsRoute
             case devSettingsRoute(DevSettingsReducer.State)
 //            case authentication(SignUpFeatureCoordinator.State)
@@ -22,7 +22,7 @@ public struct Coordinator {
 
         public enum Action {
             case landingRoute(LandingFeature.Action)
-            case homeRoute(HomeReducer.Action)
+            case homeRoute(HomeFeature.Action)
             case secretDevSettingsRoute
             case devSettingsRoute(DevSettingsReducer.Action)
 //            case authentication(SignUpFeatureCoordinator.Action)

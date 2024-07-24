@@ -1,39 +1,15 @@
 #if os(macOS)
 import AuthenticationFeature
 import ComposableArchitecture
-import DI
 import DomainEntities
-import HomeFeature
 
 @Reducer
 public struct RootCoordinator {
-    @Reducer
-    public struct Destination {
-        public enum State: Equatable {
-            case homeRoute(HomeReducer.State)
-            case logIn(LogInFeature.State)
-            case signUp(EmailSignUpFeature.State)
-        }
-
-        public enum Action {
-            case homeRoute(HomeReducer.Action)
-            case logIn(LogInFeature.Action)
-            case signUp(EmailSignUpFeature.Action)
-        }
-
-        public var body: some Reducer<State, Action> {
-            Scope(state: \.logIn, action: \.logIn) {
-                LogInFeature()
-            }
-
-            Scope(state: \.signUp, action: \.signUp) {
-                EmailSignUpFeature()
-            }
-
-            Scope(state: \.homeRoute, action: \.homeRoute) {
-                resolve(\HomeFeatureContainer.homeReducer)
-            }
-        }
+    @Reducer(state: .equatable)
+    public enum Destination {
+        case home(HomeFeature)
+        case logIn(LogInFeature)
+        case signUp(EmailSignUpFeature)
     }
 
     public struct State: Equatable {
@@ -57,7 +33,7 @@ public struct RootCoordinator {
             switch action {
             case let .routes(.element(id, destinationAction)):
                 switch destinationAction {
-                case .homeRoute:
+                case .home:
                     break
                 case let .logIn(logInAction):
                     return handleLogInAction(logInAction, id: id, state: &state)
@@ -71,9 +47,7 @@ public struct RootCoordinator {
             }
             return .none
         }
-        .forEach(\.routes, action: \.routes) {
-            Destination()
-        }
+        .forEach(\.routes, action: \.routes)
     }
 
     // MARK: - Authentication delegation
@@ -84,7 +58,7 @@ public struct RootCoordinator {
             switch delegateAction {
             case .userLoggedIn:
                 state.routes.removeAll()
-                state.routes.append(.homeRoute(.init()))
+                state.routes.append(.home(.init()))
                 return .none
             case .logInFailed:
                 return .none
