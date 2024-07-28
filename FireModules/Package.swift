@@ -17,6 +17,7 @@ var package = Package(
         .singleTargetLibrary("Intents"),
         .singleTargetLibrary("AppPlaybook"),
         .singleTargetLibrary("AuthenticationFeature"),
+        .singleTargetLibrary("AccountFeature"),
         .singleTargetLibrary("CoreUI"),
         .singleTargetLibrary("Coordinator"),
     ],

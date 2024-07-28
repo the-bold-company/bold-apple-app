@@ -10,10 +10,14 @@ enum AccountsAPI {
 }
 
 extension AccountsAPI.v1: BaseTargetType {
+    var serviceId: String? { "account-management" }
+
+    var versionId: String? { "v1" }
+
     var path: String {
         switch self {
         case .createAccount:
-            return "account-management/v1/accounts"
+            return "accounts"
         }
     }
 

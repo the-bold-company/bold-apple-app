@@ -13,6 +13,10 @@ public struct AccountViewFeature {
 
         var createAccountProgress: LoadingProgress<String, CreateAccountFailure> = .idle
 
+        var accountName: DefaultLengthConstrainedString {
+            .init(accountNameText)
+        }
+
         public init() {}
     }
 
@@ -69,7 +73,7 @@ public struct AccountViewFeature {
 
             return createAccount(
                 .bankAccount(
-                    accountName: .init(initialValue: state.accountNameText),
+                    accountName: state.accountName,
                     icon: state.emoji,
                     balance: .init(state.balance),
                     currency: state.currency
@@ -94,133 +98,3 @@ public struct AccountViewFeature {
         }
     }
 }
-
-public struct LengthConstrainedString: Value, Equatable {
-    public var value: Result<String, LengthConstrainedValidationError> {
-        validation.asResult
-    }
-
-    public var validation: Validated<String, LengthConstrainedValidationError> {
-        validator.validate(valueString)
-    }
-
-    let validator: LengthConstrainedValidator
-
-    public private(set) var valueString: String
-
-    public init(lengthRange: ClosedRange<Int>, initialValue: String) {
-        self.validator = LengthConstrainedValidator(range: lengthRange)
-        self.valueString = initialValue
-    }
-}
-
-public struct DefaultLengthConstrainedString: Value, Equatable {
-    public var value: Result<String, LengthConstrainedValidationError> {
-        validation.asResult
-    }
-
-    public var validation: Validated<String, LengthConstrainedValidationError> {
-        validator.validate(valueString)
-    }
-
-    let validator = LengthConstrainedValidator(range: 0 ... 255)
-
-    public private(set) var valueString: String
-
-    public init(initialValue: String) {
-        self.valueString = initialValue
-    }
-}
-
-@CasePathable
-public enum LengthConstrainedValidationError: LocalizedError, Equatable {
-    case shorterThanMin(_ min: Int)
-    case longerThanMax(_ max: Int)
-}
-
-public struct LengthConstrainedValidator: Validator {
-    private let range: ClosedRange<Int>
-
-    public init(range: ClosedRange<Int>) {
-        self.range = range
-    }
-
-    public func validate(_ input: String) -> Validated<String, LengthConstrainedValidationError> {
-        if range.lowerBound > input.count {
-            return .invalid(input, .shorterThanMin(range.lowerBound))
-        } else if range.upperBound < input.count {
-            return .invalid(input, .longerThanMax(range.upperBound))
-        }
-
-        return .valid(input)
-    }
-}
-
-// @propertyWrapper
-// public struct Clamping    {
-//    var value: String
-//    let range: ClosedRange<Int>
-//
-//    public init(wrappedValue: Value, range: ClosedRange<Int>) {
-//        self.range = range
-//
-//
-//        let start = str.index(str.startIndex, offsetBy: 0)
-//        let end = str.index(str.startIndex, offsetBy: 6)
-//        let range = start..<end
-//        let sub = str[start..<end]
-//        str = String(sub)
-//
-//
-//        value.ra
-//        self.value = range.clamp(wrappedValue)
-//    }
-//
-//    public var wrappedValue: String {
-//        get { value }
-//        set {
-//            value = range.clamp(newValue)
-//            if newValue.count >= minLength && input.count <= maxLength {
-//            //            return input
-//            //        } else {
-//            //            return String(input.prefix(maxLength))
-//            //        }
-//
-//        }
-//    }
-// }
-
-// @propertyWrapper
-// struct LimitedLengthString {
-//    private var value: String = ""
-//    private let minLength: Int
-//    private let maxLength: Int
-//
-//    var wrappedValue: String {
-//        get { value }
-//        set { value = LimitedLengthString.validate(newValue, minLength: minLength, maxLength: maxLength) }
-//    }
-//
-//    init(wrappedValue: String, minLength: Int, maxLength: Int) {
-//        assert(minLength < maxLength, "minLength should be less than maxLength")
-//        self.minLength = minLength
-//        self.maxLength = maxLength
-//        self.wrappedValue = LimitedLengthString.validate(wrappedValue, minLength: minLength, maxLength: maxLength)
-//    }
-//
-//    private static func validate(_ input: String, minLength: Int, maxLength: Int) -> String {
-//        if input.count >= minLength && input.count <= maxLength {
-//            return input
-//        } else {
-//            return String(input.prefix(maxLength))
-//        }
-//    }
-// }
-
-// fileprivate extension ClosedRange {
-//    func clamp(_ value : Bound) -> Bound {
-//        return self.lowerBound > value ? self.lowerBound
-//            : self.upperBound < value ? self.upperBound
-//            : value
-//    }
-// }

@@ -8,7 +8,10 @@
 import Foundation
 import Moya
 
-public protocol BaseTargetType: TargetType {}
+public protocol BaseTargetType: TargetType {
+    var serviceId: String? { get }
+    var versionId: String? { get }
+}
 
 public extension BaseTargetType {
     var baseURL: URL {
@@ -23,7 +26,7 @@ public extension BaseTargetType {
 //        #else
 //          let baseUrl = URL(string: "https://www.isowords.xyz")!
 //        #endif
-        guard let url = URL(string: "https://ens3ci4on3.execute-api.ap-southeast-1.amazonaws.com/dev/iam-bold-api") else {
+        guard let url = URL(string: "https://ens3ci4on3.execute-api.ap-southeast-1.amazonaws.com/dev") else {
             preconditionFailure("Missing base URL in \(String(describing: self))")
         }
         return url

@@ -20,6 +20,10 @@ enum TransactionsAPI {
 }
 
 extension TransactionsAPI: BaseTargetType {
+    var serviceId: String? { nil }
+
+    var versionId: String? { nil }
+
     var path: String {
         switch self {
         case .record:

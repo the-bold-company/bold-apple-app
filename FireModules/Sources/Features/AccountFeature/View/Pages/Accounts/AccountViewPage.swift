@@ -16,6 +16,8 @@ public struct AccountViewPage: View {
         @BindingViewState var accountName: String
         @BindingViewState var balance: Decimal
         @BindingViewState var currency: Currency
+        var isFormValid: Bool
+        var accountCreationInProgress: Bool
     }
 
     let store: StoreOf<AccountViewFeature>
@@ -91,9 +93,9 @@ public struct AccountViewPage: View {
                     .frame(maxWidth: geometry.size.width / 4)
 
                     MacButton.primary(
-                        disabled: false,
-                        loading: false,
-                        action: {},
+                        disabled: !viewStore.isFormValid,
+                        loading: viewStore.accountCreationInProgress,
+                        action: { viewStore.send(.view(.createButtonTapped)) },
                         label: { Text("Tạo") }
                     )
                     .frame(maxWidth: geometry.size.width / 4)
@@ -113,7 +115,9 @@ extension BindingViewStore<AccountViewFeature.State> {
             emoji: self.$emoji,
             accountName: self.$accountNameText,
             balance: self.$balance,
-            currency: self.$currency
+            currency: self.$currency,
+            isFormValid: self.accountName.isValid,
+            accountCreationInProgress: self.createAccountProgress.is(\.loading)
         )
         // swiftformat:enable redundantSelf
     }

@@ -135,13 +135,12 @@ public struct LoginPage: View {
 
     @ViewBuilder
     private var loginButton: some View {
-        Button {
-            viewStore.send(.view(.logInButtonTapped))
-        } label: {
-            Text("Đăng nhập")
-                .frame(maxWidth: .infinity)
-        }
-        .moukaButtonStyle(.primary, disabled: !viewStore.isFormValid)
+        MoukaButton.primary(
+            disabled: !viewStore.isFormValid,
+            loading: viewStore.isLoading,
+            action: { viewStore.send(.view(.logInButtonTapped)) },
+            label: { Text("Đăng nhập") }
+        )
     }
 
     @ViewBuilder private var errorMessage: some View {
