@@ -3,7 +3,7 @@ public enum MoukaButtonType: Equatable {
     case secondary
     case tertiary
 
-    var padding: EdgeInsets {
+    public var padding: EdgeInsets {
         switch self {
         case .primary, .secondary:
             return .all(14)
@@ -12,7 +12,7 @@ public enum MoukaButtonType: Equatable {
         }
     }
 
-    var defaultBackgroundColor: Color {
+    public var defaultBackgroundColor: Color {
         switch self {
         case .primary:
             return .coreui.brightGreen
@@ -23,7 +23,7 @@ public enum MoukaButtonType: Equatable {
         }
     }
 
-    var hoverBackgroundColor: Color {
+    public var hoverBackgroundColor: Color {
         switch self {
         case .primary:
             return .init(hex: 0x8BD958)
@@ -34,7 +34,7 @@ public enum MoukaButtonType: Equatable {
         }
     }
 
-    var foregroundColor: Color {
+    public var foregroundColor: Color {
         switch self {
         case .primary: .coreui.forestGreen
         case .secondary: .init(hex: 0x1F2937)
@@ -42,28 +42,28 @@ public enum MoukaButtonType: Equatable {
         }
     }
 
-    var disabledForegroundColor: Color {
+    public var disabledForegroundColor: Color {
         switch self {
         case .primary, .secondary: .init(hex: 0xD1D5DB)
         case .tertiary: foregroundColor
         }
     }
 
-    var disabledBackgroundColor: Color {
+    public var disabledBackgroundColor: Color {
         switch self {
         case .primary, .secondary: .init(hex: 0xF3F4F6)
         case .tertiary: defaultBackgroundColor
         }
     }
 
-    var borderColor: Color? {
+    public var borderColor: Color? {
         switch self {
         case .primary, .tertiary: nil
         case .secondary: .init(hex: 0xE5E7EB)
         }
     }
 
-    var disabledBorderColor: Color? {
+    public var disabledBorderColor: Color? {
         switch self {
         case .primary, .tertiary: nil
         case .secondary: .init(hex: 0xF3F4F6)

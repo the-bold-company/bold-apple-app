@@ -1,4 +1,5 @@
 #if os(macOS)
+import AccountFeature
 import ComposableArchitecture
 import CoreUI
 import SwiftUI
@@ -37,9 +38,6 @@ public struct HomePage: View {
         }
     }
 
-    @State var path = NavigationPath()
-//    @State var selection: Int? = nil
-
     public var body: some View {
         NavigationSplitView {
             List(Item.allCases, id: \.self) { item in
@@ -60,9 +58,9 @@ public struct HomePage: View {
                     }
                 } label: {
                     Label(item.rawValue, systemImage: item.image)
-                        .labelStyle(MyLabelStyle(selected: item == selection))
+                        .labelStyle(SideBarLabelStyle())
                 }
-                .buttonStyle(MoukaSideBarButtonStyle(selected: item == selection))
+                .buttonStyle(SideBarButtonStyle(selected: item == selection))
             }
             .background(Color.white)
             .navigationDestination(
@@ -82,13 +80,13 @@ public struct HomePage: View {
                     state: \.$destination.accounts,
                     action: \.destination.accounts
                 )
-            ) { accounts(store: $0) }
+            ) { AccountsOverviewPage(store: $0) }
             .navigationDestination(
                 store: store.scope(
                     state: \.$destination.transactions,
                     action: \.destination.transactions
                 )
-            ) { transactions(store: $0) }
+            ) { TransactionsOverviewPage(store: $0) }
             .navigationDestination(
                 store: store.scope(
                     state: \.$destination.categories,
@@ -132,69 +130,6 @@ extension BindingViewStore<HomeFeature.State> {
             selected: self.something
         )
         // swiftformat:enable redundantSelf
-    }
-}
-
-struct MyLabelStyle: LabelStyle {
-    //   let textColor: Color
-    let selected: Bool
-
-    func makeBody(configuration: Configuration) -> some View {
-//       Label(configuration)
-//           .frame(width: .infinity, height: .infinity, alignment: .leading)
-//           .foregroundColor(Color(hex: selected ? 0x4C8A1D : 0x1F2937))
-        ////           .listRowBackground(selected ? Color(hex: 0xECFAE2) : .clear)
-//           .background(selected ? Color(hex: 0xECFAE2) : .clear)
-//           .background(
-//               RoundedRectangle(cornerRadius: 8)
-//                   .fill(selected ? Color(hex: 0xECFAE2) : .clear)
-//           )
-//           .padding(15)
-//           .background(Capsule().fill(gradient))
-//           .background(Capsule().stroke(Color.secondary, lineWidth: 1))
-//           .font(.largeTitle)
-        HStack(spacing: 8) {
-            configuration.icon
-
-//               .background(Circle().fill(color))
-
-            configuration.title // .padding(.trailing, 10)
-                .lineLimit(1)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-//       .padding(.symetric(horizontal: 12, vertical: 8))
-//       .frame(width: .infinity, alignment: .leading)
-//       .foregroundColor(Color(hex: selected ? 0x4C8A1D : 0x1F2937))
-//       .listRowBackground(selected ? Color(hex: 0xECFAE2) : .clear)
-//       .tint(Color(hex: 0xECFAE2))
-//       .background(selected ? Color(hex: 0xECFAE2) : .clear)
-//       .padding(6)
-//       .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray))
-    }
-}
-
-public struct MoukaSideBarButtonStyle: ButtonStyle {
-    public init(selected: Bool = false) {
-        self.selected = selected
-    }
-
-    let selected: Bool
-
-    public func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
-            .padding(.symetric(horizontal: 8, vertical: 8))
-            .font(.custom(FontFamily.Inter.medium, size: 12))
-            .foregroundColor(
-                selected
-                    ? Color(hex: 0x4C8A1D)
-                    : Color(hex: 0x1F2937).opacity(configuration.isPressed ? 0.7 : 1)
-            )
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(selected ? Color(hex: 0xECFAE2) : .clear)
-            )
-            .compositingGroup()
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
     }
 }
 

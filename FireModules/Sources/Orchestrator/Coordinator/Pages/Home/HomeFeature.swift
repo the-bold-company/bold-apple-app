@@ -1,3 +1,4 @@
+import AccountFeature
 import ComposableArchitecture
 import CoreUI
 import SwiftUI
@@ -9,8 +10,8 @@ public struct HomeFeature {
     public enum Destination {
         case overview(OverviewFeature)
         case reports(ReportFeature)
-        case accounts(AccountsFeature)
-        case transactions(TransactionsFeature)
+        case accounts(AccountsOverviewFeature)
+        case transactions(TransactionsOverviewFeature)
         case categories(CategoriesFeature)
     }
 
