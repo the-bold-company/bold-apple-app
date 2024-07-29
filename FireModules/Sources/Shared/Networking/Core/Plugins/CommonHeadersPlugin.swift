@@ -5,18 +5,20 @@
 //  Created by Hien Tran on 23/11/2023.
 //
 
+import CasePaths
+import Dependencies
 import Foundation
-import KeychainService // TODO: Remove this to avoid cycle dependency. Shared layer should't depend on Data layer. Use directly from `SwiftKeychainWrapper` or `KeychainServiceInterface` instead
+import KeychainService
 import Moya
 
 struct CommonHeadersPlugin: PluginType {
-    let keychainService = KeychainService()
     // swiftformat:disable unusedArguments
     func prepare(_ request: URLRequest, target: TargetType) -> URLRequest {
+        @Dependency(\.keychainService) var keychainService
         var newRequest = request
 
-        if let accessToken = try? keychainService.getAccessToken() {
-            newRequest.headers.add(name: "authorization", value: accessToken)
+        if let accessToken = keychainService.getAccessToken()[case: \.success] {
+            newRequest.headers.add(name: "Authorization", value: "Bearer \(accessToken)")
         }
 
         return newRequest

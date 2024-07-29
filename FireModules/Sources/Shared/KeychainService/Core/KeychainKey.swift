@@ -5,7 +5,7 @@
 //  Created by Hien Tran on 09/01/2024.
 //
 
-private let prefix = "[FIRE]"
+private let prefix = "[mouka]"
 
 public enum KeychainKey: String {
     case accessToken
@@ -19,11 +19,11 @@ public enum KeychainKey: String {
     var name: String {
         switch self {
         case .accessToken:
-            return "Access Token"
+            return "AccessToken"
         case .refreshToken:
-            return "Refresh Token"
+            return "RefreshToken"
         case .idToken:
-            return "ID Token"
+            return "IdToken"
         }
     }
 }

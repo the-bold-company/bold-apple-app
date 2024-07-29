@@ -97,7 +97,7 @@ public extension Effect {
     func mapToUseCaseLogic<S1, S2, F2>(
         success transformSuccess: @escaping (S1) -> S2,
         failure transformFailure: @escaping (DomainError) -> F2,
-        actionOnSuccess: ((S1) throws -> Void)? = nil,
+        performOnSuccess: ((S1) throws -> Void)? = nil,
         catch handler: ((Swift.Error) -> F2)? = nil
     ) -> Effect<Result<S2, F2>>
         where Action == Result<S1, DomainError>,
@@ -107,7 +107,7 @@ public extension Effect {
             do {
                 switch result {
                 case let .success(successValue):
-                    try actionOnSuccess?(successValue)
+                    try performOnSuccess?(successValue)
                     return .success(transformSuccess(successValue))
                 case let .failure(error):
                     return .failure(transformFailure(error))

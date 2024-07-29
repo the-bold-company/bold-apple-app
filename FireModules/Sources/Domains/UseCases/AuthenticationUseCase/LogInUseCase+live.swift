@@ -7,6 +7,7 @@ import KeychainServiceInterface
 public extension LogInUseCase {
     static func live() -> Self {
         @Dependency(\.authAPIService) var authAPIService
+        @Dependency(\.keychainService.setCredentials) var setCredentials
         return LogInUseCase(
             logInAsync: { request in
                 let emailValidationError = request.email.getErrorOrNil()
@@ -19,10 +20,11 @@ public extension LogInUseCase {
                 do {
                     let successfulLogIn = try await authAPIService.logInAsync(request.email.getOrCrash(), request.password.getOrCrash())
 
-//                    try keychainService.setCredentials(
-//                        accessToken: successfulLogIn.1.accessToken,
-//                        refreshToken: successfulLogIn.1.refreshToken
-//                    )
+                    _ = setCredentials(
+                        successfulLogIn.1.accessToken,
+                        successfulLogIn.1.refreshToken,
+                        successfulLogIn.1.idToken
+                    )
                     return .success(AuthenticationLogic.LogIn.Response(user: successfulLogIn.0))
                 } catch let error as DomainError {
                     return .failure(AuthenticationLogic.LogIn.Failure(domainError: error))
@@ -42,11 +44,12 @@ public extension LogInUseCase {
                     .mapToUseCaseLogic(
                         success: { AuthenticationLogic.LogIn.Response(user: $0.0) },
                         failure: { AuthenticationLogic.LogIn.Failure(domainError: $0) },
-                        actionOnSuccess: { _ in
-//                            try keychainService.setCredentials(
-//                                accessToken: response.1.accessToken,
-//                                refreshToken: response.1.refreshToken
-//                            )
+                        performOnSuccess: { response in
+                            _ = setCredentials(
+                                response.1.accessToken,
+                                response.1.refreshToken,
+                                response.1.idToken
+                            )
                         },
                         catch: { AuthenticationLogic.LogIn.Failure(domainError: $0.eraseToDomainError()) }
                     )

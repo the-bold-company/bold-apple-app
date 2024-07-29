@@ -1,57 +1,61 @@
-//
-//  KeychainClient.swift
-//
-//
-//  Created by Hien Tran on 09/01/2024.
-//
-
 import Foundation
-import SwiftKeychainWrapper
+import KeychainAccess
+import KeychainServiceInterface
+
+let KEYCHAIN_SERVICE_ID = Bundle.main.bundleIdentifier ?? "ai.mouka.app"
+let KEYCHAIN_SERVICE_ERROR_DOMAIN = "\(KEYCHAIN_SERVICE_ID).error"
 
 struct KeychainClient {
-    private let keychain: KeychainWrapper = .standard
+    private let keychain = Keychain(service: KEYCHAIN_SERVICE_ID)
 
-    @discardableResult
-    func set<V>(_ value: V, forKey key: KeychainKey) -> Bool {
-        if let valueAsInt = value as? Int {
-            return keychain.set(valueAsInt, forKey: key.keyedValue)
-        } else if let valueAsFloat = value as? Float {
-            return keychain.set(valueAsFloat, forKey: key.keyedValue)
-        } else if let valueAsDouble = value as? Double {
-            return keychain.set(valueAsDouble, forKey: key.keyedValue)
-        } else if let valueAsBool = value as? Bool {
-            return keychain.set(valueAsBool, forKey: key.keyedValue)
-        } else if let valueAsString = value as? String {
-            return keychain.set(valueAsString, forKey: key.keyedValue)
+    func set<V>(_ value: V, forKey key: KeychainKey) throws {
+        if let valueAsString = value as? String {
+            try keychain.set(valueAsString, key: key.keyedValue)
         } else if let valueAsData = value as? Data {
-            return keychain.set(valueAsData, forKey: key.keyedValue)
+            try keychain.set(valueAsData, key: key.keyedValue)
         } else {
-            assertionFailure("The type of \(V.self) is not supported")
-            return false
+            throw NSError(
+                domain: KEYCHAIN_SERVICE_ERROR_DOMAIN,
+                code: -99998,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to set value for key \(key.keyedValue). The type of \(V.self) is not supported"]
+            )
         }
     }
 
-    @discardableResult
-    func remove(forKey key: KeychainKey) -> Bool {
-        return keychain.removeObject(forKey: key.keyedValue)
+    func remove(forKey key: KeychainKey) throws {
+        try keychain.remove(key.keyedValue)
     }
 
-    func get<V>(type _: V.Type, forKey key: KeychainKey) -> V? {
-        if V.self == Int.self {
-            return keychain.integer(forKey: key.keyedValue) as? V
-        } else if V.self == Float.self {
-            return keychain.float(forKey: key.keyedValue) as? V
-        } else if V.self == Double.self {
-            return keychain.double(forKey: key.keyedValue) as? V
-        } else if V.self == Bool.self {
-            return keychain.bool(forKey: key.keyedValue) as? V
-        } else if V.self == String.self {
-            return keychain.string(forKey: key.keyedValue) as? V
+    func get<V>(_: V.Type, forKey key: KeychainKey) throws -> V {
+        if V.self == String.self {
+            let value = try keychain.getString(key.keyedValue)
+
+            if let value = value as? V {
+                return value
+            } else {
+                throw NSError(
+                    domain: KEYCHAIN_SERVICE_ERROR_DOMAIN,
+                    code: -99997,
+                    userInfo: [NSLocalizedDescriptionKey: "Failed to get value for key \(key.keyedValue). Value happens to be nil"]
+                )
+            }
         } else if V.self == Data.self {
-            return keychain.data(forKey: key.keyedValue) as? V
-        } else {
-            assertionFailure("The type of \(V.self) is not supported")
-            return nil
+            let value = try keychain.get(key.keyedValue)
+            if let value = value as? V {
+                return value
+            } else {
+                throw NSError(
+                    domain: KEYCHAIN_SERVICE_ERROR_DOMAIN,
+                    code: -99997,
+                    userInfo: [NSLocalizedDescriptionKey: "Failed to get value for key \(key.keyedValue). Value happens to be nil"]
+                )
+            }
         }
+
+        throw NSError(
+            domain: KEYCHAIN_SERVICE_ERROR_DOMAIN,
+            code: -99998,
+            userInfo: [NSLocalizedDescriptionKey: "Failed to get value for key \(key.keyedValue). The type of \(V.self) is not supported"]
+        )
     }
 }

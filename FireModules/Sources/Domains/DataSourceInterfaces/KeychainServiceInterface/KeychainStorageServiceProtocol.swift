@@ -1,23 +1,53 @@
-//
-//  KeychainStorageServiceProtocol.swift
-//
-//
-//  Created by Hien Tran on 23/02/2024.
-//
-
+import Dependencies
 import DomainEntities
+import Foundation
 
-public protocol KeychainServiceProtocol {
-    @discardableResult
-    func setCredentials(accessToken: String, refreshToken: String, idToken: String) throws -> CredentialsEntity
+public struct KeychainService {
+    public var setCredentials: @Sendable (_ accessToken: String, _ refreshToken: String, _ idToken: String) -> Result<CredentialsEntity, KeychainError>
+    public var getAccessToken: @Sendable () -> Result<String, KeychainError>
+    public var getRefreshToken: @Sendable () -> Result<String, KeychainError>
+    public var getIDToken: @Sendable () -> Result<String, KeychainError>
+    public var removeCredentials: @Sendable () -> Result<Void, KeychainError>
+    public var getCredentials: @Sendable () throws -> Result<CredentialsEntity, KeychainError>
 
-    func getAccessToken() throws -> String
+    public init(
+        setCredentials: @Sendable @escaping (_ accessToken: String, _ refreshToken: String, _ idToken: String) -> Result<CredentialsEntity, KeychainError>,
+        getAccessToken: @Sendable @escaping () -> Result<String, KeychainError>,
+        getRefreshToken: @Sendable @escaping () -> Result<String, KeychainError>,
+        getIDToken: @Sendable @escaping () -> Result<String, KeychainError>,
+        removeCredentials: @Sendable @escaping () -> Result<Void, KeychainError>,
+        getCredentials: @Sendable @escaping () -> Result<CredentialsEntity, KeychainError>
+    ) {
+        self.setCredentials = setCredentials
+        self.getAccessToken = getAccessToken
+        self.getRefreshToken = getRefreshToken
+        self.getIDToken = getIDToken
+        self.removeCredentials = removeCredentials
+        self.getCredentials = getCredentials
+    }
+}
 
-    func getRefreshToken() throws -> String
+public extension KeychainService {
+    static var nope: Self {
+        .init(
+            setCredentials: { _, _, _ in .success(CredentialsEntity(accessToken: "", refreshToken: "", idToken: "")) },
+            getAccessToken: { .success("") },
+            getRefreshToken: { .success("") },
+            getIDToken: { .success("") },
+            removeCredentials: { .success(()) },
+            getCredentials: { .success(CredentialsEntity(accessToken: "", refreshToken: "", idToken: "")) }
+        )
+    }
+}
 
-    func getIDToken() throws -> String
+public enum KeychainServiceKey: TestDependencyKey {
+    public static let testValue = KeychainService.nope
+    public static let previewValue = KeychainService.nope
+}
 
-    func removeCredentials() throws
-
-    func getCredentials() throws -> CredentialsEntity
+public extension DependencyValues {
+    var keychainService: KeychainService {
+        get { self[KeychainServiceKey.self] }
+        set { self[KeychainServiceKey.self] = newValue }
+    }
 }

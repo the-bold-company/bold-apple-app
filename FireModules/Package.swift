@@ -30,7 +30,7 @@ var package = Package(
         .package(url: "https://github.com/siteline/swiftui-introspect", exact: "1.2.0"),
         .package(url: "https://github.com/JohnSundell/Codextended.git", exact: "0.3.0"),
         .package(url: "https://github.com/johnpatrickmorgan/TCACoordinators.git", exact: "0.8.0"),
-        .package(url: "https://github.com/jrendel/SwiftKeychainWrapper.git", exact: "4.0.1"),
+        .package(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", exact: "4.2.2"),
 //        .package(url: "https://github.com/krzysztofzablocki/AutomaticSettings", exact: "1.2.0"),
         .package(url: "https://github.com/realm/realm-swift.git", exact: "10.47.0"),
         .package(url: "https://github.com/hmlongco/Factory.git", exact: "2.3.1"),
@@ -207,6 +207,7 @@ package.targets.append(contentsOf: [
             .combineMoya,
             .codextended,
             .combineExt,
+            .swiftDependencies,
         ]
     ),
     .infra(.currencyKit),
@@ -226,7 +227,7 @@ package.targets.append(contentsOf: [
     ),
     .infra(
         .keychainService,
-        thirdParties: [.keychainWrapper],
+        thirdParties: [.keychainAccess, .swiftDependencies],
         domainEntities: [.domainEntities],
         domainDataSources: [.keychainService]
     ),
@@ -554,7 +555,7 @@ extension Target.Dependency {
         case combineExt
         case overture
         case difference
-        case keychainWrapper
+        case keychainAccess
         case realm
         case automaticSettings
         case playbook
@@ -584,8 +585,8 @@ extension Target.Dependency {
                 return Target.Dependency.product(name: "Overture", package: "swift-overture")
             case .difference:
                 return Target.Dependency.product(name: "Difference", package: "difference")
-            case .keychainWrapper:
-                return Target.Dependency.product(name: "SwiftKeychainWrapper", package: "swiftkeychainwrapper")
+            case .keychainAccess:
+                return Target.Dependency.product(name: "KeychainAccess", package: "keychainaccess")
             case .realm:
                 return Target.Dependency.product(name: "RealmSwift", package: "realm-swift")
             case .automaticSettings:
