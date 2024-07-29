@@ -88,6 +88,9 @@ package.targets.append(contentsOf: [
             .authenticationFeature,
             .accountFeature,
         ],
+        dataSources: [
+            .keychainService,
+        ],
         thirdParties: [
             .composableArchitecture,
             .tcaCoordinator,
@@ -290,7 +293,8 @@ extension Target {
         dataSources: [Module.DataSource]? = nil,
         infras: [Module.Infra]? = nil,
         otherOrchestrators: [Module.Orchestrator]? = nil,
-        thirdParties: [Dependency.ThirdParty]? = nil
+        thirdParties: [Dependency.ThirdParty]? = nil,
+        others: [Dependency]? = nil
     ) -> Target {
         var dependencies = [Dependency]()
 
@@ -317,6 +321,10 @@ extension Target {
 
         if let thirdParties {
             dependencies.append(contentsOf: thirdParties.map(\.asDependency))
+        }
+
+        if let others {
+            dependencies.append(contentsOf: others)
         }
 
         return Target.target(

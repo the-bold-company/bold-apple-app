@@ -2,6 +2,7 @@
 import AuthenticationFeature
 import ComposableArchitecture
 import DomainEntities
+import KeychainServiceInterface
 
 @Reducer
 public struct RootCoordinator {
@@ -15,7 +16,7 @@ public struct RootCoordinator {
     public struct State: Equatable {
         var routes = StackState<Destination.State>()
 
-        public init(initialRoute: Destination.State? = .logIn(.init())) {
+        public init(initialRoute: Destination.State? = nil) {
             if let initialRoute {
                 routes.append(initialRoute)
             }
@@ -24,13 +25,23 @@ public struct RootCoordinator {
 
     public enum Action {
         case routes(StackActionOf<Destination>)
+        case view(ViewAction)
+
+        @CasePathable
+        public enum ViewAction {
+            case onAppear
+        }
     }
+
+    @Dependency(\.keychainService.getAccessToken) var getAccessToken
 
     public init() {}
 
     public var body: some ReducerOf<Self> {
         Reduce<State, Action> { state, action in
             switch action {
+            case let .view(viewAction):
+                return handleViewAction(viewAction, state: &state)
             case let .routes(.element(id, destinationAction)):
                 switch destinationAction {
                 case .home:
@@ -50,7 +61,20 @@ public struct RootCoordinator {
         .forEach(\.routes, action: \.routes)
     }
 
-    // MARK: - Authentication delegation
+    private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
+        switch action {
+        case .onAppear:
+            if getAccessToken().is(\.success) {
+                state.routes.removeAll()
+                state.routes.append(.home(.init()))
+            } else {
+                state.routes.removeAll()
+                state.routes.append(.logIn(.init()))
+            }
+
+            return .none
+        }
+    }
 
     private func handleLogInAction(_ action: LogInFeature.Action, id _: StackElementID, state: inout State) -> Effect<Action> {
         switch action {

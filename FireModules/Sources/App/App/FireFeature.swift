@@ -4,7 +4,7 @@ import SwiftUI
 import TCACoordinators
 
 public struct MoukaApp: View {
-    let store = Store(initialState: .init(initialRoute: .logIn(.init()))) {
+    let store = Store(initialState: .init()) {
         RootCoordinator()
     }
 

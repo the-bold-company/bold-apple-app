@@ -38,14 +38,17 @@ public struct RootCoordinatorView: View {
                 )
             }
         }
+        .task {
+            store.send(.view(.onAppear))
+        }
     }
 }
 
 #Preview {
     RootCoordinatorView(
-        store: Store(
-            initialState: .init()
-        ) { RootCoordinator() }
+        store: Store(initialState: .init()) {
+            RootCoordinator()
+        }
     )
 }
 
