@@ -12,7 +12,7 @@ public struct AccountViewPage: View {
     }
 
     struct ViewState: Equatable {
-        @BindingViewState var emoji: String
+        @BindingViewState var emoji: String?
         @BindingViewState var accountName: String
         @BindingViewState var balance: Decimal
         @BindingViewState var currency: Currency
@@ -87,7 +87,7 @@ public struct AccountViewPage: View {
                     Spacer()
 
                     MacButton.secondary(
-                        action: {},
+                        action: { viewStore.send(.view(.cancelButtonTapped)) },
                         label: { Text("Hủy") }
                     )
                     .frame(maxWidth: geometry.size.width / 4)

@@ -5,6 +5,7 @@ import Foundation
 public enum APIVersion {
     case v0
     case v1
+    case v1_1
 }
 
 public enum API {}
@@ -101,6 +102,57 @@ public extension API {
                 }
                 self.message = try decoder.decode("message")
                 self.error = code != nil
+                    ? try? Failure(from: decoder)
+                    : nil
+            }
+        }
+
+        public struct Failure: ServerError {
+            public let code: Int
+            public let message: String
+
+            public init(from decoder: Decoder) throws {
+                self.code = try decoder.decode("code")
+                self.message = try decoder.decode("message")
+            }
+        }
+    }
+}
+
+// MARK: API version 1.1
+
+public extension API {
+    enum v1_1 {
+        public struct Response<M: Decodable>: Decodable {
+            public let code: Int
+            public let data: M?
+            public let message: String
+            public let error: Failure?
+
+            private let SUCESS_CODE = 200
+
+            public var asResult: Result<M, Failure> {
+                if let data, error == nil {
+                    return Result<M, Failure>.success(data)
+                } else if let error {
+                    return Result<M, Failure>.failure(error)
+                }
+
+                fatalError("If it gets here, something is wrong")
+            }
+
+            public init(from decoder: any Decoder) throws {
+                self.code = try decoder.decode("code")
+
+                if M.self == EmptyDataResponse.self {
+                    self.data = EmptyDataResponse() as? M
+                } else if M.self == MessageOnlyResponse.self {
+                    self.data = try? MessageOnlyResponse(from: decoder) as? M
+                } else {
+                    self.data = try decoder.decodeIfPresent("data")
+                }
+                self.message = try decoder.decode("message")
+                self.error = code != SUCESS_CODE
                     ? try? Failure(from: decoder)
                     : nil
             }

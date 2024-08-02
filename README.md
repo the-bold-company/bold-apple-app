@@ -25,3 +25,11 @@ templates:
 - [fonts](./FireModules/Sources/Shared/CoreUI/CodeGen/Templates/FontTemplate.stencil)
 
 To generate assets files, simply run `swiftgen` from the root directory.
+
+## SwiftFormat
+
+Install **pre-commit**, run `pre-commit install`
+
+If you run into issue while commiting you code, like the one below. Just clear the catch by running `pre-commit clean` and `pre-commit install` again
+
+![alt text](image.png)

@@ -6,6 +6,7 @@ import Networking
 enum AccountsAPI {
     enum v1 {
         case createAccount(CreateAccountBody)
+        case getAccountList
     }
 }
 
@@ -16,7 +17,7 @@ extension AccountsAPI.v1: BaseTargetType {
 
     var path: String {
         switch self {
-        case .createAccount:
+        case .createAccount, .getAccountList:
             return "accounts"
         }
     }
@@ -25,6 +26,8 @@ extension AccountsAPI.v1: BaseTargetType {
         switch self {
         case .createAccount:
             return .post
+        case .getAccountList:
+            return .get
         }
     }
 
@@ -32,6 +35,8 @@ extension AccountsAPI.v1: BaseTargetType {
         switch self {
         case let .createAccount(body):
             return .requestJSONEncodable(body)
+        case .getAccountList:
+            return .requestPlain
         }
     }
 }

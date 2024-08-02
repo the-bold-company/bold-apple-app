@@ -6,7 +6,7 @@ import TCAExtensions
 @Reducer
 public struct AccountViewFeature {
     public struct State: Equatable {
-        @BindingState var emoji: String = ""
+        @BindingState var emoji: String?
         @BindingState var accountNameText: String = ""
         @BindingState var balance: Decimal = 0
         @BindingState var currency: Currency = .current
@@ -42,10 +42,11 @@ public struct AccountViewFeature {
         public enum LocalAction {}
     }
 
-    public init() {}
-
-    @Dependency(\.AccountUseCase.createAccount) var createAccount
+    @Dependency(\.dismiss) var dismiss
+    @Dependency(\.accountUseCase.createAccount) var createAccount
     @Dependency(\.mainQueue) var mainQueue
+
+    public init() {}
 
     public var body: some ReducerOf<Self> {
         BindingReducer()
@@ -65,7 +66,7 @@ public struct AccountViewFeature {
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
         case .cancelButtonTapped:
-            return .none
+            return .run { _ in await dismiss() }
         case .createButtonTapped:
             enum CancelId { case createAccount }
 

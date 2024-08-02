@@ -30,8 +30,8 @@ public extension AccountUseCase {
                             )
                         )
                         .mapToUseCaseLogic(
-                            success: { _ in CreateAccountResponse() },
-                            failure: { CreateAccountFailure(domainError: $0) }
+                            success: { .init(createdAccount: $0) },
+                            failure: { .init(domainError: $0) }
                         )
                 case let .creditCard(accountName, icon, balance, currency):
                     guard accountName.isValid else {
@@ -51,10 +51,18 @@ public extension AccountUseCase {
                             )
                         )
                         .mapToUseCaseLogic(
-                            success: { _ in CreateAccountResponse() },
-                            failure: { CreateAccountFailure(domainError: $0) }
+                            success: { .init(createdAccount: $0) },
+                            failure: { .init(domainError: $0) }
                         )
                 }
+            },
+            getAccountList: { _ in
+                return accountsAPIService
+                    .getAccountList()
+                    .mapToUseCaseLogic(
+                        success: { .init(accounts: $0) },
+                        failure: { .init(domainError: $0) }
+                    )
             }
         )
     }

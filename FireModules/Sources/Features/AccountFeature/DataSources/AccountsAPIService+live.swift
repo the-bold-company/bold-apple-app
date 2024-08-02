@@ -10,7 +10,16 @@ public extension AccountsAPIService {
                 Effect.publisher {
                     networkClient
                         .requestPublisher(.createAccount(data))
-                        .mapToResponse(AccountAPIResponse.self, apiVersion: .v1)
+                        .mapToResponse(AccountAPIResponse.self, apiVersion: .v1_1)
+                        .mapErrorToDomainError()
+                        .mapToResult()
+                }
+            },
+            getAccountList: {
+                Effect.publisher {
+                    networkClient
+                        .requestPublisher(.getAccountList)
+                        .mapToResponse([AccountAPIResponse].self, apiVersion: .v1_1)
                         .mapErrorToDomainError()
                         .mapToResult()
                 }

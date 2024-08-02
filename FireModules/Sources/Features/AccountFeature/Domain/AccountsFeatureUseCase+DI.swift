@@ -1,7 +1,7 @@
 import Dependencies
 
 public extension DependencyValues {
-    var AccountUseCase: AccountUseCase {
+    var accountUseCase: AccountUseCase {
         get { self[AccountUseCaseKey.self] }
         set { self[AccountUseCaseKey.self] = newValue }
     }

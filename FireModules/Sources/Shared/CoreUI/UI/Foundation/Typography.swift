@@ -18,6 +18,9 @@ public enum Typography {
     case bodyLargeBold
     case bodyDefault
     case bodyDefaultBold
+    case bodySmall
+    case bodySmallBold
+    case bodySmallMedium
     case linkLarge
     case linkDefault
 
@@ -25,11 +28,11 @@ public enum Typography {
         switch self {
         case .titleScreen, .titleSection, .titleSubsection, .titleBody,
              .bodyLargeBold, .bodyDefaultBold,
-             .linkLarge, .linkDefault:
+             .linkLarge, .linkDefault, .bodySmallBold:
             return FontFamily.Inter.semiBold
-        case .titleGroup:
+        case .titleGroup, .bodySmallMedium:
             return FontFamily.Inter.medium
-        case .bodyLarge, .bodyDefault, .titleSmall:
+        case .bodyLarge, .bodyDefault, .titleSmall, .bodySmall:
             return FontFamily.Inter.regular
         }
     }
@@ -48,7 +51,7 @@ public enum Typography {
             return 14
         case .bodyLarge, .bodyLargeBold, .linkLarge:
             return 16
-        case .titleSmall:
+        case .titleSmall, .bodySmall, .bodySmallBold, .bodySmallMedium:
             return 12
         }
     }
@@ -67,7 +70,7 @@ public enum Typography {
             return 20
         case .bodyDefault, .bodyDefaultBold, .linkDefault:
             return 22
-        case .titleSmall:
+        case .titleSmall, .bodySmall, .bodySmallBold, .bodySmallMedium:
             return 16
         }
     }
@@ -88,6 +91,8 @@ public enum Typography {
             return -0.005 // -0.5%
         case .bodyDefaultBold, .linkDefault, .titleSmall:
             return -0.00125 // -1.25%
+        default:
+            return -0.01
         }
     }
 

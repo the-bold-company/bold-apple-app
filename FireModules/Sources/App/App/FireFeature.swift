@@ -13,7 +13,7 @@ public struct MoukaApp: View {
     public var body: some View {
         #if os(macOS)
         RootCoordinatorView(store: store)
-            .frame(minWidth: 500, minHeight: 500) // Add this on the host app to constraint the minimum size of the app window on desktop
+            .frame(minWidth: 500, minHeight: 800) // Add this on the host app to constraint the minimum size of the app window on desktop
         #elseif os(iOS)
         CoordinatorView(
             store: Store(

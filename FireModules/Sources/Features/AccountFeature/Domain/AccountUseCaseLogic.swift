@@ -17,13 +17,13 @@ public extension AccountUseCaseLogic {
         public enum Input: Equatable {
             case bankAccount(
                 accountName: DefaultLengthConstrainedString,
-                icon: String,
+                icon: String?,
                 balance: FiatAccountBalance,
                 currency: Currency
             )
             case creditCard(
                 accountName: DefaultLengthConstrainedString,
-                icon: String,
+                icon: String?,
                 balance: FiatAccountBalance,
                 currency: Currency
             )
@@ -36,8 +36,59 @@ public extension AccountUseCaseLogic {
             }
         }
 
-        public struct Response: Equatable {
-            public init() {}
+        public struct Response {
+            let createdAccount: AccountAPIResponse
+            public init(createdAccount: AccountAPIResponse) {
+                self.createdAccount = createdAccount
+            }
+        }
+
+        @CasePathable
+        public enum Failure: LocalizedError, Equatable {
+            case genericError(DomainError)
+            case invalidInputs(Input)
+
+            public init(domainError: DomainError) {
+                switch domainError.errorCode {
+                default:
+                    self = .genericError(domainError)
+                }
+            }
+
+            public var errorDescription: String? {
+                switch self {
+                case let .genericError(error):
+                    return error.errorDescription
+                case let .invalidInputs(input):
+                    return "Input invalid: \(input)"
+                }
+            }
+
+            public var failureReason: String? {
+                switch self {
+                case let .genericError(error):
+                    return error.failureReason
+                case .invalidInputs:
+                    return "Invalid inputs"
+                }
+            }
+        }
+    }
+}
+
+public typealias GetAccountListInput = AccountUseCaseLogic.GetAccounts.Input
+public typealias GetAccountListResponse = AccountUseCaseLogic.GetAccounts.Response
+public typealias GetAccountListFailure = AccountUseCaseLogic.GetAccounts.Failure
+public typealias GetAccountListOutput = Result<GetAccountListResponse, GetAccountListFailure>
+public extension AccountUseCaseLogic {
+    enum GetAccounts: UseCaseRequirements {
+        public struct Input: Equatable {}
+
+        public struct Response {
+            let accounts: [AccountAPIResponse]
+            public init(accounts: [AccountAPIResponse]) {
+                self.accounts = accounts
+            }
         }
 
         @CasePathable
