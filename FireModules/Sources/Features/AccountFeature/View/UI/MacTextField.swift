@@ -2,7 +2,6 @@ import CoreUI
 import SwiftUI
 
 public struct MacTextField<Format: ParseableFormatStyle, FocusField: Hashable>: View where Format.FormatOutput == String {
-//    @Binding private var text: String
     private var focusedField: FocusState<FocusField?>.Binding
     private var fieldId: FocusField?
 
@@ -50,7 +49,28 @@ public struct MacTextField<Format: ParseableFormatStyle, FocusField: Hashable>: 
     ) where Format == String.FormatStyle.None {
         self.title = title
         self._value = text
-        self.format = .none()
+        self.format = .none
+        self.prompt = prompt
+        self.focusedField = focusedField
+        self.fieldId = fieldId
+        self.error = error
+        self.onEditingChanged = onEditingChanged ?? { _ in }
+        self.onCommit = onCommit ?? {}
+    }
+
+    public init(
+        title: String,
+        text: Binding<String?>,
+        prompt: String? = nil,
+        focusedField: FocusState<FocusField?>.Binding,
+        fieldId: FocusField?,
+        error: String? = nil,
+        onEditingChanged: ((Bool) -> Void)? = nil,
+        onCommit: (() -> Void)? = nil
+    ) where Format == String?.FormatStyle<String.FormatStyle.None> {
+        self.title = title
+        self._value = text
+        self.format = .optional
         self.prompt = prompt
         self.focusedField = focusedField
         self.fieldId = fieldId
@@ -95,28 +115,67 @@ public struct MacTextField<Format: ParseableFormatStyle, FocusField: Hashable>: 
     }
 }
 
-public struct StringParseStrategy: ParseStrategy {
-    public func parse(_ value: String) throws -> String {
-        return value
+public extension ParseableFormatStyle where Self == String.FormatStyle.None {
+    static var none: Self { .init() }
+}
+
+public extension ParseableFormatStyle where Self == String?.FormatStyle<String.FormatStyle.None> {
+    static var optional: Self { .init(formatter: .none) }
+}
+
+public extension ParseableFormatStyle where Self == Decimal?.FormatStyle<Decimal.FormatStyle.Currency> {
+    static func currency(code: String) -> Self {
+        .init(formatter: .currency(code: code))
     }
 }
 
 public extension String {
     enum FormatStyle {
         public struct None: ParseableFormatStyle {
-            public var parseStrategy: StringParseStrategy {
-                return StringParseStrategy()
-            }
+            public var parseStrategy: Strategy { Strategy() }
 
             public func format(_ value: String) -> String {
                 return value
+            }
+
+            public struct Strategy: ParseStrategy {
+                public func parse(_ value: String) throws -> String {
+                    return value
+                }
             }
         }
     }
 }
 
-public extension ParseableFormatStyle where Self == String.FormatStyle.None {
-    static func none() -> Self { .init() }
+public extension Optional {
+    struct FormatStyle<Format: ParseableFormatStyle>: ParseableFormatStyle where Format.FormatOutput == String, Format.FormatInput == Wrapped {
+        public var parseStrategy: Strategy<Format.Strategy> { Strategy(strategy: formatter.parseStrategy) }
+
+        private let formatter: Format
+
+        public init(formatter: Format) {
+            self.formatter = formatter
+        }
+
+        public func format(_ value: Format.FormatInput?) -> String {
+            guard let value else { return "" }
+
+            return formatter.format(value)
+        }
+
+        public struct Strategy<OutputStrategy: ParseStrategy>: ParseStrategy where OutputStrategy.ParseInput == String {
+            private let strategy: OutputStrategy
+
+            public init(strategy: OutputStrategy) {
+                self.strategy = strategy
+            }
+
+            public func parse(_ value: String) throws -> OutputStrategy.ParseOutput? {
+                guard !value.isEmpty else { return nil }
+                return try strategy.parse(value)
+            }
+        }
+    }
 }
 
 private struct Wrapper: View {

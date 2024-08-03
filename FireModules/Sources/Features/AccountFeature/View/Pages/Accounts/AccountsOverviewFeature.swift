@@ -30,7 +30,8 @@ public struct AccountsOverviewFeature {
 
         @CasePathable
         public enum ViewAction {
-            case createAccountManuallyButtonTapped
+            case manualBankAccountCreationTapped
+            case manualCreditAccountCreationTapped
             case onAppear
         }
 
@@ -73,8 +74,10 @@ public struct AccountsOverviewFeature {
 
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
-        case .createAccountManuallyButtonTapped:
+        case .manualBankAccountCreationTapped:
             state.destination = .createAccount(state.createAccount)
+            return .none.animation()
+        case .manualCreditAccountCreationTapped:
             return .none.animation()
         case .onAppear:
             enum CancelId { case getAccounts }

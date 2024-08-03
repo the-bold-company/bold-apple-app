@@ -21,19 +21,19 @@ public struct AccountsOverviewPage: View {
 
     public var body: some View {
         Expanded {
-            TwoThirdLayout(spacing: 24) {
-                accountList
-                accountOverview
-            }
-            .padding(.horizontal, 24)
-
             GeometryReader { geometry in
-                EmptyView()
+                VStack {}
                     .sheet(store: store.scope(state: \.$destination.createAccount, action: \.destination.createAccount)) {
                         AccountViewPage(store: $0)
                             .frame(width: max(geometry.size.width * 0.4, 400), height: max(geometry.size.height * 0.6, 700))
                     }
             }
+
+            TwoThirdLayout(spacing: 24) {
+                accountList
+                accountOverview
+            }
+            .padding(.horizontal, 24)
         }
         .navigationTitle("Tài khoản")
         .toolbar {
@@ -153,17 +153,17 @@ public struct AccountsOverviewPage: View {
         ToolbarItem(placement: .primaryAction) {
             Menu {
                 Menu("TK ngân hàng / Tiền mặt") {
-                    Button("Nhập tay") { withAnimation { isSlideOverPresented = true } }
-                    Button("Nhập tự động từ email") { store.send(.view(.createAccountManuallyButtonTapped)) }
-                    Button("Tải lên CSV") { /* self.day = "Wednesday" */ }
+                    Button("Nhập tay") { store.send(.view(.manualBankAccountCreationTapped)) }
+                    Button("Nhập tự động từ email") { /* This feature is under constructure */ }
+                    Button("Tải lên CSV") { withAnimation { isSlideOverPresented = true } }
                 }
 
                 Color.clear.frame(width: 1, height: 1)
 
                 Menu("Tài khoản tín dụng") {
-                    Button("Nhập tay") { /* self.day = "Monday" */ }
-                    Button("Nhập tự động từ email") { /* self.day = "Tuesday" */ }
-                    Button("Tải lên CSV") { /* self.day = "Wednesday" */ }
+                    Button("Nhập tay") { store.send(.view(.manualCreditAccountCreationTapped)) }
+                    Button("Nhập tự động từ email") { /* This feature is under constructure */ }
+                    Button("Tải lên CSV") { /* This feature is under constructure */ }
                 }
             } label: {
                 Label("Tạo tài khoản", systemImage: "creditcard")
