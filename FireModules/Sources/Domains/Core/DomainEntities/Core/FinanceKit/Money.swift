@@ -5,7 +5,7 @@ public typealias MoneyComposition = (amount: Decimal, currencyCode: String, symb
 public struct Money: Value {
     public let value: Result<MoneyComposition, CurrencyValidationError>
 
-    public let amount: Decimal
+    public private(set) var amount: Decimal
     public let currency: Currency
 
     public var compositions: MoneyComposition {
@@ -44,9 +44,8 @@ public struct Money: Value {
         return converter.convert(self, to: targetCurrency, at: rate)
     }
 
-    public func changeCurrency(to currency: Currency) -> Money {
-        guard self.currency != currency else { return self }
-        return Money(amount, currency: currency)
+    public mutating func updateAmount(_ newAmount: Decimal) {
+        amount = newAmount
     }
 }
 

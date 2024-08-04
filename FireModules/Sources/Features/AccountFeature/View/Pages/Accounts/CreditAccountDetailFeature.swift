@@ -14,11 +14,7 @@ public struct CreditAccountDetailFeature {
         @BindingState var paymenyDueDate: Int?
         @BindingState var currency: Currency = .current
 
-        var accountName: DefaultLengthConstrainedString {
-            .init(accountNameText)
-        }
-
-        var createAccountProgress: LoadingProgress<AccountAPIResponse, CreateAccountFailure> = .idle
+        var createAccountProgress: LoadingProgress<CreditAccount, CreateAccountFailure> = .idle
 
         public init() {}
     }
@@ -37,7 +33,7 @@ public struct CreditAccountDetailFeature {
 
         @CasePathable
         public enum DelegateAction {
-            case accountCreateSuccessfully(CreateAccountResponse)
+            case accountCreateSuccessfully(CreditAccount)
             case failedToCreateAccount(CreateAccountFailure)
         }
 
@@ -74,29 +70,42 @@ public struct CreditAccountDetailFeature {
             enum CancelId { case createAccount }
 
             state.createAccountProgress = .loading
+            let accountName = state.accountNameText
+            let icon = state.emoji
+            let balance = state.balance
+            let limit = state.limit
+            let currency = state.currency
+            let paymenyDueDate = state.paymenyDueDate
+            let statementDate = state.statementDate
 
-            return .none
+            return createAccount(
+                .creditCard(
+                    accountName: DefaultLengthConstrainedString(accountName),
+                    icon: icon,
+                    balance: Money(balance, currency: currency),
+                    limit: limit != nil ? Money(limit!, currency: currency) : nil,
+                    paymentDueDate: paymenyDueDate,
+                    statementDate: statementDate
+                )
+            )
+            .debounce(id: CancelId.createAccount, for: .milliseconds(200), scheduler: mainQueue)
+            .map(
+                success: {
+                    guard let createdAccount = $0[case: \.creditAccount] else {
+                        return Action.delegate(.failedToCreateAccount(.init(domainError: .custom(description: "Account created successfully but failed to read the response"))))
+                    }
 
-//            return createAccount(
-//                .creditCard(
-//                    accountName: state.accountName,
-//                    icon: state.emoji,
-//                    balance: .init(state.balance),
-//                    currency: state.currency
-//                )
-//            )
-//            .debounce(id: CancelId.createAccount, for: .milliseconds(200), scheduler: mainQueue)
-//            .map(
-//                success: { Action.delegate(.accountCreateSuccessfully($0)) },
-//                failure: { Action.delegate(.failedToCreateAccount($0)) }
-//            )
+                    return Action.delegate(.accountCreateSuccessfully(createdAccount))
+                },
+                failure: { Action.delegate(.failedToCreateAccount($0)) }
+            )
         }
     }
 
     private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
         switch action {
-        case let .accountCreateSuccessfully(res):
-            state.createAccountProgress = .loaded(.success(res.createdAccount))
+        case let .accountCreateSuccessfully(createdAccount):
+            state.createAccountProgress = .loaded(.success(createdAccount))
             return .none
         case let .failedToCreateAccount(reason):
             state.createAccountProgress = .loaded(.failure(reason))

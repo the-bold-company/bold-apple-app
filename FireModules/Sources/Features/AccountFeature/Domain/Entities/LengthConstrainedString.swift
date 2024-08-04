@@ -38,6 +38,10 @@ public struct DefaultLengthConstrainedString: Value, Equatable {
     public init(_ initialValue: String) {
         self.valueString = initialValue
     }
+
+    public mutating func update(_ newValue: String) {
+        valueString = newValue
+    }
 }
 
 @CasePathable

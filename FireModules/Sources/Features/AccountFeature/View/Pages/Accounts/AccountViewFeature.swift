@@ -72,12 +72,16 @@ public struct AccountViewFeature {
 
             state.createAccountProgress = .loading
 
+            let accountName = state.accountName
+            let emoji = state.emoji
+            let balance = state.balance
+            let currency = state.currency
+
             return createAccount(
                 .bankAccount(
-                    accountName: state.accountName,
-                    icon: state.emoji,
-                    balance: .init(state.balance),
-                    currency: state.currency
+                    accountName: accountName,
+                    icon: emoji,
+                    balance: .init(balance, currency: currency)
                 )
             )
             .debounce(id: CancelId.createAccount, for: .milliseconds(200), scheduler: mainQueue)

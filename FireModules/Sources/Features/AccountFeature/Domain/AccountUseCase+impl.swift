@@ -1,5 +1,6 @@
 import ComposableArchitecture
 import Dependencies
+import Foundation
 
 public extension AccountUseCase {
     static func live() -> Self { common }
@@ -9,11 +10,19 @@ public extension AccountUseCase {
     private static var common: Self {
         @Dependency(\.accountsAPIService) var accountsAPIService
 
+        @Sendable func unexpectedError(_ description: String) -> NSError {
+            NSError(
+                domain: "AccountUseCaseError",
+                code: -99999,
+                userInfo: [NSLocalizedDescriptionKey: description]
+            )
+        }
+
         return AccountUseCase(
             createAccount: { input in
                 switch input {
-                case let .bankAccount(accountName, icon, balance, currency):
-                    guard accountName.isValid else {
+                case let .bankAccount(accountName, icon, balance):
+                    guard accountName.isValid, balance.isValid else {
                         return Effect.send(.failure(.invalidInputs(input)))
                     }
 
@@ -23,36 +32,68 @@ public extension AccountUseCase {
                                 name: accountName.getOrCrash(),
                                 type: .bank,
                                 icon: icon,
-                                currencyId: currency.currencyCodeString,
+                                currencyId: balance.getOrCrash().currencyCode,
                                 cells: [
-                                    AccountBalanceCell(value: balance.getOrCrash()).eraseToAnyAccountCell,
+                                    .init(BankAccountBalanceCell(value: balance.getOrCrash().amount)),
                                 ]
                             )
                         )
-                        .mapToUseCaseLogic(
-                            success: { .init(createdAccount: $0) },
-                            failure: { .init(domainError: $0) }
+                        .mapResult(
+                            success: { res -> CreateAccountOutput in
+                                guard let createdAccount = res.asBankAccountEntity else {
+                                    return .failure(.genericError(
+                                        unexpectedError("Failed to convert to `BankAccount` entity due to unknow issue. Check the json response").eraseToDomainError()
+                                    ))
+                                }
+
+                                return .success(.bankAccount(createdAccount))
+                            },
+                            failure: { .failure(.init(domainError: $0)) }
                         )
-                case let .creditCard(accountName, icon, balance, currency):
-                    guard accountName.isValid else {
+                case let .creditCard(data):
+                    guard data.accountName.isValid, data.balance.isValid else {
                         return Effect.send(.failure(.invalidInputs(input)))
+                    }
+
+                    var cells: [CreateAccountBody.Cell] = [.init(CreditAccountBalanceCell(value: data.balance.getOrCrash().amount))]
+
+                    if let limit = data.limit {
+                        if !limit.isValid {
+                            return Effect.send(.failure(.invalidInputs(input)))
+                        }
+
+                        cells.append(.init(CreditAccountLimitCell(value: limit.amount)))
+                    }
+
+                    if let statementDate = data.statementDate {
+                        cells.append(.init(CreditAccountStatementClosingDateCell(value: statementDate)))
+                    }
+
+                    if let paymentDueDate = data.paymentDueDate {
+                        cells.append(.init(CreditAccountPaymentDueDateCell(value: paymentDueDate)))
                     }
 
                     return accountsAPIService
                         .createAccount(
                             CreateAccountBody(
-                                name: accountName.getOrCrash(),
+                                name: data.accountName.getOrCrash(),
                                 type: .credit,
-                                icon: icon,
-                                currencyId: currency.currencyCodeString,
-                                cells: [
-                                    AccountBalanceCell(value: balance.getOrCrash()).eraseToAnyAccountCell,
-                                ]
+                                icon: data.icon,
+                                currencyId: data.balance.getOrCrash().currencyCode,
+                                cells: cells
                             )
                         )
-                        .mapToUseCaseLogic(
-                            success: { .init(createdAccount: $0) },
-                            failure: { .init(domainError: $0) }
+                        .mapResult(
+                            success: { res -> CreateAccountOutput in
+                                guard let createdAccount = res.asCreditAccountEntity else {
+                                    return .failure(.genericError(
+                                        unexpectedError("Failed to convert to `BankAccount` entity due to unknow issue. Check the json response").eraseToDomainError()
+                                    ))
+                                }
+
+                                return .success(.creditAccount(createdAccount))
+                            },
+                            failure: { .failure(.init(domainError: $0)) }
                         )
                 }
             },
@@ -60,7 +101,7 @@ public extension AccountUseCase {
                 return accountsAPIService
                     .getAccountList()
                     .mapToUseCaseLogic(
-                        success: { .init(accounts: $0) },
+                        success: { .init(accounts: $0.compactMap { acc in acc.asAnyAccount }) },
                         failure: { .init(domainError: $0) }
                     )
             }

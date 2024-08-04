@@ -251,7 +251,7 @@ extension BindingViewStore<CreditAccountDetailFeature.State> {
             statementDate: self.$statementDate,
             paymentDueDate: self.$statementDate,
             currency: self.$currency,
-            isFormValid: self.accountName.isValid,
+            isFormValid: false,
             accountCreationInProgress: self.createAccountProgress.is(\.loading)
         )
         // swiftformat:enable redundantSelf

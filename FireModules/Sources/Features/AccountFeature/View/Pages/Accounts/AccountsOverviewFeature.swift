@@ -8,13 +8,16 @@ import TCAExtensions
 public struct AccountsOverviewFeature {
     @Reducer(state: .equatable)
     public enum Destination {
-        case createAccount(AccountViewFeature)
+        case createBankAccount(AccountViewFeature)
+        case createCreditAccount(CreditAccountDetailFeature)
     }
 
     public struct State: Equatable {
         @PresentationState var destination: Destination.State?
 
-        var getAccountsStatus: LoadingProgress<[AccountAPIResponse], GetAccountListFailure> = .idle
+        var getAccountsStatus: LoadingProgress<[AnyAccount], GetAccountListFailure> = .idle
+
+//        var accounts: [AccountType : IdentifiedArrayOf<AccountAPIResponse>] = [:]
 
         var createAccount = AccountViewFeature.State()
 
@@ -37,7 +40,7 @@ public struct AccountsOverviewFeature {
 
         @CasePathable
         public enum DelegateAction {
-            case getAccountSuccessfully([AccountAPIResponse])
+            case getAccountSuccessfully([AnyAccount])
             case failedToGetAccounts(GetAccountListFailure)
         }
 
@@ -75,9 +78,10 @@ public struct AccountsOverviewFeature {
     private func handleViewAction(_ action: Action.ViewAction, state: inout State) -> Effect<Action> {
         switch action {
         case .manualBankAccountCreationTapped:
-            state.destination = .createAccount(state.createAccount)
+            state.destination = .createBankAccount(state.createAccount)
             return .none.animation()
         case .manualCreditAccountCreationTapped:
+            state.destination = .createCreditAccount(.init())
             return .none.animation()
         case .onAppear:
             enum CancelId { case getAccounts }

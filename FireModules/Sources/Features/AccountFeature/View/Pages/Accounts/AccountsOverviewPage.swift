@@ -8,7 +8,7 @@ public struct AccountsOverviewPage: View {
     @State private var isSlideOverPresented = false
 
     struct ViewState: Equatable {
-        var getAccountsStatus: LoadingProgress<[AccountAPIResponse], GetAccountListFailure>
+        var getAccountsStatus: LoadingProgress<[AnyAccount], GetAccountListFailure>
     }
 
     let store: StoreOf<AccountsOverviewFeature>
@@ -21,13 +21,7 @@ public struct AccountsOverviewPage: View {
 
     public var body: some View {
         Expanded {
-            GeometryReader { geometry in
-                VStack {}
-                    .sheet(store: store.scope(state: \.$destination.createAccount, action: \.destination.createAccount)) {
-                        AccountViewPage(store: $0)
-                            .frame(width: max(geometry.size.width * 0.4, 400), height: max(geometry.size.height * 0.6, 700))
-                    }
-            }
+            navigationLinks
 
             TwoThirdLayout(spacing: 24) {
                 accountList
@@ -148,6 +142,29 @@ public struct AccountsOverviewPage: View {
         }
     }
 
+    @ViewBuilder
+    private var navigationLinks: some View {
+        GeometryReader { geometry in
+            VStack {}
+                .hidden()
+                .accessibilityHidden(true)
+                .sheet(store: store.scope(state: \.$destination.createBankAccount, action: \.destination.createBankAccount)) {
+                    AccountViewPage(store: $0)
+                        .frame(
+                            width: max(geometry.size.width * 0.4, 400),
+                            height: max(geometry.size.height * 0.6, 700)
+                        )
+                }
+                .sheet(store: store.scope(state: \.$destination.createCreditAccount, action: \.destination.createCreditAccount)) {
+                    CreditAccountDetailPage(store: $0)
+                        .frame(
+                            width: max(geometry.size.width * 0.4, 400),
+                            height: max(geometry.size.height * 0.6, 700)
+                        )
+                }
+        }
+    }
+
     @ToolbarContentBuilder
     private var toolbarView: some ToolbarContent {
         ToolbarItem(placement: .primaryAction) {
@@ -215,7 +232,7 @@ private struct _SideBarLabelStyle: LabelStyle {
 }
 
 struct AccountOverviewItem: View {
-    let account: AccountAPIResponse
+    let account: AnyAccount
 
     var body: some View {
         HStack {
@@ -229,7 +246,7 @@ struct AccountOverviewItem: View {
                 }
 
             Spacing(size: .size16)
-            Text(account.name).typography(.bodySmall)
+            Text(account.name.valueString).typography(.bodySmall)
             Spacing(size: .size8)
             Button {
                 //

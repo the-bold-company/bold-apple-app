@@ -18,14 +18,15 @@ public extension AccountUseCaseLogic {
             case bankAccount(
                 accountName: DefaultLengthConstrainedString,
                 icon: String?,
-                balance: FiatAccountBalance,
-                currency: Currency
+                balance: Money
             )
             case creditCard(
                 accountName: DefaultLengthConstrainedString,
                 icon: String?,
-                balance: FiatAccountBalance,
-                currency: Currency
+                balance: Money,
+                limit: Money?,
+                paymentDueDate: Int?,
+                statementDate: Int?
             )
 
             var identity: String {
@@ -36,11 +37,10 @@ public extension AccountUseCaseLogic {
             }
         }
 
-        public struct Response {
-            let createdAccount: AccountAPIResponse
-            public init(createdAccount: AccountAPIResponse) {
-                self.createdAccount = createdAccount
-            }
+        @CasePathable
+        public enum Response {
+            case bankAccount(BankAccount)
+            case creditAccount(CreditAccount)
         }
 
         @CasePathable
@@ -85,8 +85,9 @@ public extension AccountUseCaseLogic {
         public struct Input: Equatable {}
 
         public struct Response {
-            let accounts: [AccountAPIResponse]
-            public init(accounts: [AccountAPIResponse]) {
+            let accounts: [AnyAccount]
+
+            public init(accounts: [AnyAccount]) {
                 self.accounts = accounts
             }
         }
