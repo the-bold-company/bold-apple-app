@@ -24,7 +24,7 @@ public extension AccountUseCaseLogic {
                 accountName: DefaultLengthConstrainedString,
                 icon: String?,
                 balance: Money,
-                limit: Money?,
+                limit: Money,
                 paymentDueDate: Int?,
                 statementDate: Int?
             )

@@ -29,10 +29,14 @@ public struct Money: Value {
 
     /// - returns: Formatted rounded amount with currency symbol.
     public var formattedString: String {
-        let formatter = NumberFormatter.currency
-        formatter.locale = currency.currencyLocale
-        formatter.currencySymbol = currency.symbol
-        return formatter.string(from: amount.asDecimalNumber) ?? ""
+        // Old format API, keep here fore future reference
+        // let formatter = NumberFormatter.currency
+        // formatter.locale = currency.currencyLocale
+        // formatter.currencySymbol = currency.symbol
+        // return formatter.string(from: amount.asDecimalNumber) ?? ""
+
+        let formatter = Decimal.FormatStyle.Currency.currency(code: currency.currencyCodeString)
+        return formatter.format(amount)
     }
 
     /// Converts and returns a new `Money` in the given currency with a new amount.

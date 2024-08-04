@@ -8,7 +8,10 @@ public struct AccountsOverviewPage: View {
     @State private var isSlideOverPresented = false
 
     struct ViewState: Equatable {
-        var getAccountsStatus: LoadingProgress<[AnyAccount], GetAccountListFailure>
+//        var getAccountsStatus: LoadingProgress<[AnyAccount], GetAccountListFailure>
+
+        var isLoadingAccounts: Bool
+        var accounts: IdentifiedArrayOf<AnyAccount>
     }
 
     let store: StoreOf<AccountsOverviewFeature>
@@ -41,36 +44,36 @@ public struct AccountsOverviewPage: View {
     @ViewBuilder
     private var accountList: some View {
         Expanded {
-            IfCaseLet(
-                enum: viewStore.getAccountsStatus,
-                casePath: \.loaded
-            ) { result in
-                switch result {
-                case let .success(accs):
-                    List {
-                        Spacing(height: .size24)
-                            .listRowSeparator(.hidden)
-                            .listSectionSeparator(.hidden)
+//            IfCaseLet(
+//                enum: viewStore.getAccountsStatus,
+//                casePath: \.loaded
+//            ) { result in
+//                switch result {
+//                case let .success(accs):
+            List {
+                Spacing(height: .size24)
+                    .listRowSeparator(.hidden)
+                    .listSectionSeparator(.hidden)
 
-                        Section {
-                            LazyVStack {
-                                ForEach(accs, id: \.id) { item in
-                                    AccountOverviewItem(account: item)
-                                }
-                                .listRowBackground(Color.white)
-                                .listRowSeparator(.hidden)
-                            }
-                            .listRowInsets(.horizontal(-8))
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.white)
-                            )
-                            .listRowSeparator(.hidden)
-                            //                            .padding(.horizontal, 0)
-                        } header: {
-                            Text("TÀI KHOẢN NGÂN HÀNG / TIỀN MẶT")
+                Section {
+                    LazyVStack {
+                        ForEach(viewStore.accounts, id: \.id) { item in
+                            AccountOverviewItem(account: item)
                         }
-                        .listSectionSeparator(.hidden)
+                        .listRowBackground(Color.white)
+                        .listRowSeparator(.hidden)
+                    }
+                    .listRowInsets(.horizontal(-8))
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.white)
+                    )
+                    .listRowSeparator(.hidden)
+                    //                            .padding(.horizontal, 0)
+                } header: {
+                    Text("TÀI KHOẢN NGÂN HÀNG / TIỀN MẶT")
+                }
+                .listSectionSeparator(.hidden)
 
 //                        Section{
 //                            accounts
@@ -92,19 +95,19 @@ public struct AccountsOverviewPage: View {
 //                        }
 //                        .listSectionSeparator(.hidden)
 //                        .padding()
-                    }
-                    .listStyle(.plain)
-                    .scrollContentBackground(.hidden)
-                    .background(Color.clear)
-                    .scrollIndicators(.never, axes: .vertical)
-                    //                .padding(.vertical, 24)
-                    .refreshable {
-                        //                     await store.loadStats()
-                    }
-                case let .failure(error):
-                    Text(error.localizedDescription)
-                }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
+            .scrollIndicators(.never, axes: .vertical)
+            //                .padding(.vertical, 24)
+            .refreshable {
+                //                     await store.loadStats()
+            }
+//                case let .failure(error):
+//                    Text(error.localizedDescription)
+//                }
+//            }
 //        orElse: {
 //                List {
 //                    Text("There's nothing here")
@@ -211,7 +214,9 @@ extension BindingViewStore<AccountsOverviewFeature.State> {
     var viewState: AccountsOverviewPage.ViewState {
         // swiftformat:disable redundantSelf
         .init(
-            getAccountsStatus: self.getAccountsStatus
+            isLoadingAccounts: self.getAccountsStatus.is(\.loading),
+            accounts: self.accounts
+//            getAccountsStatus: self.getAccountsStatus
         )
         // swiftformat:enable redundantSelf
     }
@@ -269,7 +274,7 @@ struct AccountOverviewItem: View {
             Spacer()
 
             VStack(alignment: .trailing) {
-                Text("50,000 ₫").typography(.bodySmallMedium)
+                Text("\(account.balance)").typography(.bodySmallMedium)
                 Spacing(size: .size12)
                 Text("▲0.04%")
                     .foregroundColor(Color.coreui.matureGreen)
@@ -307,7 +312,7 @@ private let ACCESS_TOKEN = "eyJraWQiOiJQcVFzbE9vSmFZRVd5dno2YlwvbnV0Y0dMakZYcDBP
             )
         }
     )
-    .frame(minWidth: 800)
+    .frame(width: 800, height: 600)
     .preferredColorScheme(.light)
 }
 

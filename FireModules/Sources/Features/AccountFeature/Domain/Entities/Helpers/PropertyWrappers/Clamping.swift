@@ -23,7 +23,7 @@
 /// [Swift Evolution Proposal example](https://github.com/apple/swift-evolution/blob/master/proposals/0258-property-wrappers.md#clamping-a-value-within-bounds)
 /// [NSHisper article](https://nshipster.com/propertywrapper/)
 @propertyWrapper
-public struct Clamping<Value: Comparable> {
+public struct Clamping<Value: Comparable>: Equatable {
     var value: Value
     let range: ClosedRange<Value>
 
@@ -36,17 +36,15 @@ public struct Clamping<Value: Comparable> {
         get { value }
         set { value = range.clamp(newValue) }
     }
+
+    public static func == (lhs: Clamping<Value>, rhs: Clamping<Value>) -> Bool {
+        return lhs.value == rhs.value
+    }
 }
 
 extension Clamping: Comparable {
     public static func < (lhs: Clamping<Value>, rhs: Clamping<Value>) -> Bool {
         return lhs.value < rhs.value
-    }
-}
-
-extension Clamping: Equatable {
-    public static func == (lhs: Clamping<Value>, rhs: Clamping<Value>) -> Bool {
-        return lhs.value == rhs.value
     }
 }
 

@@ -51,13 +51,13 @@ public extension CreateAccountBody.Cell {
 
     init(_ cell: CreditAccountStatementClosingDateCell) {
         self.name = cell.name
-        self.value = .int(cell.value)
+        self.value = .number(Decimal(cell.value))
         self.title = cell.title
     }
 
     init(_ cell: CreditAccountPaymentDueDateCell) {
         self.name = cell.name
-        self.value = .int(cell.value)
+        self.value = .number(Decimal(cell.value))
         self.title = cell.title
     }
 }

@@ -11,7 +11,7 @@ public struct AccountViewFeature {
         @BindingState var balance: Decimal = 0
         @BindingState var currency: Currency = .current
 
-        var createAccountProgress: LoadingProgress<String, CreateAccountFailure> = .idle
+        var createAccountProgress: LoadingProgress<BankAccount, CreateAccountFailure> = .idle
 
         var accountName: DefaultLengthConstrainedString {
             .init(accountNameText)
@@ -34,7 +34,7 @@ public struct AccountViewFeature {
 
         @CasePathable
         public enum DelegateAction {
-            case accountCreateSuccessfully
+            case accountCreateSuccessfully(BankAccount)
             case failedToCreateAccount(CreateAccountFailure)
         }
 
@@ -86,7 +86,14 @@ public struct AccountViewFeature {
             )
             .debounce(id: CancelId.createAccount, for: .milliseconds(200), scheduler: mainQueue)
             .map(
-                success: { _ in Action.delegate(.accountCreateSuccessfully) },
+                success: { success in
+                    guard let createdAccount = success[case: \.bankAccount] else {
+                        return Action.delegate(.failedToCreateAccount(.init(domainError: .custom(description: "Account created successfully but failed to read the response"))))
+                    }
+
+                    return Action.delegate(.accountCreateSuccessfully(createdAccount))
+
+                },
                 failure: { Action.delegate(.failedToCreateAccount($0)) }
             )
         }
@@ -94,9 +101,9 @@ public struct AccountViewFeature {
 
     private func handleDelegateAction(_ action: Action.DelegateAction, state: inout State) -> Effect<Action> {
         switch action {
-        case .accountCreateSuccessfully:
-            state.createAccountProgress = .loaded(.success(""))
-            return .none
+        case let .accountCreateSuccessfully(createdAccount):
+            state.createAccountProgress = .loaded(.success(createdAccount))
+            return .run { _ in await dismiss() }.animation()
         case let .failedToCreateAccount(reason):
             state.createAccountProgress = .loaded(.failure(reason))
             return .none

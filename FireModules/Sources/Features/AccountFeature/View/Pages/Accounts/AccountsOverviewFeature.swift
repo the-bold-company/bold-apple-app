@@ -17,7 +17,7 @@ public struct AccountsOverviewFeature {
 
         var getAccountsStatus: LoadingProgress<[AnyAccount], GetAccountListFailure> = .idle
 
-//        var accounts: [AccountType : IdentifiedArrayOf<AccountAPIResponse>] = [:]
+        var accounts: IdentifiedArrayOf<AnyAccount> = []
 
         var createAccount = AccountViewFeature.State()
 
@@ -68,7 +68,9 @@ public struct AccountsOverviewFeature {
                 return handleViewAction(viewAction, state: &state)
             case let .delegate(delegateAction):
                 return handleDelegateAction(delegateAction, state: &state)
-            case .destination, .binding:
+            case let .destination(destinationAction):
+                return handleDestinationDelegation(destinationAction, state: &state)
+            case .binding:
                 return .none
             }
         }
@@ -101,9 +103,25 @@ public struct AccountsOverviewFeature {
         switch action {
         case let .getAccountSuccessfully(accounts):
             state.getAccountsStatus = .loaded(.success(accounts))
+            state.accounts = .init(uniqueElements: accounts)
             return .none
         case let .failedToGetAccounts(error):
             state.getAccountsStatus = .loaded(.failure(error))
+            return .none
+        }
+    }
+
+    private func handleDestinationDelegation(_ action: PresentationAction<AccountsOverviewFeature.Destination.Action>, state: inout State) -> Effect<Action> {
+        switch action {
+        case .dismiss:
+            return .none
+        case let .presented(.createCreditAccount(.delegate(.accountCreateSuccessfully(createdAccount)))):
+            state.accounts.append(AnyAccount(createdAccount))
+            return .none
+        case let .presented(.createBankAccount(.delegate(.accountCreateSuccessfully(createdAccount)))):
+            state.accounts.append(AnyAccount(createdAccount))
+            return .none
+        default:
             return .none
         }
     }

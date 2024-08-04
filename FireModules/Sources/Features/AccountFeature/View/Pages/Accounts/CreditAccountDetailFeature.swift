@@ -9,7 +9,7 @@ public struct CreditAccountDetailFeature {
         @BindingState var emoji: String?
         @BindingState var accountNameText: String = ""
         @BindingState var balance: Decimal = 0
-        @BindingState var limit: Decimal?
+        @BindingState var limit: Decimal = 0
         @BindingState var statementDate: Int?
         @BindingState var paymenyDueDate: Int?
         @BindingState var currency: Currency = .current
@@ -83,15 +83,15 @@ public struct CreditAccountDetailFeature {
                     accountName: DefaultLengthConstrainedString(accountName),
                     icon: icon,
                     balance: Money(balance, currency: currency),
-                    limit: limit != nil ? Money(limit!, currency: currency) : nil,
+                    limit: Money(limit, currency: currency),
                     paymentDueDate: paymenyDueDate,
                     statementDate: statementDate
                 )
             )
             .debounce(id: CancelId.createAccount, for: .milliseconds(200), scheduler: mainQueue)
             .map(
-                success: {
-                    guard let createdAccount = $0[case: \.creditAccount] else {
+                success: { success in
+                    guard let createdAccount = success[case: \.creditAccount] else {
                         return Action.delegate(.failedToCreateAccount(.init(domainError: .custom(description: "Account created successfully but failed to read the response"))))
                     }
 
@@ -106,7 +106,7 @@ public struct CreditAccountDetailFeature {
         switch action {
         case let .accountCreateSuccessfully(createdAccount):
             state.createAccountProgress = .loaded(.success(createdAccount))
-            return .none
+            return .run { _ in await dismiss() }.animation()
         case let .failedToCreateAccount(reason):
             state.createAccountProgress = .loaded(.failure(reason))
             return .none

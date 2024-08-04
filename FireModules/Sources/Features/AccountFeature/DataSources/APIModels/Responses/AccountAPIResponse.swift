@@ -82,9 +82,10 @@ public extension AccountAPIResponse.Cell {
     }
 
     var asCreditAccountStatementClosingDateCell: CreditAccountStatementClosingDateCell? {
-        guard let number = value[case: \.int] else { return nil }
+        guard let number = value[case: \.number] else { return nil }
 
-        let cell = CreditAccountStatementClosingDateCell(value: number)
+        let numberAsInt = NSDecimalNumber(decimal: number).intValue
+        let cell = CreditAccountStatementClosingDateCell(value: numberAsInt)
 
         if cell.name == name, cell.title == title {
             return cell
@@ -94,9 +95,10 @@ public extension AccountAPIResponse.Cell {
     }
 
     var asCreditAccountPaymentDueDateCell: CreditAccountPaymentDueDateCell? {
-        guard let number = value[case: \.int] else { return nil }
+        guard let number = value[case: \.number] else { return nil }
 
-        let cell = CreditAccountPaymentDueDateCell(value: number)
+        let numberAsInt = NSDecimalNumber(decimal: number).intValue
+        let cell = CreditAccountPaymentDueDateCell(value: numberAsInt)
 
         if cell.name == name, cell.title == title {
             return cell
@@ -130,7 +132,7 @@ public extension AccountAPIResponse {
 
     var asCreditAccountEntity: CreditAccount? {
         guard let accountType = AccountType(rawValue: type),
-              accountType == .bank
+              accountType == .credit
         else { return nil }
 
         var balanceCell: CreditAccountBalanceCell?
@@ -150,7 +152,7 @@ public extension AccountAPIResponse {
             }
         }
 
-        guard let balanceCell, let statementClosingDateCell, let paymentDueDateCell
+        guard let balanceCell, let statementClosingDateCell, let paymentDueDateCell, let limitCell
         else { return nil }
 
         return CreditAccount(
@@ -161,7 +163,7 @@ public extension AccountAPIResponse {
             icon: icon,
             userId: Id(userId),
             balance: Money(balanceCell.value, codeString: currencyId),
-            limit: limitCell == nil ? nil : Money(limitCell!.value, codeString: currencyId),
+            limit: Money(limitCell.value, codeString: currencyId),
             paymentDueDate: paymentDueDateCell.value,
             statementDate: statementClosingDateCell.value
         )

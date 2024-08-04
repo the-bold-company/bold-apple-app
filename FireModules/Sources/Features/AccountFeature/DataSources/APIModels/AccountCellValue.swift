@@ -6,7 +6,6 @@ public enum AccountCellValue: Codable, Equatable {
     case boolean(Bool)
     case number(Decimal)
     case string(String)
-    case int(Int)
 }
 
 public extension AccountCellValue {
@@ -18,19 +17,8 @@ public extension AccountCellValue {
             let boolValue: Bool = try decoder.decode("value")
             self = .boolean(boolValue)
         case "NumberType":
-            if let numberValue: Decimal = try? decoder.decode("value") {
-                self = .number(numberValue)
-            } else if let numberValue: Int = try? decoder.decode("value") {
-                self = .int(numberValue)
-            } else {
-                throw NSError(
-                    domain: "AccountCellValueError",
-                    code: -999_999,
-                    userInfo: [
-                        NSLocalizedDescriptionKey: "Cannot parse value of type \(valueType)",
-                    ]
-                )
-            }
+            let numberValue: Decimal = try decoder.decode("value")
+            self = .number(numberValue)
         case "StringType":
             let stringValue: String = try decoder.decode("value")
             self = .string(stringValue)
@@ -56,9 +44,6 @@ public extension AccountCellValue {
         case let .string(string):
             try encoder.encode("StringType", for: "valueType")
             try encoder.encode(string, for: "value")
-        case let .int(interger):
-            try encoder.encode("NumberType", for: "valueType")
-            try encoder.encode(interger, for: "value")
         }
     }
 }

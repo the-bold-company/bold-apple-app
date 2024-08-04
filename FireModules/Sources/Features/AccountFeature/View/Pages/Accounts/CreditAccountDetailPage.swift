@@ -29,7 +29,7 @@ public struct CreditAccountDetailPage: View {
         @BindingViewState var emoji: String?
         @BindingViewState var accountName: String
         @BindingViewState var balance: Decimal
-        @BindingViewState var limit: Decimal?
+        @BindingViewState var limit: Decimal
         @BindingViewState var statementDate: Int?
         @BindingViewState var paymentDueDate: Int?
         @BindingViewState var currency: Currency
@@ -39,6 +39,7 @@ public struct CreditAccountDetailPage: View {
 
     let store: StoreOf<CreditAccountDetailFeature>
     @ObservedObject var viewStore: ViewStore<ViewState, CreditAccountDetailFeature.Action>
+    @State private var explainationPopover: Popover? = nil
 
     @Dependency(\.date.now) var today
 
@@ -50,10 +51,6 @@ public struct CreditAccountDetailPage: View {
         self.store = store
         self.viewStore = ViewStore(store, observe: \.viewState)
     }
-
-    @State private var statementDate: Int = 1
-    @State private var paymentDueDate: Int = 1
-    @State private var explainationPopover: Popover? = nil
 
     public var body: some View {
         GeometryReader { geometry in
@@ -76,7 +73,7 @@ public struct CreditAccountDetailPage: View {
                     Section {
                         MacTextField(
                             title: "Tổng hạn mức",
-                            value: viewStore.$balance,
+                            value: viewStore.$limit,
                             format: .currency(code: viewStore.currency.currencyCodeString),
                             prompt: "Default = 0",
                             focusedField: $focusedField,
@@ -117,7 +114,7 @@ public struct CreditAccountDetailPage: View {
                     }
 
                     Section {
-                        Picker(selection: $statementDate) {
+                        Picker(selection: viewStore.$statementDate) {
                             pickerContent()
                         } label: {
                             HStack(spacing: 4) {
@@ -149,7 +146,7 @@ public struct CreditAccountDetailPage: View {
                             }
                         }
 
-                        Picker(selection: $paymentDueDate) {
+                        Picker(selection: viewStore.$paymentDueDate) {
                             pickerContent()
                         } label: {
                             HStack(spacing: 4) {
@@ -194,13 +191,15 @@ public struct CreditAccountDetailPage: View {
         }
     }
 
+    @ViewBuilder
     private func pickerContent() -> some View {
+        Text("  ").tag(Int?.none)
         ForEach(1 ..< 32) { day in
             Group {
                 Text("\(day) hằng tháng ")
                     + Text(day == todayDate ? "(Hôm nay)" : "")
                     .foregroundColor(Color(hex: 0x9CA3AF))
-            }.tag(day)
+            }.tag(Optional(day))
         }
     }
 
@@ -249,9 +248,9 @@ extension BindingViewStore<CreditAccountDetailFeature.State> {
             balance: self.$balance,
             limit: self.$limit,
             statementDate: self.$statementDate,
-            paymentDueDate: self.$statementDate,
+            paymentDueDate: self.$paymenyDueDate,
             currency: self.$currency,
-            isFormValid: false,
+            isFormValid: true,
             accountCreationInProgress: self.createAccountProgress.is(\.loading)
         )
         // swiftformat:enable redundantSelf

@@ -55,15 +55,10 @@ public extension AccountUseCase {
                         return Effect.send(.failure(.invalidInputs(input)))
                     }
 
-                    var cells: [CreateAccountBody.Cell] = [.init(CreditAccountBalanceCell(value: data.balance.getOrCrash().amount))]
-
-                    if let limit = data.limit {
-                        if !limit.isValid {
-                            return Effect.send(.failure(.invalidInputs(input)))
-                        }
-
-                        cells.append(.init(CreditAccountLimitCell(value: limit.amount)))
-                    }
+                    var cells: [CreateAccountBody.Cell] = [
+                        .init(CreditAccountBalanceCell(value: data.balance.getOrCrash().amount)),
+                        .init(CreditAccountLimitCell(value: data.limit.getOrCrash().amount)),
+                    ]
 
                     if let statementDate = data.statementDate {
                         cells.append(.init(CreditAccountStatementClosingDateCell(value: statementDate)))
