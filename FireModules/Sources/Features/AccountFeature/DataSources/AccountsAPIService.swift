@@ -24,10 +24,10 @@ public struct AccountsAPIService {
 public enum AccountsAPIServiceKey: DependencyKey {
     public static let liveValue = AccountsAPIService.live
 
-//    public static let previewValue = AccountsAPIService.local(
-//        createAccountMockURL: .local(backward: 6).appendingPathComponent("mock/account-management/v1/accounts/create/response.json"),
-//        getAccountListURL: .local(backward: 6).appendingPathComponent("mock/account-management/v1/accounts/getAccountList/response.json")
-//    )
+    public static let previewValue = AccountsAPIService.local(
+        createAccountMockURL: .local(backward: 6).appendingPathComponent("mock/account-management/v1/accounts/create/response.json"),
+        getAccountListURL: .local(backward: 6).appendingPathComponent("mock/account-management/v1/accounts/getAccountList/response.json")
+    )
 
     public static let testValue = AccountsAPIService(
         createAccount: unimplemented("\(Self.self).logIn"),
