@@ -7,8 +7,12 @@ public struct TransactionsOverviewFeature {
         public init() {}
     }
 
-    public enum Action {}
+    public enum Action: BindableAction {
+        case binding(BindingAction<State>)
+    }
+
     public init() {}
+
     public var reducer: some ReducerOf<Self> {
         EmptyReducer()
     }

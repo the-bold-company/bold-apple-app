@@ -13,9 +13,13 @@ struct Expanded<Child>: View where Child: View {
     }
 
     var body: some View {
-        ZStack {
-            color
-            child()
-        }
+        ContainerRelativeShape()
+            .fill(color)
+            .overlay { child() }
+
+//        ZStack {
+//            color
+//            child()
+//        }
     }
 }

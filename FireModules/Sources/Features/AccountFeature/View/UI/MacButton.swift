@@ -49,31 +49,36 @@ public struct MacButton<Label>: View where Label: View {
         .init(type: .tertiary, disabled: disabled, loading: loading, action: action, label: label)
     }
 
+    public static func bordered(
+        disabled: Bool = false,
+        loading: Bool = false,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping () -> Label
+    ) -> Self {
+        .init(type: .bordered, disabled: disabled, loading: loading, action: action, label: label)
+    }
+
+    public static func black(
+        disabled: Bool = false,
+        loading: Bool = false,
+        action: @escaping () -> Void,
+        @ViewBuilder label: @escaping () -> Label
+    ) -> Self {
+        .init(type: .black, disabled: disabled, loading: loading, action: action, label: label)
+    }
+
     public var body: some View {
         Button(action: action) {
-            HStack {
-                HStack {
-                    Spacer()
-                    Rectangle()
-                        .frame(width: 0, height: 0)
-                }
-                .frame(idealWidth: .infinity)
-
-                label()
-                    .layoutPriority(1000)
-
-                HStack {
-                    if type != .tertiary, loading, !disabled {
+            label()
+                .if(type != .tertiary && loading && !disabled) {
+                    $0.overlay(alignment: .topTrailing) {
+//                        if loading {
                         ProgressView()
                             .controlSize(.small)
+                            .offset(x: 20)
+//                        }
                     }
-                    Spacer()
-                    Rectangle()
-                        .frame(width: 0, height: 0)
                 }
-                .frame(idealWidth: .infinity)
-            }
-            .frame(maxWidth: .infinity)
         }
         .buttonStyle(_MacButtonStyle(type, disabled: loading || disabled))
     }
@@ -91,8 +96,8 @@ private struct _MacButtonStyle: ButtonStyle {
 
     public func makeBody(configuration: Self.Configuration) -> some View {
         configuration.label
-            .padding(.symetric(horizontal: 14, vertical: 8))
-            .font(.custom(FontFamily.Inter.semiBold, size: 12))
+            .padding(buttonType.padding)
+            .font(buttonType.font)
             .foregroundColor(disabled
                 ? buttonType.disabledForegroundColor
                 : buttonType.foregroundColor
@@ -106,7 +111,7 @@ private struct _MacButtonStyle: ButtonStyle {
                         : buttonType.defaultBackgroundColor
                     )
             )
-            .if(buttonType == .secondary) {
+            .if(buttonType == .secondary || buttonType == .bordered) {
                 $0.overlay {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(
@@ -124,6 +129,12 @@ private struct _MacButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
             .onHover { isHovered = $0 }
             .disabled(disabled)
+    }
+}
+
+public extension View {
+    func macButtonStyle(_ type: MoukaButtonType = .primary, disabled: Bool = false) -> some View {
+        buttonStyle(_MacButtonStyle(type, disabled: disabled))
     }
 }
 
