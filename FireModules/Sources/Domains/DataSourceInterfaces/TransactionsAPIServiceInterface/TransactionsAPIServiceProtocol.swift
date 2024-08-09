@@ -7,7 +7,7 @@ public protocol TransactionsAPIServiceProtocol {
         amount: Decimal,
         destinationFundId: UUID?,
         description: String?,
-        type: TransactionType
+        type: TransactionEntityType
     ) async throws -> TransactionEntity
 
     func getTransactionLists() async throws -> [TransactionEntity]

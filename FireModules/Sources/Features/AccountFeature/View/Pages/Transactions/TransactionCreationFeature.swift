@@ -4,7 +4,7 @@ import SwiftUI
 import TCAExtensions
 
 @CasePathable
-enum TransactionType: Equatable {
+enum TransactionEntityType: Equatable {
     case moneyIn
     case moneyOut
     case internalTransfer
@@ -13,7 +13,7 @@ enum TransactionType: Equatable {
 @Reducer
 public struct TransactionCreationFeature {
     public struct State: Equatable {
-        @BindingState var transactionType: TransactionType = .moneyIn
+        @BindingState var transactionType: TransactionEntityType = .moneyIn
         @BindingState var amount: Decimal = 0
         @BindingState var date: Date
         @BindingState var category: Id = MoneyInCategory.undefined.id

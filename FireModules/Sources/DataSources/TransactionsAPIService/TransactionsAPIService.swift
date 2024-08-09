@@ -13,7 +13,7 @@ public struct TransactionsAPIService: TransactionsAPIServiceProtocol {
         amount: Decimal,
         destinationFundId: UUID?,
         description: String?,
-        type: TransactionType
+        type: TransactionEntityType
     ) async throws -> TransactionEntity {
         return try await client
             .requestPublisher(.record(

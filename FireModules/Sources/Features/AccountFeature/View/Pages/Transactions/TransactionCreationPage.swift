@@ -11,7 +11,7 @@ public struct TransactionCreationPage: View {
     }
 
     struct ViewState: Equatable {
-        @BindingViewState var currentTransactionType: TransactionType
+        @BindingViewState var currentTransactionType: TransactionEntityType
         @BindingViewState var amount: Decimal
         @BindingViewState var date: Date
         @BindingViewState var category: Id
@@ -30,9 +30,9 @@ public struct TransactionCreationPage: View {
     public var body: some View {
         VStack {
             Picker("Transaction type", selection: viewStore.$currentTransactionType) {
-                _constructSegmentLabel("Tiền vào", systemImage: "plus.circle").tag(TransactionType.moneyIn)
-                _constructSegmentLabel("Tiền ra", systemImage: "minus.circle").tag(TransactionType.moneyOut)
-                _constructSegmentLabel("Chuyển nội bộ", systemImage: "arrow.left.arrow.right.circle").tag(TransactionType.internalTransfer)
+                _constructSegmentLabel("Tiền vào", systemImage: "plus.circle").tag(TransactionEntityType.moneyIn)
+                _constructSegmentLabel("Tiền ra", systemImage: "minus.circle").tag(TransactionEntityType.moneyOut)
+                _constructSegmentLabel("Chuyển nội bộ", systemImage: "arrow.left.arrow.right.circle").tag(TransactionEntityType.internalTransfer)
             }
             .labelsHidden()
             .pickerStyle(.segmented)

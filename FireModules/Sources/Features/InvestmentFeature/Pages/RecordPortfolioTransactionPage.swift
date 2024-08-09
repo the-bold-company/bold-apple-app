@@ -11,7 +11,7 @@ public struct RecordPortfolioTransactionPage: View {
         @BindingViewState var tradeTime: Date
         @BindingViewState var amount: Int
         @BindingViewState var notes: String
-        let transactionType: TransactionType
+        let transactionType: TransactionEntityType
         let isFormValid: Bool
         let loadingState: LoadingState<InvestmentTransactionEntity>
     }

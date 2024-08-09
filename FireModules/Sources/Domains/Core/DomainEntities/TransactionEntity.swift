@@ -13,7 +13,7 @@ public struct TransactionEntity: Equatable, Identifiable, Hashable {
     public let sourceFundId: UUID
     public let destinationFundId: UUID?
     public let amount: Decimal
-    public let type: TransactionType
+    public let type: TransactionEntityType
     public let userId: UUID
     public let currency: String
     public let description: String?
@@ -34,7 +34,7 @@ public struct TransactionEntity: Equatable, Identifiable, Hashable {
         self.sourceFundId = UUID(uuidString: sourceFundId)! // swiftlint:disable:this force_unwrapping
         self.destinationFundId = UUID(uuidString: destinationFundId ?? "")
         self.amount = amount
-        self.type = TransactionType(rawValue: type)! // swiftlint:disable:this force_unwrapping
+        self.type = TransactionEntityType(rawValue: type)! // swiftlint:disable:this force_unwrapping
         self.userId = UUID(uuidString: userId)! // swiftlint:disable:this force_unwrapping
         self.currency = currency
         self.description = description
@@ -57,7 +57,7 @@ public extension TransactionEntity {
     }
 }
 
-public enum TransactionType: String {
+public enum TransactionEntityType: String {
     case `inout`
     case `in`
     case out

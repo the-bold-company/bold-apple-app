@@ -4,7 +4,7 @@ import Factory
 import InvestmentUseCase
 import SwiftUI
 
-enum TransactionType: String {
+enum TransactionEntityType: String {
     case deposit
     case withdraw
 }
@@ -17,7 +17,7 @@ public struct RecordPortfolioTransactionReducer {
         @BindingState var tradeTime: Date
         @BindingState var amount: Int = 0
         @BindingState var notes = ""
-        var transactionType: TransactionType = .deposit
+        var transactionType: TransactionEntityType = .deposit
         var submissionState: LoadingState<InvestmentTransactionEntity> = .idle
 
         /// Because `CurrencyField` use Int to process the decimal digits, we need to convert it to the actual Decimal amount. TODO: - Fix this
