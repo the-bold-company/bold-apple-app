@@ -17,6 +17,7 @@ public struct TransactionsOverviewPage: View {
 
     public var body: some View {
         Expanded(color: Color(hex: 0xF2F4F7)) {
+            navigationLinks
             Expanded {
                 VStack {
                     HStack {
@@ -36,8 +37,6 @@ public struct TransactionsOverviewPage: View {
                             Image(systemName: "plus")
                         }
                     }
-                    .frame(width: .infinity)
-//                    .background(.yellow)
 
                     Divider()
                     Spacing(size: .size12)
@@ -53,7 +52,7 @@ public struct TransactionsOverviewPage: View {
                                 Text("Chưa có giao dịch nào").typography(.bodyDefaultBold)
 
                                 MacButton.black {
-                                    //
+                                    viewStore.send(.view(.addTransactionButtonTapped))
                                 } label: {
                                     Label("Nhập giao dịch", systemImage: "plus")
                                 }
@@ -70,6 +69,27 @@ public struct TransactionsOverviewPage: View {
             .padding(24)
         }
         .navigationTitle("Tài khoản")
+    }
+
+    @ViewBuilder
+    private var navigationLinks: some View {
+        GeometryReader { geometry in
+            VStack {}
+                .hidden()
+                .accessibilityHidden(true)
+                .sheet(
+                    store: store.scope(
+                        state: \.$destination.createNewTransaction,
+                        action: \.destination.createNewTransaction
+                    )
+                ) {
+                    TransactionCreationPage(store: $0)
+                        .frame(
+                            width: max(geometry.size.width * 0.4, 400),
+                            height: max(geometry.size.height * 0.6, 700)
+                        )
+                }
+        }
     }
 }
 

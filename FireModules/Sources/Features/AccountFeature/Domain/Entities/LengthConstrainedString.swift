@@ -67,3 +67,15 @@ public struct LengthConstrainedValidator: Validator {
         return .valid(input)
     }
 }
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(_ value: LengthConstrainedString) {
+        appendInterpolation(value.value[case: \.success] ?? "")
+    }
+}
+
+public extension String.StringInterpolation {
+    mutating func appendInterpolation(_ value: DefaultLengthConstrainedString) {
+        appendInterpolation(value.value[case: \.success] ?? "")
+    }
+}

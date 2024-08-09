@@ -263,5 +263,5 @@ extension BindingViewStore<CreditAccountDetailFeature.State> {
             CreditAccountDetailFeature()
         })
     )
-    .frame(height: 500)
+    .frame(height: 600)
 }
