@@ -27,3 +27,15 @@ public struct TransactionAPIResponse: Decodable {
         self.userId = try decoder.decode("userId")
     }
 }
+
+public extension TransactionAPIResponse {
+    var asTransactionEntity: Transaction {
+        return Transaction(
+            id: Id(id),
+            type: type,
+            amount: Money(amount, currency: .current), // This is hacky but the currency value is not available at this point, so we have to use a abitrary currency, and then convert it to account currency in the reducer
+            name: DefaultLengthConstrainedString(name),
+            note: DefaultLengthConstrainedString(note)
+        )
+    }
+}

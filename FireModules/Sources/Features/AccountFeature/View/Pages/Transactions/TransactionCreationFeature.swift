@@ -17,10 +17,14 @@ public struct TransactionCreationFeature {
         @BindingState var amount: Decimal = 0
         @BindingState var date: Date
         @BindingState var category: Id = MoneyInCategory.undefined.id
+        @BindingState var referenceAccount: AnyAccount?
         @BindingState var transactionName: String = ""
+        @BindingState var notes: String = ""
 
         var moneyInCategories: LoadingProgress<IdentifiedArrayOf<MoneyInCategory>, GetCategoriesFailure> = .idle
         var moneyOutCategories: LoadingProgress<IdentifiedArrayOf<MoneyOutCategory>, GetCategoriesFailure> = .idle
+        var accountList: LoadingProgress<IdentifiedArrayOf<AnyAccount>, GetAccountListFailure> = .idle
+        var createTransactionProgress: LoadingProgress<Transaction, CreateTransactionFailure> = .idle
 
         public init() {
             @Dependency(\.date.now) var currentDate
@@ -39,6 +43,8 @@ public struct TransactionCreationFeature {
             case onAppear
             case selectCategory(Id)
             case createNewCategory
+            case createTransactionButtonTapped
+            case cancelButtonTapped
         }
 
         @CasePathable
@@ -47,14 +53,21 @@ public struct TransactionCreationFeature {
             case failedToFetchMoneyInCategories(GetCategoriesFailure)
             case moneyOutCategoriesFetched(IdentifiedArrayOf<MoneyOutCategory>)
             case failedToFetchMoneyOutCategories(GetCategoriesFailure)
+            case accountListFetched(IdentifiedArrayOf<AnyAccount>)
+            case failedToFetchAccountList(GetAccountListFailure)
+            case transactionCreated(Transaction)
+            case failedToCreateTransaction(CreateTransactionFailure)
         }
 
         @CasePathable
         public enum LocalAction {}
     }
 
+    @Dependency(\.accountUseCase.getAccountList) var getAccountList
     @Dependency(\.categoryUseCase) var categoryUseCase
+    @Dependency(\.transactionUseCase.createTransaction) var createTransaction
     @Dependency(\.mainQueue) var mainQueue
+    @Dependency(\.dismiss) var dismiss
 
     public init() {}
 
@@ -79,6 +92,7 @@ public struct TransactionCreationFeature {
         switch action {
         case .onAppear:
             return .merge(
+                fetchAccountList(state: &state),
                 loadMoneyInCategories(state: &state),
                 loadMoneyOutCategories(state: &state)
             )
@@ -87,6 +101,40 @@ public struct TransactionCreationFeature {
             return .none
         case .createNewCategory:
             return .none
+        case .createTransactionButtonTapped:
+            enum CancelId { case createTransaction }
+
+            guard let account = state.referenceAccount else { return .none }
+
+            state.createTransactionProgress = .loading
+
+            let amount = state.amount
+            let date = state.date
+            let categoryId = state.category
+            let name = state.transactionName
+            let note = state.notes
+
+            return createTransaction(.moneyIn(
+                amount: Money(amount, currency: account.currency),
+                accountId: account.id,
+                timestamp: Timestamp(date),
+                categoryId: categoryId,
+                name: DefaultLengthConstrainedString(name),
+                note: DefaultLengthConstrainedString(note)
+            ))
+            .debounce(id: CancelId.createTransaction, for: .milliseconds(300), scheduler: mainQueue)
+            .map(
+                success: {
+                    guard let transaction = $0[case: \.moneyIn] else {
+                        return .delegate(.failedToCreateTransaction(.init(domainError: .custom(description: "Transaction created successfully but failed to read the response"))))
+                    }
+
+                    return .delegate(.transactionCreated(transaction))
+                },
+                failure: { .delegate(.failedToCreateTransaction($0)) }
+            )
+        case .cancelButtonTapped:
+            return .run { _ in await dismiss() }
         }
     }
 
@@ -103,6 +151,19 @@ public struct TransactionCreationFeature {
             return .none
         case let .failedToFetchMoneyOutCategories(error):
             state.moneyOutCategories = .loaded(.failure(error))
+            return .none
+        case let .transactionCreated(transaction):
+            state.createTransactionProgress = .loaded(.success(transaction))
+            return .run { _ in await dismiss() }
+        case let .failedToCreateTransaction(error):
+            state.createTransactionProgress = .loaded(.failure(error))
+            return .none
+        case let .accountListFetched(accounts):
+            state.referenceAccount = accounts.first!
+            state.accountList = .loaded(.success(accounts))
+            return .none
+        case let .failedToFetchAccountList(error):
+            state.accountList = .loaded(.failure(error))
             return .none
         }
     }
@@ -135,6 +196,18 @@ public struct TransactionCreationFeature {
             .map(
                 success: { .delegate(.moneyOutCategoriesFetched($0[case: \.moneyOut]!)) },
                 failure: { .delegate(.failedToFetchMoneyOutCategories($0)) }
+            )
+    }
+
+    private func fetchAccountList(state: inout State) -> Effect<Action> {
+        enum CancelId { case getAccountList }
+
+        state.accountList = .loading
+        return getAccountList(.init())
+            .debounce(id: CancelId.getAccountList, for: .milliseconds(300), scheduler: mainQueue)
+            .map(
+                success: { .delegate(.accountListFetched($0.accounts)) },
+                failure: { .delegate(.failedToFetchAccountList($0)) }
             )
     }
 }

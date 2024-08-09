@@ -8,9 +8,14 @@ public protocol BaseAccount {
     var type: AccountType { get }
     var icon: String? { get }
     var balance: Money { get }
+    var currency: Currency { get }
 }
 
-public struct AnyAccount: BaseAccount, Equatable, Identifiable {
+public extension BaseAccount {
+    var currency: Currency { balance.currency }
+}
+
+public struct AnyAccount: BaseAccount, Equatable, Identifiable, Hashable {
     public typealias ID = Id
 
     let base: BaseAccount
@@ -33,6 +38,10 @@ public struct AnyAccount: BaseAccount, Equatable, Identifiable {
             && lhs.status == rhs.status
             && lhs.icon == rhs.icon
             && lhs.balance == rhs.balance
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 

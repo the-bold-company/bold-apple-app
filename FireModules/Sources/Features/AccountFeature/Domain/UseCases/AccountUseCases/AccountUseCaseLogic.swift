@@ -85,10 +85,10 @@ public extension AccountUseCaseLogic {
         public struct Input: Equatable {}
 
         public struct Response {
-            let accounts: [AnyAccount]
+            let accounts: IdentifiedArrayOf<AnyAccount>
 
             public init(accounts: [AnyAccount]) {
-                self.accounts = accounts
+                self.accounts = IdentifiedArrayOf(uniqueElements: accounts)
             }
         }
 

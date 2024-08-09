@@ -15,7 +15,7 @@ public struct AccountsOverviewFeature {
     public struct State: Equatable {
         @PresentationState var destination: Destination.State?
 
-        var getAccountsStatus: LoadingProgress<[AnyAccount], GetAccountListFailure> = .idle
+        var getAccountsStatus: LoadingProgress<IdentifiedArrayOf<AnyAccount>, GetAccountListFailure> = .idle
 
         var accounts: IdentifiedArrayOf<AnyAccount> = []
 
@@ -40,7 +40,7 @@ public struct AccountsOverviewFeature {
 
         @CasePathable
         public enum DelegateAction {
-            case getAccountSuccessfully([AnyAccount])
+            case getAccountSuccessfully(IdentifiedArrayOf<AnyAccount>)
             case failedToGetAccounts(GetAccountListFailure)
         }
 

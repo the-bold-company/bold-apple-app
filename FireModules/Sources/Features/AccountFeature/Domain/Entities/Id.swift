@@ -19,6 +19,14 @@ public struct Id: Value, Equatable, Identifiable, Hashable {
         self.idString = idString
     }
 
+    public init?(_ nullableString: String?) {
+        if let nullableString {
+            self.idString = nullableString
+        } else {
+            return nil
+        }
+    }
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(idString)
     }

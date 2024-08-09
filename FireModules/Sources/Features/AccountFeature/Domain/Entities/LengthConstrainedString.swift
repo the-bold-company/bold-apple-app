@@ -39,6 +39,14 @@ public struct DefaultLengthConstrainedString: Value, Equatable {
         self.valueString = initialValue
     }
 
+    public init?(_ nullableValue: String?) {
+        if let nullableValue {
+            self.init(nullableValue)
+        } else {
+            return nil
+        }
+    }
+
     public mutating func update(_ newValue: String) {
         valueString = newValue
     }

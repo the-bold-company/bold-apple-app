@@ -9,7 +9,7 @@ enum TransactionsAPI {
             type: TransactionType,
             amount: Decimal,
             accountId: String,
-            date: Int,
+            date: TimeInterval,
             categoryId: String?,
             name: String?,
             note: String?

@@ -16,7 +16,11 @@ public struct TransactionCreationPage: View {
         @BindingViewState var date: Date
         @BindingViewState var category: Id
         @BindingViewState var transactionName: String
+        @BindingViewState var notes: String
+        @BindingViewState var selectedAccount: AnyAccount?
+        var accountList: LoadingProgress<IdentifiedArrayOf<AnyAccount>, GetAccountListFailure>
         var moneyInCategories: LoadingProgress<IdentifiedArrayOf<MoneyInCategory>, GetCategoriesFailure>
+        var createTransactionProgress: LoadingProgress<Transaction, CreateTransactionFailure>
     }
 
     let store: StoreOf<TransactionCreationFeature>
@@ -61,33 +65,35 @@ public struct TransactionCreationPage: View {
     private var moneyInForm: some View {
         MacForm {
             Section {
-                MacTextField(
-                    title: "Số tiền *",
-                    value: viewStore.$amount,
-                    format: .currency(code: "VND" /* viewStore.currency.currencyCodeString */ ),
-                    prompt: "Nhập số tiền",
-                    focusedField: $focusedField,
-                    fieldId: .amount
-                )
+                IfCaseLet2(
+                    enum: viewStore.accountList,
+                    casePath1: \.loaded.success,
+                    content1: { accounts in
+                        MacTextField(
+                            title: "Số tiền *",
+                            value: viewStore.$amount,
+                            format: .currency(code: viewStore.selectedAccount?.currency.currencyCodeString ?? Currency.current.currencyCodeString
+                            ),
+                            prompt: "Nhập số tiền",
+                            focusedField: $focusedField,
+                            fieldId: .amount
+                        )
 
-                MacPicker(
-                    title: "Tài khoản",
-                    selection: .constant("")
-                ) {
-                    ForEach(
-                        [
-                            "Thẻ Timo - 1253",
-                            "Tiền lẻ trong ví",
-                            "Thẻ VPBank Shopee - 2028",
-                        ],
-                        id: \.self,
-                        content: { acc in
-                            Text(acc)
-                                .font(.custom(FontFamily.Inter.medium, size: 12))
-                                .tag(acc)
+                        MacPicker(
+                            title: "Tài khoản",
+                            selection: viewStore.$selectedAccount
+                        ) {
+                            ForEach(accounts, id: \.self) { acc in
+                                Text("\(acc.name)")
+                                    .font(.custom(FontFamily.Inter.medium, size: 12))
+                                    .tag(Optional(acc))
+                            }
                         }
-                    )
-                }
+                    },
+                    casePath2: \.loading,
+                    content2: { accountsDependentInputPlaceholder },
+                    orElse: { accountsDependentInputPlaceholder }
+                )
 
                 DatePicker("Ngày ", selection: viewStore.$date, displayedComponents: [.date])
 
@@ -356,12 +362,22 @@ public struct TransactionCreationPage: View {
     }
 
     @ViewBuilder
+    private var accountsDependentInputPlaceholder: some View {
+        LabeledContent("Số tiền *") {
+            ProgressView().controlSize(.mini)
+        }
+        LabeledContent("Tài khoản") {
+            ProgressView().controlSize(.mini)
+        }
+    }
+
+    @ViewBuilder
     private var actionButtons: some View {
         HStack {
             Spacer()
 
             MacButton.secondary(
-                action: { /* viewStore.send(.view(.cancelButtonTapped)) */ },
+                action: { viewStore.send(.view(.cancelButtonTapped)) },
                 label: {
                     Text("Hủy")
                 }
@@ -369,8 +385,8 @@ public struct TransactionCreationPage: View {
 
             MacButton.primary(
                 disabled: false, // !viewStore.isFormValid,
-                loading: false, // viewStore.accountCreationInProgress,
-                action: { /* viewStore.send(.view(.createButtonTapped)) */ },
+                loading: viewStore.createTransactionProgress.is(\.loading),
+                action: { viewStore.send(.view(.createTransactionButtonTapped)) },
                 label: {
                     Text("Tạo")
                 }
@@ -402,7 +418,11 @@ extension BindingViewStore<TransactionCreationFeature.State> {
             date: self.$date,
             category: self.$category,
             transactionName: self.$transactionName,
-            moneyInCategories: self.moneyInCategories
+            notes: self.$notes,
+            selectedAccount: self.$referenceAccount,
+            accountList: self.accountList,
+            moneyInCategories: self.moneyInCategories,
+            createTransactionProgress: self.createTransactionProgress
         )
         // swiftformat:enable redundantSelf
     }
@@ -414,141 +434,9 @@ extension BindingViewStore<TransactionCreationFeature.State> {
             initialState: .init(),
             reducer: { TransactionCreationFeature() }
         ) {
-            $0.categoriesAPIService = .directMock(
-                getCategoriesMock: mock,
-                createCategoryMock: nil
-            )
+            $0.accountsAPIService = .directMock(getAccountListMock: accountListMock)
+            $0.categoriesAPIService = .directMock(getCategoriesMock: categoryListMock, createCategoryMock: nil)
         }
     )
     .frame(height: 600)
 }
-
-private let mock = """
-{
-    "message": "Execute successfully",
-    "data": [
-        {
-            "id": "1ee5a461-7b00-473e-b23a-856173e7bf81",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Sugarbaby",
-            "level": 0
-        },
-        {
-            "id": "7a32b2cd-9159-4b0b-9c88-63200511aad6",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Baby 1",
-            "level": 1,
-            "parentId": "1ee5a461-7b00-473e-b23a-856173e7bf81"
-        },
-        {
-            "id": "6547a713-d3df-423d-a764-b8d71af6d66a",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Baby 2",
-            "level": 1,
-            "parentId": "1ee5a461-7b00-473e-b23a-856173e7bf81"
-        },
-        {
-            "id": "8cab19f6-59a9-4e39-b1bb-ded4d663567b",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Salary",
-            "level": 0
-        },
-        {
-            "id": "bb5195e3-6345-4d25-9622-e6d5c1be4eca",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Freelance",
-            "level": 1,
-            "parentId": "8cab19f6-59a9-4e39-b1bb-ded4d663567b"
-        },
-        {
-            "id": "27e6a10b-34e2-45d2-a752-f3b8f105b6d0",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "9-5",
-            "level": 1,
-            "parentId": "8cab19f6-59a9-4e39-b1bb-ded4d663567b"
-        },
-        {
-            "id": "ebd779b3-93e3-497e-a9dd-fb2dde1e41b4",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "stock",
-            "level": 1,
-            "parentId": "8cab19f6-59a9-4e39-b1bb-ded4d663567b"
-        },
-        {
-            "id": "d371345e-6846-4f59-81dd-39bbfa7ddc41",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "tiktok",
-            "level": 1,
-            "parentId": "8cab19f6-59a9-4e39-b1bb-ded4d663567b"
-        },
-        {
-            "id": "3ae4bbc8-7948-4565-a852-97a6fac5f0c3",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Social Media",
-            "level": 0
-        },
-        {
-            "id": "c18b7311-b42b-45ac-810d-be214815efb4",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Youtube",
-            "level": 1,
-            "parentId": "3ae4bbc8-7948-4565-a852-97a6fac5f0c3"
-        },
-        {
-            "id": "332fc28b-f55d-4672-b8af-71efcd6b4542",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "X",
-            "level": 1,
-            "parentId": "3ae4bbc8-7948-4565-a852-97a6fac5f0c3"
-        },
-        {
-            "id": "c5a3465e-b718-428e-bc37-f33ab8c3679e",
-            "type": "money-in",
-            "icon": "green_square",
-            "name": "Instagram",
-            "level": 1,
-            "parentId": "3ae4bbc8-7948-4565-a852-97a6fac5f0c3"
-        },
-        {
-          "id": "1ee5a461-7b00-473e-b23a-856173e7bf90",
-          "type": "money-in",
-          "icon": "green_square",
-          "name": "Gambling",
-          "level": 0
-        },
-        {
-          "id": "1ee5a461-7b00-473e-b23a-856173e7bf91",
-          "type": "money-in",
-          "icon": "green_square",
-          "name": "Inherit",
-          "level": 0
-        },
-        {
-          "id": "1ee5a461-7b00-473e-b23a-856173e7bf92",
-          "type": "money-in",
-          "icon": "green_square",
-          "name": "Others",
-          "level": 0
-        },
-        {
-          "id": "1ee5a461-7b00-473e-b23a-856173e7bf93",
-          "type": "money-in",
-          "icon": "green_square",
-          "name": "Back Street Boys",
-          "level": 0
-        }
-    ],
-    "code": 200
-}
-"""

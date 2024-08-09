@@ -12,10 +12,10 @@ public struct TransactionsAPIService {
         _ type: TransactionType,
         _ amount: Decimal,
         _ accountId: String,
-        _ date: Int,
+        _ date: TimeInterval,
         _ categoryId: String?,
         _ name: String?,
-        _ note: String
+        _ note: String?
     ) -> Effect<CreateTransactionResult>
 }
 
